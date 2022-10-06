@@ -4,13 +4,13 @@ import 'dart:async';
 import 'package:coverlo/blocs/bloc.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/des/des.dart';
+import 'package:coverlo/env/env.dart';
 import 'package:coverlo/globals.dart';
 import 'package:coverlo/models/user_model.dart';
 import 'package:coverlo/networking/response.dart';
 import 'package:coverlo/pairbloc.dart';
 import 'package:coverlo/respository/user_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserBloc extends Bloc with ChangeNotifier {
   late UserRepository _userRepository;
@@ -59,8 +59,8 @@ class UserBloc extends Bloc with ChangeNotifier {
     try {
       getSink.add(Response.loading('Loading User...'));
       Map<String, String> encryptedData = Des.encryptMap(
-          dotenv.env['SERVER_KEY'] ?? '',
-          {'UserName': userName, 'Password': password});
+          Env.serverKey, {'UserName': userName, 'Password': password});
+
       UserModel user = await _userRepository.loginUser(
           uniqueID,
           deviceUniqueIdentifier,
@@ -82,8 +82,8 @@ class UserBloc extends Bloc with ChangeNotifier {
     try {
       getSink.add(Response.loading('Registering Device...'));
       Map<String, String> encryptedData = Des.encryptMap(
-          dotenv.env['SERVER_KEY'] ?? '',
-          {'deviceUniqueIdentifier': deviceUniqueIdentifier});
+          Env.serverKey, {'deviceUniqueIdentifier': deviceUniqueIdentifier});
+
       UserMessageResponse data = await _userRepository
           .registerDevice(encryptedData['deviceUniqueIdentifier'] ?? '');
       getSink.add(Response.completed(data));

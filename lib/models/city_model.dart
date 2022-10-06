@@ -1,5 +1,6 @@
 import 'package:coverlo/des/des.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:coverlo/env/env.dart';
+
 
 class CityModel {
   List<CityResponse> cityList = [];
@@ -40,7 +41,7 @@ class CityResponse {
   factory CityResponse.fromJson(Map<String, dynamic> json) {
 
     Map<String, String> decryptedData =
-        Des.decryptMap(dotenv.env['APP_KEY'] ?? '', {
+        Des.decryptMap(Env.appKey, {
       'cityID': json['cityID'],
       'cityName': json['cityName'],
       'countryName': json['countryName'],

@@ -1,7 +1,9 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+
+import 'package:coverlo/env/env.dart';
 
 abstract class BaseAPI {
-  final String baseUrl = dotenv.env['API_URL1'] ?? '';
+  final String baseUrl = Env.appUrl1;
 
   Future<dynamic> post(String url, String body);
 }

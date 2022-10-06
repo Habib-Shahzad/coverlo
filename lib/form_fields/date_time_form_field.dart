@@ -14,7 +14,7 @@ Theme dateTimeFormFieldMethod(
         onSurface: kFormTextColor,
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(primary: kPrimaryColor),
+        style: TextButton.styleFrom(foregroundColor: kPrimaryColor),
       ),
     ),
     child: DateTimeFormField(

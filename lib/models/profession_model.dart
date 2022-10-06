@@ -1,5 +1,6 @@
 import 'package:coverlo/des/des.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:coverlo/env/env.dart';
+
 
 class ProfessionModel {
   List<ProfessionResponse> professionList = [];
@@ -35,7 +36,7 @@ class ProfessionResponse {
 
   factory ProfessionResponse.fromJson(Map<String, dynamic> json) {
     Map<String, String> decryptedData =
-        Des.decryptMap(dotenv.env['APP_KEY'] ?? '', {
+        Des.decryptMap(Env.appKey, {
       'professionName': json['ProfessionName'],
     });
 

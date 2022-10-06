@@ -1,5 +1,6 @@
 import 'package:coverlo/des/des.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:coverlo/env/env.dart';
+
 
 class YearModel {
   List<YearResponse> yearList = [];
@@ -37,7 +38,7 @@ class YearResponse {
 
   factory YearResponse.fromJson(Map<String, dynamic> json) {
     Map<String, String> decryptedData =
-        Des.decryptMap(dotenv.env['APP_KEY'] ?? '', {
+        Des.decryptMap(Env.appKey, {
       'yearName': json['yearName'],
       'modelName': json['modelName'],
     });
