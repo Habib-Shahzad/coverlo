@@ -32,3 +32,5 @@ doc/api/
 /lib/env
 
 .DS_Store
+.idea/
+.vscode/

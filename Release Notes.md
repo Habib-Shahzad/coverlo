@@ -11,4 +11,3 @@ The following components have been developed:
 - Form Step 1 Screen
 - Form Step 2 Screen
 
-
