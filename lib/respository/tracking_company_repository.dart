@@ -1,0 +1,21 @@
+import 'package:coverlo/constants.dart';
+import 'package:coverlo/models/tracking_company_model.dart';
+import 'package:coverlo/networking/api_provider.dart';
+import 'package:coverlo/networking/base_api.dart';
+
+class TrackingCompanyRepository {
+  final BaseAPI _provider = ApiProvider();
+
+  Future<TrackingCompanyModel> fetchData(
+      String uniqueID, String deviceUniqueIdentifier) async {
+    final response = await _provider.post(GET_TRACKING_COMPANIES_API,
+        _bodyInterpolateFetch(uniqueID, deviceUniqueIdentifier));
+    return TrackingCompanyModel.fromJson(response);
+  }
+
+  String _bodyInterpolateFetch(String uniqueID, String deviceUniqueIdentifier) {
+    String body =
+        '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><CoverLo_GetTrackingCompanies xmlns="http://tempuri.org/"><uniqueID>$uniqueID</uniqueID><device_unique_identifier>$deviceUniqueIdentifier</device_unique_identifier></CoverLo_GetTrackingCompanies></soap:Body></soap:Envelope>';
+    return body;
+  }
+}
