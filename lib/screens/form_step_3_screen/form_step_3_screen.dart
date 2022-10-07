@@ -4,7 +4,7 @@ import 'package:coverlo/components/navigate_button.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';
 // import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:intl/intl.dart';
@@ -77,7 +77,7 @@ class FormStep3Screen extends StatelessWidget {
                     fontWeight: FontWeight.w600),
                 TextButton(
                   onPressed: () {
-                    pay();
+                    helper();
                   },
                   child: const Text("Pay with JazzCash"),
                 ),
@@ -91,11 +91,16 @@ class FormStep3Screen extends StatelessWidget {
   }
 
   final integritySalt = "91sz838003";
-
+static const platform = MethodChannel('payments.flutter/jazzcash');
 
   Future<String> performPayment(data) async {
     // print(data);
     return "";
+  }
+
+  void helper() async {
+    final String result = await platform.invokeMethod('performPayment');
+    print(result);
   }
 
 
@@ -138,8 +143,7 @@ class FormStep3Screen extends StatelessWidget {
     final currentDate = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
 
     // Transaction Expiry Time
-    final expDate = DateFormat('yyyyMMddHHmmss')
-        .format(DateTime.now().add(const Duration(minutes: 5)));
+    final expDate = DateFormat('yyyyMMddHHmmss').format(DateTime.now().add(const Duration(minutes: 5)));
     final refNo = 'T$currentDate';
 
     // The json map that contains our key-value pairs
@@ -165,13 +169,29 @@ class FormStep3Screen extends StatelessWidget {
       "ppmpf_4": "4",
       "ppmpf_5": "5",
     };
+
     String postData = hashingFunc(data);
     String responseString = "";
+    String result = "";
+
+  try {
+      // Trigger native code through channel method
+      // The first arguemnt is the name of method that is invoked
+      // The second argument is the data passed to the method as input
+      final result = await platform.invokeMethod('performPayment', {"postData": postData});
+
+      // Await for response from above before moving on
+      // The response contains the result of the transaction
+      responseString = result.toString();
+
+    } on PlatformException {
+      // On Channel Method Invocation Failure
+      // print("PLATFORM_EXCEPTION: ${e.message.toString()}");
+    }
 
     // Trigger native code through channel method
     // The first arguemnt is the name of method that is invoked
     // The second argument is the data passed to the method as input
-    final result = await performPayment(postData);
 
     // Await for response from above before moving on
     // The response contains the result of the transaction
