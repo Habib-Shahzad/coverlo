@@ -179,23 +179,23 @@ class _Step2FormState extends State<Step2Form> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          dropDownFormFieldMethod(
-              context,
-              _productKey,
-              'Product',
-              _productValue,
-              _productList,
-              _productListMap,
-              'productName',
-              false,
-              setProductData),
-          const SizedBox(height: kMinSpacing),
+          // dropDownFormFieldMethod(
+          //     context,
+          //     _productKey,
+          //     'Product',
+          //     _productValue,
+          //     _productList,
+          //     _productListMap,
+          //     'productName',
+          //     false,
+          //     setProductData),
+          // const SizedBox(height: kMinSpacing),
+          
           const FormSubHeading(text: 'Applied For Registration'),
           const SizedBox(height: kMinSpacing),
           Row(
             children: [
-              radioMethod(context, 'Yes', 'yes', _appliedForRegistartion,
-                  setAppliedForRegistartion),
+              radioMethod(context, 'Yes', 'yes', _appliedForRegistartion, setAppliedForRegistartion),
               const SizedBox(width: kMinSpacing),
               radioMethod(context, 'Already Registered', 'already registered',
                   _appliedForRegistartion, setAppliedForRegistartion),

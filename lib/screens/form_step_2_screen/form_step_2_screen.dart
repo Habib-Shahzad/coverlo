@@ -15,11 +15,11 @@ class FormStep2Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
+    return MainLayout( 
       body: SizedBox(
         width: double.infinity,
         height: double.infinity,
-        child: Container(
+        child: Container( 
           padding: const EdgeInsets.symmetric(
             horizontal: kDefaultPadding,
             vertical: kDefaultPadding / 2,
