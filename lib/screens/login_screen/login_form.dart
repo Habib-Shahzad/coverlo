@@ -144,7 +144,7 @@ class _LoginFormState extends State<LoginForm> {
 
   TextFormField usernameTextFormField() {
     return TextFormField(
-      cursorColor: kTextColor,
+      cursorColor: kCursorColor,
       controller: _usernameController,
       style: TextStyle(
         color: kFormTextColor,
@@ -201,7 +201,7 @@ class _LoginFormState extends State<LoginForm> {
   TextFormField passwordTextFormField() {
     return TextFormField(
       obscureText: true,
-      cursorColor: kTextColor,
+      cursorColor: kCursorColor,
       controller: _passwordController,
       style: TextStyle(
         color: kFormTextColor,

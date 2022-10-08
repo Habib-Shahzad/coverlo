@@ -5,7 +5,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 TextFormField textFormFieldMethod(BuildContext context, String hintText,
     TextEditingController controller, bool hasPrefix, bool isReadOnly, TextInputType type) {
   return TextFormField(
-    cursorColor: kTextColor,
+    cursorColor: kCursorColor,
     controller: controller,
     readOnly: isReadOnly,
     keyboardType: type,
