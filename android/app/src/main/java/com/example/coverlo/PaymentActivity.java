@@ -23,7 +23,7 @@ import android.view.ViewGroup;
 public class PaymentActivity extends FlutterActivity {
     private static final String CHANNEL = "payments.flutter/jazzcash";
     private static final String paymentUrl = "https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/";
-    private static final String paymentReturnUrl = "https://sandbox.jazzcash.com.pk/CustomerPortal/TransactionManagement/http//localhost/case.php";
+    private static final String paymentReturnUrl = "https://www.google.com/";
 
     WebView mWebView;
 

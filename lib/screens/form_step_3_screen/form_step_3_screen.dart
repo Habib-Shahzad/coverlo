@@ -5,7 +5,6 @@ import 'package:coverlo/constants.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:intl/intl.dart';
 
@@ -77,7 +76,7 @@ class FormStep3Screen extends StatelessWidget {
                     fontWeight: FontWeight.w600),
                 TextButton(
                   onPressed: () {
-                    helper();
+                    pay();
                   },
                   child: const Text("Pay with JazzCash"),
                 ),
@@ -91,18 +90,7 @@ class FormStep3Screen extends StatelessWidget {
   }
 
   final integritySalt = "91sz838003";
-static const platform = MethodChannel('payments.flutter/jazzcash');
-
-  Future<String> performPayment(data) async {
-    // print(data);
-    return "";
-  }
-
-  void helper() async {
-    final String result = await platform.invokeMethod('performPayment');
-    print(result);
-  }
-
+  static const platform = MethodChannel('payments.flutter/jazzcash');
 
   String hashingFunc(Map<String, String> data) {
     Map<String, String> temp2 = {};
@@ -112,12 +100,9 @@ static const platform = MethodChannel('payments.flutter/jazzcash');
     });
     var sortedKeys = temp2.keys.toList(growable: false)
       ..sort((k1, k2) => k1.compareTo(k2));
-    // ignore: prefer_for_elements_to_map_fromiterable
-    Map<String, String> sortedMap = Map.fromIterable(sortedKeys,
-        key: (k) => k,
-        value: (k) {
-          return temp2[k].toString();
-        });
+    Map<String, String> sortedMap = {
+      for (var k in sortedKeys) k: temp2[k].toString()
+    };
 
     var values = sortedMap.values;
     String toBePrinted = values.reduce((str, ele) => str += ele);
@@ -143,7 +128,8 @@ static const platform = MethodChannel('payments.flutter/jazzcash');
     final currentDate = DateFormat('yyyyMMddHHmmss').format(DateTime.now());
 
     // Transaction Expiry Time
-    final expDate = DateFormat('yyyyMMddHHmmss').format(DateTime.now().add(const Duration(minutes: 5)));
+    final expDate = DateFormat('yyyyMMddHHmmss')
+        .format(DateTime.now().add(const Duration(minutes: 5)));
     final refNo = 'T$currentDate';
 
     // The json map that contains our key-value pairs
@@ -174,17 +160,18 @@ static const platform = MethodChannel('payments.flutter/jazzcash');
     String responseString = "";
     String result = "";
 
-  try {
+    try {
       // Trigger native code through channel method
       // The first arguemnt is the name of method that is invoked
       // The second argument is the data passed to the method as input
-      final result = await platform.invokeMethod('performPayment', {"postData": postData});
+      final result =
+          await platform.invokeMethod('performPayment', {"postData": postData});
 
       // Await for response from above before moving on
       // The response contains the result of the transaction
       responseString = result.toString();
-
     } on PlatformException {
+      print("ERROR OCCURED");
       // On Channel Method Invocation Failure
       // print("PLATFORM_EXCEPTION: ${e.message.toString()}");
     }
@@ -209,109 +196,6 @@ static const platform = MethodChannel('payments.flutter/jazzcash');
     }
 // Use the transaction response as needed now
     // ignore: avoid_print
-    print(response);
-  }
-
-  payment() async {
-    // String password = "0d382vf2tc";
-    // String merchantID = "MC48656";
-    // String hashKey = "91sz838003";
-    // String returnURL = "https://www.google.com";
-
-    // String dateandtime = DateFormat("yyyyMMddHHmmss").format(DateTime.now());
-    // String dexpiredate = DateFormat("yyyyMMddHHmmss")
-    //     .format(DateTime.now().add(const Duration(days: 1)));
-
-    // String env = "sandbox";
-
-    // String postURL = env == "sandbox"
-    //     ? "https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/"
-    //     : "https://payments.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform";
-
-    // String amount = "100000";
-    // String billReference = "billRef";
-    // String description = "Product test description";
-    // String isRegisteredCustomer = "No";
-    // String language = "EN";
-    // String txnCurrency = "PKR";
-    // String txnDateTime = dateandtime.toString();
-    // String txnExpiryDateTime = dexpiredate.toString();
-    // String txnRefNumber = "TR$dateandtime";
-    // String txnType = "";
-    // String version = "2.0";
-    // String subMerchantID = "";
-    // String bankID = "";
-    // String productID = "";
-    // String ppmpf_1 = "";
-    // String ppmpf_2 = "";
-    // String ppmpf_3 = "";
-    // String ppmpf_4 = "";
-    // String ppmpf_5 = "";
-
-    // List<String>  hashArray = [
-    //   amount,
-    //   bankID,
-    //   billReference,
-    //   description,
-    //   isRegisteredCustomer,
-    //   language,
-    //   merchantID,
-    //   password,
-    //   productID,
-    //   returnURL,
-    //   txnCurrency,
-    //   txnDateTime,
-    //   txnExpiryDateTime,
-    //   txnRefNumber,
-    //   txnType,
-    //   version,
-    //   subMerchantID,
-    //   ppmpf_1,
-    //   ppmpf_2,
-    //   ppmpf_3,
-    //   ppmpf_4,
-    //   ppmpf_5
-    // ];
-
-    // String sortedArray = hashKey;
-    // for (int i = 0; i < hashArray.length; i++) {
-    //   if (hashArray[i] != 'undefined' &&
-    //       hashArray[i] != "") {
-    //     sortedArray += "&${hashArray[i]}";
-    //   }
-    // }
-
-    // String securehash = sha256.convert(utf8.encode(sortedArray)).toString();
-
-    // var response = await http.post(Uri.parse(postURL), body: {
-    //   "pp_Amount": amount,
-    //   "pp_BankID": bankID,
-    //   "pp_BillReference": billReference,
-    //   "pp_Description": description,
-    //   "pp_IsRegisteredCustomer": isRegisteredCustomer,
-    //   "pp_Language": language,
-    //   "pp_MerchantID": merchantID,
-    //   "pp_Password": password,
-    //   "pp_ProductID": productID,
-    //   "pp_ReturnURL": returnURL,
-    //   "pp_TxnCurrency": txnCurrency,
-    //   "pp_TxnDateTime": txnDateTime,
-    //   "pp_TxnExpiryDateTime": txnExpiryDateTime,
-    //   "pp_TxnRefNo": txnRefNumber,
-    //   "pp_TxnType": txnType,
-    //   "pp_Version": version,
-    //   "pp_SubMerchantID": subMerchantID,
-    //   "ppmpf_1": ppmpf_1,
-    //   "ppmpf_2": ppmpf_2,
-    //   "ppmpf_3": ppmpf_3,
-    //   "ppmpf_4": ppmpf_4,
-    //   "ppmpf_5": ppmpf_5,
-    //   "pp_SecureHash": securehash
-    // });
-
-    // // ignore: avoid_print
-    // print('Response status: ${response.statusCode}');
-    // // ignore: avoid_print
-    // print(response.body);
+    print("RESPONSE: $response");
   }
 }
