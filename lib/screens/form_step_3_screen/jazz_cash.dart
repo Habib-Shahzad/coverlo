@@ -19,7 +19,7 @@ String hashingFunc(Map<String, String> data) {
 
   var values = sortedMap.values;
   String toBePrinted = values.reduce((str, ele) => str += ele);
-  
+
   toBePrinted = toBePrinted.substring(0, toBePrinted.length - 1);
   toBePrinted = '$integritySalt&$toBePrinted';
   var key = utf8.encode(integritySalt);
@@ -69,6 +69,5 @@ paymentJazzCash(Function showJazzCashWebView) async {
   };
 
   String postData = hashingFunc(data);
-
   showJazzCashWebView(postData);
 }
