@@ -21,10 +21,23 @@ class FormStep3Screen extends StatefulWidget {
 class _FormStep3ScreenState extends State<FormStep3Screen> {
   bool showPaymentWebView = false;
   bool showHBLPaymentWebView = false;
+  bool loaded = false;
+  String? contribution;
   String paymentData = '';
 
   @override
   Widget build(BuildContext context) {
+
+
+if (!loaded) {
+      final args =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      setState(() {
+        contribution = args['contribution'];
+        loaded = true;
+      });
+    }
+
     if (!showPaymentWebView && !showHBLPaymentWebView) {
       return MainLayout(
         body: SizedBox(
@@ -86,13 +99,13 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                       fontWeight: FontWeight.w600),
                   TextButton(
                     onPressed: () {
-                      paymentJazzCash(displayJazzCashWebView);
+                      paymentJazzCash(displayJazzCashWebView, contribution);
                     },
                     child: const Text("Pay with JazzCash"),
                   ),
                   TextButton(
                     onPressed: () {
-                      paymentHBL(displayHblPaymentWebView);
+                      paymentHBL(displayHblPaymentWebView, contribution);
                     },
                     child: const Text("Pay with HBL"),
                   ),

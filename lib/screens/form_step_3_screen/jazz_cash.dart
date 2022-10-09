@@ -37,7 +37,9 @@ String hashingFunc(Map<String, String> data) {
   return returnString;
 }
 
-paymentJazzCash(Function showJazzCashWebView) async {
+paymentJazzCash(Function showJazzCashWebView, String? contribution) async {
+  String fixedContribution = contribution.toString().replaceAll('.', '');
+
   String returnURL = "https://www.google.com/";
   String currentDate = DateFormat("yyyyMMddHHmmss").format(DateTime.now());
   String expDate = DateFormat("yyyyMMddHHmmss")
@@ -46,7 +48,7 @@ paymentJazzCash(Function showJazzCashWebView) async {
   String refNo = "T$currentDate";
 
   var data = {
-    "pp_Amount": "100000",
+    "pp_Amount": fixedContribution.toString(),
     "pp_BillReference": "billRef",
     "pp_Description": "Description of transaction",
     "pp_Language": "EN",

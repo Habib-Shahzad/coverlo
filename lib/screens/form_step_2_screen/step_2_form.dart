@@ -36,7 +36,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Step2Form extends StatefulWidget {
-  const Step2Form({Key? key}) : super(key: key);
+  final TextEditingController contributionController;
+  const Step2Form({Key? key, required this.contributionController})
+      : super(key: key);
 
   @override
   State<Step2Form> createState() => _Step2FormState();
@@ -80,7 +82,6 @@ class _Step2FormState extends State<Step2Form> {
   // DateTime? _toInsuranceDate;
   final TextEditingController _insuranceEstimatedValueController =
       TextEditingController();
-  final TextEditingController _contributionController = TextEditingController();
 
   late Bloc _productBloc;
   late Bloc _makeBloc;
@@ -179,23 +180,23 @@ class _Step2FormState extends State<Step2Form> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // dropDownFormFieldMethod(
-          //     context,
-          //     _productKey,
-          //     'Product',
-          //     _productValue,
-          //     _productList,
-          //     _productListMap,
-          //     'productName',
-          //     false,
-          //     setProductData),
-          // const SizedBox(height: kMinSpacing),
-          
+          dropDownFormFieldMethod(
+              context,
+              _productKey,
+              'Product',
+              _productValue,
+              _productList,
+              _productListMap,
+              'productName',
+              false,
+              setProductData),
+          const SizedBox(height: kMinSpacing),
           const FormSubHeading(text: 'Applied For Registration'),
           const SizedBox(height: kMinSpacing),
           Row(
             children: [
-              radioMethod(context, 'Yes', 'yes', _appliedForRegistartion, setAppliedForRegistartion),
+              radioMethod(context, 'Yes', 'yes', _appliedForRegistartion,
+                  setAppliedForRegistartion),
               const SizedBox(width: kMinSpacing),
               radioMethod(context, 'Already Registered', 'already registered',
                   _appliedForRegistartion, setAppliedForRegistartion),
@@ -414,13 +415,13 @@ class _Step2FormState extends State<Step2Form> {
                       estimatedValue = estimatedValue * 1.0190;
                     }
                     estimatedValue = estimatedValue + personalAccidentAmount;
-                    _contributionController.text =
+                    widget.contributionController.text =
                         estimatedValue.toStringAsFixed(2);
                   } else if (currentYear - int.parse(year) > 5 &&
                       currentYear - int.parse(year) <= 15) {
                     estimatedValue = estimatedValue * 1.015;
                     estimatedValue = estimatedValue + personalAccidentAmount;
-                    _contributionController.text =
+                    widget.contributionController.text =
                         estimatedValue.toStringAsFixed(2);
                   } else {
                     AlertDialog alert = messageDialog(
@@ -443,12 +444,12 @@ class _Step2FormState extends State<Step2Form> {
                     int cubicCapacityInt = int.parse(cubicCapacity);
                     if (cubicCapacityInt >= 1000 && cubicCapacityInt <= 2000) {
                       estimatedValue = estimatedValue + 1500;
-                      _contributionController.text =
+                      widget.contributionController.text =
                           estimatedValue.toStringAsFixed(2);
                     } else if (cubicCapacityInt > 2000 &&
                         cubicCapacityInt <= 3500) {
                       estimatedValue = estimatedValue + 2500;
-                      _contributionController.text =
+                      widget.contributionController.text =
                           estimatedValue.toStringAsFixed(2);
                     } else {
                       AlertDialog alert = messageDialog(
@@ -505,13 +506,27 @@ class _Step2FormState extends State<Step2Form> {
           const SizedBox(height: kMinSpacing),
           const FormSubHeading(text: 'Contribution (Premium)'),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(context, '-', _contributionController, true, true,
-              TextInputType.number),
+          textFormFieldMethod(context, '-', widget.contributionController, true,
+              true, TextInputType.number),
           const SizedBox(height: kMinSpacing),
           CustomButton(
             buttonText: nextButtonText,
             onPressed: () {
-              Navigator.pushNamed(context, FormStep3Screen.routeName);
+              if (widget.contributionController.text.isNotEmpty) {
+                Navigator.pushNamed(context, FormStep3Screen.routeName,
+                    arguments: {
+                      'contribution': widget.contributionController.text,
+                    });
+              } else {
+                AlertDialog alert = messageDialog(
+                    context, 'Error', 'Please calculate the contribution');
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return alert;
+                  },
+                );
+              }
             },
             buttonColor: kSecondaryColor,
           ),
@@ -529,7 +544,11 @@ class _Step2FormState extends State<Step2Form> {
       for (var i = 0; i < productModel.productList.length; i++) {
         items.add(
           DropdownMenuItem(
-              value: i, child: Text(productModel.productList[i].productName)),
+              value: i,
+              child: Text(
+                productModel.productList[i].productName,
+                overflow: TextOverflow.ellipsis,
+              )),
         );
         products.add({
           'productName': productModel.productList[i].productName,

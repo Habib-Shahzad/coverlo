@@ -38,7 +38,7 @@ String getSignedData(Map<String, String> data) {
   return signData;
 }
 
-paymentHBL(Function displayHblPaymentWebView) async {
+paymentHBL(Function displayHblPaymentWebView, String? contribution) async {
   String uniqueString = getUniqueString();
   String uuid = idGenerator();
   String today =
@@ -55,8 +55,8 @@ paymentHBL(Function displayHblPaymentWebView) async {
     "locale": "en",
     "transaction_type": "authorization",
     "reference_number": uniqueString,
-    "amount": "100.00",
-    "currency": "USD",
+    "amount": contribution.toString(),
+    "currency": "PKR",
   };
 
   String signedData = getSignedData(data);
@@ -71,8 +71,4 @@ paymentHBL(Function displayHblPaymentWebView) async {
   postData = postData.substring(0, postData.length - 1);
   displayHblPaymentWebView(postData);
 
-  // setState(() {
-  //   showHBLPaymentWebView = true;
-  //   paymentData = returnString;
-  // });
 }
