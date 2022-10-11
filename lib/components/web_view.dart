@@ -1,188 +1,99 @@
-import 'dart:collection';
-import 'dart:convert';
-import 'dart:typed_data';
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
-import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:url_launcher/url_launcher.dart';
+// ignore_for_file: public_member_api_docs
+
+import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-class MyWebView extends StatefulWidget {
+class WebViewExample extends StatefulWidget {
   final String paymentData;
-  const MyWebView({super.key, required this.paymentData});
+  const WebViewExample(
+      {Key? key, this.cookieManager, required this.paymentData})
+      : super(key: key);
+
+  final CookieManager? cookieManager;
 
   @override
-  WebView createState() => WebView();
+  State<WebViewExample> createState() => _WebViewExampleState();
 }
 
-class WebView extends State<MyWebView> {
-  final GlobalKey webViewKey = GlobalKey();
-
-  InAppWebViewController? webViewController;
-  InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
-      crossPlatform: InAppWebViewOptions(
-        useShouldOverrideUrlLoading: true,
-        mediaPlaybackRequiresUserGesture: false,
-      ),
-      android: AndroidInAppWebViewOptions(
-        useHybridComposition: true,
-      ),
-      ios: IOSInAppWebViewOptions(
-        allowsInlineMediaPlayback: true,
-      ));
-
-  late PullToRefreshController pullToRefreshController;
-  String url = "";
-  double progress = 0;
-  final urlController = TextEditingController();
+class _WebViewExampleState extends State<WebViewExample> {
+  final Completer<WebViewController> _controller =
+      Completer<WebViewController>();
 
   @override
   void initState() {
     super.initState();
-
-    pullToRefreshController = PullToRefreshController(
-      options: PullToRefreshOptions(
-        color: Colors.blue,
-      ),
-      onRefresh: () async {
-        if (Platform.isAndroid) {
-          webViewController?.reload();
-        } else if (Platform.isIOS) {
-          webViewController?.loadUrl(
-              urlRequest: URLRequest(url: await webViewController?.getUrl()));
-        }
-      },
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    if (Platform.isAndroid) {
+      WebView.platform = SurfaceAndroidWebView();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Jazz Cash Payment")),
-        body: SafeArea(
-            child: Column(children: <Widget>[
-          Expanded(
-            child: Stack(
-              children: [
-                InAppWebView(
-                  key: webViewKey,
-                  initialUrlRequest: URLRequest(
-                      url: Uri.parse(
-                          "https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/"),
-                      body: Uint8List.fromList(utf8.encode(widget.paymentData)),
-                      method: "POST",
-                      headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                      }),
-                  initialUserScripts: UnmodifiableListView<UserScript>([]),
-                  initialOptions: options,
-                  pullToRefreshController: pullToRefreshController,
-                  onWebViewCreated: (controller) {
-                    webViewController = controller;
-                  },
-                  onLoadStart: (controller, url) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  androidOnPermissionRequest:
-                      (controller, origin, resources) async {
-                    return PermissionRequestResponse(
-                        resources: resources,
-                        action: PermissionRequestResponseAction.GRANT);
-                  },
-                  shouldOverrideUrlLoading:
-                      (controller, navigationAction) async {
-                    var uri = navigationAction.request.url!;
+      appBar: AppBar(
+        title: const Text('Flutter WebView example'),
+      ),
+      body: WebView(
+        initialUrl:
+            "https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/",
+        javascriptMode: JavascriptMode.unrestricted,
 
-                    if (![
-                      "http",
-                      "https",
-                      "file",
-                      "chrome",
-                      "data",
-                      "javascript",
-                      "about"
-                    ].contains(uri.scheme)) {
-                      if (await canLaunch(url)) {
-                        // Launch the App
-                        await launch(
-                          url,
-                        );
-                        // and cancel the request
-                        return NavigationActionPolicy.CANCEL;
-                      }
-                    }
+        // make a post request
+        onWebViewCreated: (WebViewController webViewController) async {
+          _controller.complete(webViewController);
 
-                    return NavigationActionPolicy.ALLOW;
-                  },
-                  onLoadStop: (controller, url) async {
-                    pullToRefreshController.endRefreshing();
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
+          final WebViewRequest request = WebViewRequest(
+            uri: Uri.parse(
+                'https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/'),
+            method: WebViewRequestMethod.post,
+            headers: <String, String>{
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: Uint8List.fromList((widget.paymentData).codeUnits),
+          );
+          webViewController.loadRequest(request);
+        },
+        onProgress: (int progress) {
+          print('WebView is loading (progress : $progress%)');
+        },
+        javascriptChannels: <JavascriptChannel>{
+          _toasterJavascriptChannel(context),
+        },
+        navigationDelegate: (NavigationRequest request) {
+          if (request.url.startsWith('https://www.youtube.com/')) {
+            print('blocking navigation to $request}');
+            return NavigationDecision.prevent;
+          }
+          print('allowing navigation to $request');
+          return NavigationDecision.navigate;
+        },
+        onPageStarted: (String url) {
+          print('Page started loading: $url');
+        },
+        onPageFinished: (String url) {
+          print('Page finished loading: $url');
+        },
+        gestureNavigationEnabled: true,
+        backgroundColor: const Color(0x00000000),
+      ),
+    );
+  }
 
-
-                  },
-                  onLoadError: (controller, url, code, message) {
-                    pullToRefreshController.endRefreshing();
-                  },
-                  onProgressChanged: (controller, progress) {
-                    if (progress == 100) {
-                      pullToRefreshController.endRefreshing();
-                    }
-                    setState(() {
-                      this.progress = progress / 100;
-                      urlController.text = url;
-                    });
-                  },
-                  onUpdateVisitedHistory: (controller, url, androidIsReload) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onConsoleMessage: (controller, consoleMessage) {
-                    // ignore: avoid_print
-                    print("CONSOLE MESSAGE: $consoleMessage");
-                  },
-                ),
-                progress < 1.0
-                    ? LinearProgressIndicator(value: progress)
-                    : Container(),
-              ],
-            ),
-          ),
-          ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ElevatedButton(
-                child: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  webViewController?.goBack();
-                },
-              ),
-              ElevatedButton(
-                child: const Icon(Icons.arrow_forward),
-                onPressed: () {
-                  webViewController?.goForward();
-                },
-              ),
-              ElevatedButton(
-                child: const Icon(Icons.refresh),
-                onPressed: () {
-                  webViewController?.reload();
-                },
-              ),
-            ],
-          ),
-        ])));
+  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
+    return JavascriptChannel(
+        name: 'Toaster',
+        onMessageReceived: (JavascriptMessage message) {
+          print("MESSAGE: ${message.message}");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message.message)),
+          );
+        });
   }
 }

@@ -99,7 +99,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
         ),
       );
     } else {
-      return MyWebView(
+      return WebViewExample(
         paymentData: paymentData,
       );
     }
@@ -115,7 +115,9 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
     });
     var sortedKeys = temp2.keys.toList(growable: false)
       ..sort((k1, k2) => k1.compareTo(k2));
-    Map<String, String> sortedMap = {for (var k in sortedKeys) k: temp2[k].toString()};
+    Map<String, String> sortedMap = {
+      for (var k in sortedKeys) k: temp2[k].toString()
+    };
 
     var values = sortedMap.values;
     String toBePrinted = values.reduce((str, ele) => str += ele);
@@ -168,9 +170,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
       "ppmpf_5": "5",
     };
 
-    
     String postData = hashingFunc(data);
-
 
     setState(() {
       showPaymentWebView = true;
