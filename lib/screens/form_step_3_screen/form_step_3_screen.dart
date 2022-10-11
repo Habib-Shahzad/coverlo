@@ -1,13 +1,11 @@
-import 'dart:convert';
 import 'package:coverlo/components/main_heading.dart';
 import 'package:coverlo/components/navigate_button.dart';
 import 'package:coverlo/components/web_view.dart';
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/env/env.dart';
 import 'package:coverlo/layouts/main_layout.dart';
+import 'package:coverlo/screens/form_step_3_screen/hbl_payment.dart';
 import 'package:flutter/material.dart';
-import 'package:crypto/crypto.dart';
-import 'package:intl/intl.dart';
+// import 'package:coverlo/screens/form_step_3_screen/jazz_cash.dart';
 
 class FormStep3Screen extends StatefulWidget {
   static const String routeName = '/form_step_3_screen';
@@ -22,11 +20,23 @@ class FormStep3Screen extends StatefulWidget {
 
 class _FormStep3ScreenState extends State<FormStep3Screen> {
   bool showPaymentWebView = false;
+  bool showHBLPaymentWebView = false;
+  bool loaded = false;
+  String? contribution;
   String paymentData = '';
 
   @override
   Widget build(BuildContext context) {
-    if (!showPaymentWebView) {
+    if (!loaded) {
+      final args =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      setState(() {
+        contribution = args['contribution'];
+        loaded = true;
+      });
+    }
+
+    if (!showPaymentWebView && !showHBLPaymentWebView) {
       return MainLayout(
         body: SizedBox(
           width: double.infinity,
@@ -85,11 +95,17 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                       headingText: 'Motor Vehicle Cover',
                       color: kDarkTextColor,
                       fontWeight: FontWeight.w600),
+                  // TextButton(
+                  //   onPressed: () {
+                  //     paymentJazzCash(displayJazzCashWebView, contribution);
+                  //   },
+                  //   child: const Text("Pay with JazzCash"),
+                  // ),
                   TextButton(
                     onPressed: () {
-                      payment();
+                      paymentHBL(displayHblPaymentWebView, contribution);
                     },
-                    child: const Text("Pay with JazzCash"),
+                    child: const Text("Pay with HBL"),
                   ),
                   const SizedBox(height: kDefaultSpacing),
                 ],
@@ -98,83 +114,37 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
           ),
         ),
       );
-    } else {
+    } else if (showHBLPaymentWebView) {
       return MyWebView(
-        paymentData: paymentData,
+          paymentData: paymentData,
+          webUrl: "https://testsecureacceptance.cybersource.com/pay",
+          webViewName: "HBL Payment");
+    } else if (showPaymentWebView) {
+      return MyWebView(
+          paymentData: paymentData,
+          webUrl:
+              "https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/",
+          webViewName: "JazzCash Payment");
+    } else {
+      return const Scaffold(
+        body: Center(
+          child: Text("Something went wrong"),
+        ),
       );
     }
   }
 
-  String integritySalt = Env.jazzCashSalt;
-
-  String hashingFunc(Map<String, String> data) {
-    Map<String, String> temp2 = {};
-    data.forEach((k, v) {
-      if (v != "") v += "&";
-      temp2[k] = v;
-    });
-    var sortedKeys = temp2.keys.toList(growable: false)
-      ..sort((k1, k2) => k1.compareTo(k2));
-    Map<String, String> sortedMap = {for (var k in sortedKeys) k: temp2[k].toString()};
-
-    var values = sortedMap.values;
-    String toBePrinted = values.reduce((str, ele) => str += ele);
-    toBePrinted = toBePrinted.substring(0, toBePrinted.length - 1);
-    toBePrinted = '$integritySalt&$toBePrinted';
-    var key = utf8.encode(integritySalt);
-    var bytes = utf8.encode(toBePrinted);
-    var hash2 = Hmac(sha256, key);
-    var digest = hash2.convert(bytes);
-    var hash = digest.toString();
-    data["pp_SecureHash"] = hash;
-    String returnString = "";
-    data.forEach((k, v) {
-      returnString += '$k=$v&';
-    });
-    returnString = returnString.substring(0, returnString.length - 1);
-
-    return returnString;
-  }
-
-  payment() async {
-    String returnURL = "https://www.google.com/";
-
-    String currentDate = DateFormat("yyyyMMddHHmmss").format(DateTime.now());
-    String expDate = DateFormat("yyyyMMddHHmmss")
-        .format(DateTime.now().add(const Duration(days: 1)));
-
-    String refNo = "T$currentDate";
-
-    var data = {
-      "pp_Amount": "1000",
-      "pp_BillReference": "billRef",
-      "pp_Description": "Description of transaction",
-      "pp_Language": "EN",
-      "pp_MerchantID": Env.jazzCashMerchantId,
-      "pp_Password": Env.jazzCashPassword,
-      "pp_ReturnURL": returnURL,
-      "pp_TxnCurrency": "PKR",
-      "pp_TxnDateTime": currentDate.toString(),
-      "pp_TxnExpiryDateTime": expDate.toString(),
-      "pp_TxnRefNo": refNo,
-      "pp_TxnType": "",
-      "pp_Version": "1.1",
-      "pp_BankID": "TBANK",
-      "pp_ProductID": "RETL",
-      "ppmpf_1": "1",
-      "ppmpf_2": "2",
-      "ppmpf_3": "3",
-      "ppmpf_4": "4",
-      "ppmpf_5": "5",
-    };
-
-    
-    String postData = hashingFunc(data);
-
-
+  displayHblPaymentWebView(data) {
     setState(() {
-      showPaymentWebView = true;
-      paymentData = postData;
+      showHBLPaymentWebView = true;
+      paymentData = data;
     });
   }
+
+  // displayJazzCashWebView(data) {
+  //   setState(() {
+  //     showPaymentWebView = true;
+  //     paymentData = data;
+  //   });
+  // }
 }

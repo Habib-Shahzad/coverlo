@@ -14,6 +14,7 @@ dropDownFormFieldMethod(
     Function(Object?)? callBack) {
   return DropdownButtonFormField(
     items: items,
+    isExpanded: true,
     key: key,
     onChanged: isReadOnly
         ? null

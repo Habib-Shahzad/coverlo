@@ -2,24 +2,26 @@ import 'package:coverlo/components/main_heading.dart';
 import 'package:coverlo/components/navigate_button.dart';
 import 'package:coverlo/components/sub_heading.dart';
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/helpers/dialogs/message_dialog.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/screens/form_step_2_screen/step_2_form.dart';
 import 'package:coverlo/screens/form_step_3_screen/form_step_3_screen.dart';
 import 'package:flutter/material.dart';
 
 class FormStep2Screen extends StatelessWidget {
+  final TextEditingController _contributionController = TextEditingController();
   static const String routeName = '/form_step_2_screen';
-  const FormStep2Screen({
+  FormStep2Screen({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout( 
+    return MainLayout(
       body: SizedBox(
         width: double.infinity,
         height: double.infinity,
-        child: Container( 
+        child: Container(
           padding: const EdgeInsets.symmetric(
             horizontal: kDefaultPadding,
             vertical: kDefaultPadding / 2,
@@ -61,10 +63,24 @@ class FormStep2Screen extends StatelessWidget {
                       NavigateButton(
                         text: 'Step 3',
                         onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            FormStep3Screen.routeName,
-                          );
+                          if (_contributionController.text.isNotEmpty) {
+                            Navigator.pushNamed(
+                              context,
+                              FormStep3Screen.routeName,
+                              arguments: {
+                                "contribution": _contributionController.text
+                              },
+                            );
+                          } else {
+                            AlertDialog alert = messageDialog(
+                                context, "Error", "Please fill all fields");
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return alert;
+                              },
+                            );
+                          }
                         },
                         color: kStepButtonColor,
                       ),
@@ -82,7 +98,7 @@ class FormStep2Screen extends StatelessWidget {
                 const SubHeading(
                     headingText: 'Vehicle Details', color: kDarkTextColor),
                 const SizedBox(height: kMinSpacing),
-                const Step2Form(),
+                Step2Form(contributionController: _contributionController),
               ],
             ),
           ),

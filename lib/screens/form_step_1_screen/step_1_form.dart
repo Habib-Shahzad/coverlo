@@ -240,10 +240,11 @@ class _Step1FormState extends State<Step1Form> {
       key: _formKey,
       child: Column(
         children: [
-          textFormFieldMethod(context, 'Name', _nameController, false, false, TextInputType.text),
+          textFormFieldMethod(context, 'Name', _nameController, false, false,
+              TextInputType.text),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(
-              context, 'Address', _addressController, false, false, TextInputType.text),
+          textFormFieldMethod(context, 'Address', _addressController, false,
+              false, TextInputType.text),
           const SizedBox(height: kMinSpacing),
           dropDownFormFieldMethod(context, _cityKey, 'City', _cityValue,
               _cityList, _cityListMap, 'cityName', false, null),
@@ -259,8 +260,8 @@ class _Step1FormState extends State<Step1Form> {
               false,
               null),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(
-              context, 'CNIC/Passport No', _cnicController, false, false, TextInputType.text),
+          textFormFieldMethod(context, 'CNIC/Passport No', _cnicController,
+              false, false, TextInputType.text),
           const SizedBox(height: kMinSpacing),
           dateTimeFormFieldMethod(
               context, 'CNIC/Passport Issue Date', setCnicIssueDate),
@@ -281,10 +282,11 @@ class _Step1FormState extends State<Step1Form> {
               false,
               null),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(
-              context, 'Mobile No', _mobileNoController, false, false, TextInputType.number),
+          textFormFieldMethod(context, 'Mobile No', _mobileNoController, false,
+              false, TextInputType.number),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(context, 'Email', _emailController, false, false, TextInputType.text),
+          textFormFieldMethod(context, 'Email', _emailController, false, false,
+              TextInputType.text),
           const SizedBox(height: kMinSpacing),
           CustomButton(
             buttonText: buttonText,

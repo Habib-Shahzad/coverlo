@@ -9,7 +9,9 @@ import 'dart:io';
 
 class MyWebView extends StatefulWidget {
   final String paymentData;
-  const MyWebView({super.key, required this.paymentData});
+  final String webUrl;
+  final String webViewName;
+  const MyWebView({super.key, required this.paymentData, required this.webUrl, required this.webViewName});
 
   @override
   WebView createState() => WebView();
@@ -63,23 +65,25 @@ class WebView extends State<MyWebView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text("Jazz Cash Payment")),
+        appBar: AppBar(title: Text(widget.webViewName)),
         body: SafeArea(
             child: Column(children: <Widget>[
           Expanded(
             child: Stack(
               children: [
                 InAppWebView(
+                  
                   key: webViewKey,
                   initialUrlRequest: URLRequest(
-                      url: Uri.parse(
-                          "https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/"),
+                      url: Uri.parse(widget.webUrl),
                       body: Uint8List.fromList(utf8.encode(widget.paymentData)),
                       method: "POST",
                       headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
                       }),
+                      
                   initialUserScripts: UnmodifiableListView<UserScript>([]),
+                  
                   initialOptions: options,
                   pullToRefreshController: pullToRefreshController,
                   onWebViewCreated: (controller) {
