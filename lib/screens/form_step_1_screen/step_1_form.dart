@@ -22,6 +22,13 @@ import 'package:coverlo/screens/form_step_2_screen/form_step_2_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+String emailRegex =
+    r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+
+String pkPhoneRegex = r'^((\+92)|(0092))-{0,1}\d{3}-{0,1}\d{7}$|^\d{11}$|^\d{4}-\d{7}$';
+
+String cnicRegex = r'^[0-9]{1,13}$';
+
 class Step1Form extends StatefulWidget {
   const Step1Form({Key? key}) : super(key: key);
 
@@ -93,12 +100,10 @@ class _Step1FormState extends State<Step1Form> {
     List<DropdownMenuItem<Object>> items = [
       const DropdownMenuItem(value: 0, child: Text('Male')),
       const DropdownMenuItem(value: 1, child: Text('Female')),
-      const DropdownMenuItem(value: 2, child: Text('Do not say')),
     ];
     List<Map<String, String>> genders = [
       {'genderName': 'Male', 'genderID': '0'},
       {'genderName': 'Female', 'genderID': '1'},
-      {'genderName': 'Do not say', 'genderID': '2'},
     ];
     setState(() {
       _genderList = items;
@@ -240,10 +245,12 @@ class _Step1FormState extends State<Step1Form> {
       key: _formKey,
       child: Column(
         children: [
-          textFormFieldMethod(context, 'Name', _nameController, false, false, TextInputType.text),
+          textFormFieldMethod(context, 'Name', _nameController, false, false,
+              TextInputType.text,
+              nullValidation: true),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(
-              context, 'Address', _addressController, false, false, TextInputType.text),
+          textFormFieldMethod(context, 'Address', _addressController, false,
+              false, TextInputType.text),
           const SizedBox(height: kMinSpacing),
           dropDownFormFieldMethod(context, _cityKey, 'City', _cityValue,
               _cityList, _cityListMap, 'cityName', false, null),
@@ -259,8 +266,12 @@ class _Step1FormState extends State<Step1Form> {
               false,
               null),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(
-              context, 'CNIC/Passport No', _cnicController, false, false, TextInputType.text),
+          textFormFieldMethod(context, 'CNIC/Passport No', _cnicController,
+              false, false, TextInputType.text,
+              regexValidation: true,
+              regexPattern: cnicRegex,
+              regexValidationText: "Invalid CNIC",
+              nullValidation: true),
           const SizedBox(height: kMinSpacing),
           dateTimeFormFieldMethod(
               context, 'CNIC/Passport Issue Date', setCnicIssueDate),
@@ -281,15 +292,28 @@ class _Step1FormState extends State<Step1Form> {
               false,
               null),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(
-              context, 'Mobile No', _mobileNoController, false, false, TextInputType.number),
+          textFormFieldMethod(context, 'Mobile No', _mobileNoController, false,
+              false, TextInputType.number,
+              regexValidation: true,
+              regexPattern: pkPhoneRegex,
+              nullValidation: true),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(context, 'Email', _emailController, false, false, TextInputType.text),
+          textFormFieldMethod(context, 'Email', _emailController, false, false,
+              TextInputType.text,
+              regexValidation: true,
+              regexPattern: emailRegex,
+              nullValidation: true),
           const SizedBox(height: kMinSpacing),
           CustomButton(
             buttonText: buttonText,
             onPressed: () {
-              Navigator.pushNamed(context, FormStep2Screen.routeName);
+              if (_formKey.currentState!.validate()) {
+                Navigator.pushNamed(context, FormStep2Screen.routeName);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please fill all the fields')),
+                );
+              }
             },
             buttonColor: kSecondaryColor,
           ),

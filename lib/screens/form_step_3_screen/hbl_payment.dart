@@ -45,18 +45,40 @@ paymentHBL(Function displayHblPaymentWebView, String? contribution) async {
       DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(DateTime.now().toUtc());
 
   var data = {
+    "transaction_type": "sale",
+    "reference_number": uniqueString,
+    "bill_to_forename": "Habib",
+    "bill_to_surname": "Shahzad",
+    "bill_to_email": "habibshahzad484@gmail.com",
+    "bill_to_address_line1": "House 1",
+    "bill_to_address_city": "Lahore",
+    "bill_to_address_postal_code": "38000",
+    "bill_to_address_state": "SD",
+    "bill_to_address_country": "PK",
+    "ship_to_forename": "Habib",
+    "ship_to_surname": "Shahzad",
+    "ship_to_email": "habibshahzad484@gmail.com",
+    "ship_to_address_line1": "House 1",
+    "ship_to_address_city": "Lahore",
+    "ship_to_address_postal_code": "38000",
+    "ship_to_address_state": "SD",
+    "ship_to_address_country": "PK",
+    "amount": contribution.toString(),
+    "currency": "PKR",
+    
     "access_key": Env.hblAccessKey,
     "profile_id": Env.hblProfileId,
     "transaction_uuid": uuid,
     "signed_field_names":
-        "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency",
+        "signed_field_names,access_key,profile_id,transaction_uuid,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency",
     "signed_date_time": today,
     "unsigned_field_names": "",
     "locale": "en",
-    "transaction_type": "authorization",
-    "reference_number": uniqueString,
-    "amount": contribution.toString(),
-    "currency": "PKR",
+    "bill_address1": "Address 1",
+    "bill_city": "City",
+    "bill_country": "PK",
+    "customer_email": "murtazashafi11@gmail.com",
+    "customer_lastname": "Shafi",
   };
 
   String signedData = getSignedData(data);
@@ -69,6 +91,7 @@ paymentHBL(Function displayHblPaymentWebView, String? contribution) async {
     postData += '$k=$v&';
   });
   postData = postData.substring(0, postData.length - 1);
-  displayHblPaymentWebView(postData);
 
+  String cardNumber = '5200000000000007';
+  displayHblPaymentWebView(postData);
 }

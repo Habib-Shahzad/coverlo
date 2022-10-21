@@ -40,7 +40,7 @@ String hashingFunc(Map<String, String> data) {
 paymentJazzCash(Function showJazzCashWebView, String? contribution) async {
   String fixedContribution = contribution.toString().replaceAll('.', '');
 
-  String returnURL = "https://www.google.com/";
+  String returnURL = "https://coverlo-returnurl.herokuapp.com/test.php";
   String currentDate = DateFormat("yyyyMMddHHmmss").format(DateTime.now());
   String expDate = DateFormat("yyyyMMddHHmmss")
       .format(DateTime.now().add(const Duration(days: 1)));

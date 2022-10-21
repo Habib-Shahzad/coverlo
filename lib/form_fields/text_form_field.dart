@@ -2,13 +2,44 @@ import 'package:coverlo/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-TextFormField textFormFieldMethod(BuildContext context, String hintText,
-    TextEditingController controller, bool hasPrefix, bool isReadOnly, TextInputType type) {
+bool regexMatched(String value, regexPattern) {
+  RegExp regex = RegExp(regexPattern);
+  return regex.hasMatch(value);
+}
+
+TextFormField textFormFieldMethod(
+    BuildContext context,
+    String hintText,
+    TextEditingController controller,
+    bool hasPrefix,
+    bool isReadOnly,
+    TextInputType type,
+    {bool regexValidation = false,
+    String regexPattern = "",
+    String? regexValidationText,
+    bool nullValidation = false}) {
   return TextFormField(
     cursorColor: kCursorColor,
     controller: controller,
     readOnly: isReadOnly,
     keyboardType: type,
+    validator: (value) {
+      if (nullValidation) {
+        if (value != null && value.isEmpty) {
+          return "$hintText is required";
+        }
+      }
+      if (regexValidation) {
+        if (!regexMatched(value!, regexPattern)) {
+          if (regexValidationText != null) {
+            return regexValidationText;
+          } else {
+            return "Please enter valid $hintText";
+          }
+        }
+      }
+      return null;
+    },
     style: TextStyle(
       color: isReadOnly ? kTextColor : kFormTextColor,
       fontSize: ResponsiveValue(
