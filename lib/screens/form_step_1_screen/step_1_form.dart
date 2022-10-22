@@ -25,19 +25,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 String emailRegex =
     r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
 
-String pkPhoneRegex = r'^((\+92)|(0092))-{0,1}\d{3}-{0,1}\d{7}$|^\d{11}$|^\d{4}-\d{7}$';
+String pkPhoneRegex =
+    r'^((\+92)|(0092))-{0,1}\d{3}-{0,1}\d{7}$|^\d{11}$|^\d{4}-\d{7}$';
 
 String cnicRegex = r'^[0-9]{1,13}$';
 
 class Step1Form extends StatefulWidget {
-  const Step1Form({Key? key}) : super(key: key);
+  final GlobalKey<FormState> formKey;
+  const Step1Form({Key? key, required this.formKey}) : super(key: key);
 
   @override
   State<Step1Form> createState() => _Step1FormState();
 }
 
 class _Step1FormState extends State<Step1Form> {
-  final _formKey = GlobalKey<FormState>();
+  // final _formKey = GlobalKey<FormState>();
   String buttonText = 'Next';
 
   final TextEditingController _nameController = TextEditingController();
@@ -242,7 +244,7 @@ class _Step1FormState extends State<Step1Form> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: _formKey,
+      key: widget.formKey,
       child: Column(
         children: [
           textFormFieldMethod(context, 'Name', _nameController, false, false,
@@ -307,7 +309,7 @@ class _Step1FormState extends State<Step1Form> {
           CustomButton(
             buttonText: buttonText,
             onPressed: () {
-              if (_formKey.currentState!.validate()) {
+              if (widget.formKey.currentState!.validate()) {
                 Navigator.pushNamed(context, FormStep2Screen.routeName);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(

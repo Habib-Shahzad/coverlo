@@ -9,9 +9,8 @@ import 'package:flutter/material.dart';
 
 class FormStep1Screen extends StatelessWidget {
   static const String routeName = '/form_step_1_screen';
-  const FormStep1Screen({
-    Key? key,
-  }) : super(key: key);
+  final _formKey = GlobalKey<FormState>();
+  FormStep1Screen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +47,17 @@ class FormStep1Screen extends StatelessWidget {
                       NavigateButton(
                         text: 'Step 2',
                         onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            FormStep2Screen.routeName,
-                          );
+                          if (_formKey.currentState!.validate()) {
+                            Navigator.pushNamed(
+                              context,
+                              FormStep2Screen.routeName,
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Please fill all the fields')),
+                            );
+                          }
                         },
                         color: kStepButtonColor,
                       ),
@@ -80,7 +86,7 @@ class FormStep1Screen extends StatelessWidget {
                 const SubHeading(
                     headingText: 'Personal Details', color: kDarkTextColor),
                 const SizedBox(height: kMinSpacing),
-                const Step1Form(),
+                Step1Form(formKey: _formKey),
               ],
             ),
           ),

@@ -35,6 +35,10 @@ import 'package:coverlo/screens/form_step_3_screen/form_step_3_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:coverlo/blocs/color_bloc.dart';
+import 'package:coverlo/helpers/get_color_api.dart';
+import 'package:coverlo/models/color_model.dart';
+
 class Step2Form extends StatefulWidget {
   final TextEditingController contributionController;
   const Step2Form({Key? key, required this.contributionController})
@@ -51,6 +55,11 @@ class _Step2FormState extends State<Step2Form> {
 
   // final TextEditingController _productController = TextEditingController();
   String? _productValue;
+  Object? _colorValue;
+
+  final int _minSeatingCapacity = 1;
+  int _maxSeatingCapacity = 10;
+
   final GlobalKey<FormFieldState> _productKey = GlobalKey<FormFieldState>();
   String _appliedForRegistartion = 'yes';
   final TextEditingController _engineNoController = TextEditingController();
@@ -63,14 +72,16 @@ class _Step2FormState extends State<Step2Form> {
   String? _vehicleModelValue;
   final GlobalKey<FormFieldState> _vehicleModelKey =
       GlobalKey<FormFieldState>();
-  final TextEditingController _colorController = TextEditingController();
+  // final TextEditingController _colorController = TextEditingController();
+
+  final GlobalKey<FormFieldState> _colorKey = GlobalKey<FormFieldState>();
+
   String? _bodyTypeValue;
   final GlobalKey<FormFieldState> _bodyTypeKey = GlobalKey<FormFieldState>();
   final TextEditingController _cubicCapacityController =
       TextEditingController();
   double _seatingCapacity = 1;
-  final int _minSeatingCapacity = 1;
-  final int _maxSeatingCapacity = 4;
+
   String _trackerInstalled = 'yes';
   String? _trackingCompanyValue;
   final GlobalKey<FormFieldState> _trackingCompanyKey =
@@ -91,6 +102,10 @@ class _Step2FormState extends State<Step2Form> {
   late Bloc _yearBloc;
   late Bloc _bodyTypeBloc;
   late Bloc _trackingCompanyBloc;
+  late Bloc _colorBloc;
+
+  List<DropdownMenuItem<Object>> _colorList = [];
+  List<Map<String, String>> _colorListMap = [];
 
   List<DropdownMenuItem<Object>> _productList = [];
   List<Map<String, String>> _productListMap = [];
@@ -125,6 +140,7 @@ class _Step2FormState extends State<Step2Form> {
     _modelBloc = ModelBloc();
     _yearBloc = YearBloc();
     _bodyTypeBloc = BodyTypeBloc();
+    _colorBloc = ColorBloc();
     _trackingCompanyBloc = TrackingCompanyBloc();
     StaticGlobal.blocs.addListener(checkBlocsQueue);
     getData();
@@ -137,6 +153,7 @@ class _Step2FormState extends State<Step2Form> {
     _makeBloc.dispose();
     _modelBloc.dispose();
     _yearBloc.dispose();
+    _colorBloc.dispose();
     _trackingCompanyBloc.dispose();
     super.dispose();
   }
@@ -153,6 +170,7 @@ class _Step2FormState extends State<Step2Form> {
     _yearBloc.getStream.listen(yearListener);
     _bodyTypeBloc.getStream.listen(bodyTypeListener);
     _trackingCompanyBloc.getStream.listen(trackingCompanyListener);
+    _colorBloc.getStream.listen(colorListener);
 
     getProductApi(_productBloc, uniqueID, deviceUniqueIdentifier);
     getMakeApi(_makeBloc, uniqueID, deviceUniqueIdentifier);
@@ -161,6 +179,8 @@ class _Step2FormState extends State<Step2Form> {
     getBodyTypeApi(_bodyTypeBloc, uniqueID, deviceUniqueIdentifier);
     getTrackingCompanyApi(
         _trackingCompanyBloc, uniqueID, deviceUniqueIdentifier);
+
+    getColorApi(_colorBloc, uniqueID, deviceUniqueIdentifier);
 
     if (StaticGlobal.blocs.value.isNotEmpty) {
       PairBloc pairBloc = StaticGlobal.blocs.value.first;
@@ -242,8 +262,13 @@ class _Step2FormState extends State<Step2Form> {
               _modelReadOnly,
               setModelData),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(context, 'Color', _colorController, false, false,
-              TextInputType.text),
+
+          dropDownFormFieldMethod(context, _colorKey, 'Color', _colorValue,
+              _colorList, _colorListMap, 'colorName', false, null),
+
+          // textFormFieldMethod(context, 'Color', _colorController, false, false,
+          // TextInputType.text),
+
           const SizedBox(height: kMinSpacing),
           dropDownFormFieldMethod(
               context,
@@ -259,7 +284,7 @@ class _Step2FormState extends State<Step2Form> {
           textFormFieldMethod(context, 'Cubic Capacity/Bhp/Torque',
               _cubicCapacityController, false, false, TextInputType.text),
           const SizedBox(height: kMinSpacing),
-          const FormSubHeading(text: 'Seating Capacity'),
+          FormSubHeading(text: 'Seating Capacity: ${_seatingCapacity.ceil()}'),
           const SizedBox(height: kMinSpacing),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
@@ -285,7 +310,8 @@ class _Step2FormState extends State<Step2Form> {
               ],
             ),
           ),
-          sliderThemeMethod(context, _seatingCapacity, setSeatingCapacity),
+          sliderThemeMethod(context, _seatingCapacity, setSeatingCapacity,
+              _minSeatingCapacity, _maxSeatingCapacity),
           const CustomText(
               text: '(For Motor Cars Only)', color: kFormSubHeadingColor),
           const SizedBox(height: kMinSpacing),
@@ -396,6 +422,7 @@ class _Step2FormState extends State<Step2Form> {
               try {
                 String productName = _productValue!;
                 String year = _vehicleModelValue!;
+
                 String hasTracker = _trackerInstalled;
                 String personalAccident = _personalAccident;
                 double estimatedValue = double.parse(
@@ -687,11 +714,51 @@ class _Step2FormState extends State<Step2Form> {
     }
   }
 
+  colorListener(Response response) {
+    if (response.status == Status.COMPLETED) {
+      List<DropdownMenuItem<Object>> items = [];
+      List<Map<String, String>> colors = [];
+      ColorModel colorModel = response.data as ColorModel;
+      for (var i = 0; i < colorModel.colorList.length; i++) {
+        items.add(
+          DropdownMenuItem(
+              value: i, child: Text(colorModel.colorList[i].colorName)),
+        );
+        colors.add({
+          'colorName': colorModel.colorList[i].colorName,
+          'colorID': i.toString()
+        });
+      }
+      setState(() {
+        _colorList = items;
+        _colorListMap = colors;
+      });
+    } else if (response.status == Status.ERROR) {
+      AlertDialog alert = messageDialog(context, 'Error', response.message);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      );
+    }
+  }
+
   setProductData(Object? value) {
     String productName = _productListMap.firstWhere(
         (element) => element['productID'] == value.toString())['productName']!;
+
+    int maxCap = 0;
+
+    if (productName.toLowerCase().contains('car')) {
+      maxCap = 10;
+    } else {
+      maxCap = 2;
+    }
+
     setState(() {
       _productValue = productName;
+      _maxSeatingCapacity = maxCap;
     });
   }
 
@@ -746,6 +813,7 @@ class _Step2FormState extends State<Step2Form> {
   setVariantData(Object? value) {
     String variantName = _variantListMap.firstWhere(
         (element) => element['variantID'] == value.toString())['variantName']!;
+
     List<DropdownMenuItem<Object>> items = [];
     List<Map<String, String>> models = [];
     for (var i = 0; i < _models.yearList.length; i++) {
@@ -760,31 +828,12 @@ class _Step2FormState extends State<Step2Form> {
         });
       }
     }
-    _vehicleModelKey.currentState?.reset();
-    _bodyTypeKey.currentState?.reset();
-    setState(() {
-      _vehicleVariantValue = variantName;
 
-      _modelList = items;
-      _modelListMap = models;
-      _vehicleModelValue = null;
-      _modelReadOnly = false;
-
-      _bodyTypeList = [];
-      _bodyTypeListMap = [];
-      _bodyTypeValue = null;
-      _bodyTypeReadOnly = true;
-    });
-  }
-
-  setModelData(Object? value) {
-    String modelName = _modelListMap.firstWhere(
-        (element) => element['variantID'] == value.toString())['modelName']!;
-    List<DropdownMenuItem<Object>> items = [];
+    List<DropdownMenuItem<Object>> bodyTypeItems = [];
     List<Map<String, String>> bodyTypes = [];
     for (var i = 0; i < _bodyTypes.bodyTypeList.length; i++) {
-      if (modelName == _bodyTypes.bodyTypeList[i].modelName) {
-        items.add(
+      if (variantName == _bodyTypes.bodyTypeList[i].modelName) {
+        bodyTypeItems.add(
           DropdownMenuItem(
               value: i, child: Text(_bodyTypes.bodyTypeList[i].bodyType)),
         );
@@ -795,14 +844,30 @@ class _Step2FormState extends State<Step2Form> {
         });
       }
     }
+
+    _vehicleModelKey.currentState?.reset();
     _bodyTypeKey.currentState?.reset();
     setState(() {
-      _vehicleModelValue = modelName;
+      _vehicleVariantValue = variantName;
 
-      _bodyTypeList = items;
+      _modelList = items;
+      _modelListMap = models;
+      _vehicleModelValue = null;
+      _modelReadOnly = false;
+
+      _bodyTypeList = bodyTypeItems;
       _bodyTypeListMap = bodyTypes;
       _bodyTypeValue = null;
       _bodyTypeReadOnly = false;
+    });
+  }
+
+  setModelData(Object? value) {
+    String modelName = _modelListMap.firstWhere(
+        (element) => element['variantID'] == value.toString())['modelName']!;
+
+    setState(() {
+      _vehicleModelValue = modelName;
     });
   }
 
