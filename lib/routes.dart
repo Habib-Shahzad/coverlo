@@ -3,6 +3,7 @@ import 'package:coverlo/screens/form_step_2_screen/form_step_2_screen.dart';
 import 'package:coverlo/screens/form_step_3_screen/form_step_3_screen.dart';
 import 'package:coverlo/screens/login_screen/login_screen.dart';
 import 'package:coverlo/screens/onboarding_screen/onboarding_screen.dart';
+import 'package:coverlo/screens/payment_screen/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -12,4 +13,5 @@ final Map<String, WidgetBuilder> routes = {
   FormStep1Screen.routeName: (context) => FormStep1Screen(),
   FormStep2Screen.routeName: (context) => FormStep2Screen(),
   FormStep3Screen.routeName: (context) => const FormStep3Screen(),
+  PaymentScreen.routeName: (context) => const PaymentScreen(),
 };

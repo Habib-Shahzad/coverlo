@@ -1,0 +1,92 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter run
+
+## exception
+
+RPCError: ext.flutter.debugDumpRenderTree: (-32000) Server error
+{"exception":"Null check operator used on a null value","stack":"#0      RenderIndexedStack.debugDescribeChildren (package:flutter/src/rendering/stack.dart:793:26)\n#1      DiagnosticableTreeNode.getChildren (package:flutter/src/foundation/diagnostics.dart:2985:48)\n#2      TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1201:43)\n#3      TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#4      TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1399:33)\n#5      TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#6      TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#7      TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#8      TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#9      TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#10     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1399:33)\n#11     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#12     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#13     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#14     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#15     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#16     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#17     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#18     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#19     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#20     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#21     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#22     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#23     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#24     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1399:33)\n#25     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#26     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#27     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#28     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#29     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#30     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#31     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#32     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#33     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#34     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#35     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#36     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#37     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#38     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#39     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#40     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#41     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#42     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#43     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#44     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#45     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#46     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#47     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#48     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1399:33)\n#49     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#50     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#51     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#52     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#53     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#54     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#55     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#56     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#57     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#58     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#59     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#60     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#61     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#62     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#63     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#64     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#65     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#66     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#67     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#68     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#69     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#70     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#71     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#72     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#73     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#74     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#75     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#76     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#77     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#78     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#79     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#80     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#81     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#82     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#83     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#84     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#85     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#86     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#87     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#88     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#89     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#90     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1399:33)\n#91     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#92     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#93     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#94     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#95     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#96     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#97     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#98     TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#99     TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#100    TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#101    TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#102    TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#103    TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#104    TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#105    TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#106    TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#107    TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#108    TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#109    TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#110    TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#111    TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#112    TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#113    TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#114    TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#115    TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#116    TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#117    TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#118    TextTreeRenderer._debugRender (package:flutter/src/foundation/diagnostics.dart:1378:33)\n#119    TextTreeRenderer.render (package:flutter/src/foundation/diagnostics.dart:1133:14)\n#120    DiagnosticsNode.toStringDeep.<anonymous closure> (package:flutter/src/foundation/diagnostics.dart:1798:9)\n#121    DiagnosticsNode.toStringDeep (package:flutter/src/foundation/diagnostics.dart:1805:6)\n#122    DiagnosticableTreeMixin.toStringDeep (package:flutter/src/foundation/diagnostics.dart:3499:32)\n#123    RenderObject.toStringDeep (package:flutter/src/rendering/object.dart:3374:33)\n#124    RendererBinding.initServiceExtensions.<anonymous closure> (package:flutter/src/rendering/binding.dart:160:67)\n#125    BindingBase.registerServiceExtension.<anonymous closure> (package:flutter/src/foundation/binding.dart:855:32)\n<asynchronous suspension>\n","method":"ext.flutter.debugDumpRenderTree"}
+
+```
+#0      new _OutstandingRequest (package:vm_service/src/vm_service.dart:1746:45)
+#1      VmService._call (package:vm_service/src/vm_service.dart:2262:21)
+#2      VmService.callServiceExtension (package:vm_service/src/vm_service.dart:2233:14)
+#3      FlutterVmService._checkedCallServiceExtension (package:flutter_tools/src/vmservice.dart:807:28)
+#4      FlutterVmService.invokeFlutterExtensionRpcRaw (package:flutter_tools/src/vmservice.dart:826:49)
+#5      FlutterVmService.flutterDebugDumpRenderTree (package:flutter_tools/src/vmservice.dart:585:50)
+#6      ResidentHandlers.debugDumpRenderTree (package:flutter_tools/src/resident_runner.dart:667:53)
+<asynchronous suspension>
+#7      TerminalHandler.processTerminalInput (package:flutter_tools/src/resident_runner.dart:1739:7)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[✓] Flutter (Channel stable, 3.3.3, on macOS 12.3.1 21E258 darwin-arm, locale en-PK)
+    • Flutter version 3.3.3 on channel stable at
+      /Users/habib/documents/development/flutter
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision 18a827f393 (3 weeks ago), 2022-09-28 10:03:14 -0700
+    • Engine revision 5c984c26eb
+    • Dart version 2.18.2
+    • DevTools version 2.15.0
+
+[!] Android toolchain - develop for Android devices (Android SDK version 33.0.0)
+    • Android SDK at /Users/habib/Library/Android/sdk
+    ✗ cmdline-tools component is missing
+      Run `path/to/sdkmanager --install "cmdline-tools;latest"`
+      See https://developer.android.com/studio/command-line for more details.
+    ✗ Android license status unknown.
+      Run `flutter doctor --android-licenses` to accept the SDK licenses.
+      See https://flutter.dev/docs/get-started/install/macos#android-setup for more
+      details.
+
+[✗] Xcode - develop for iOS and macOS
+    ✗ Xcode installation is incomplete; a full installation is necessary for iOS
+      development.
+      Download at: https://developer.apple.com/xcode/download/
+      Or install Xcode via the App Store.
+      Once installed, run:
+        sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
+        sudo xcodebuild -runFirstLaunch
+    ✗ CocoaPods not installed.
+        CocoaPods is used to retrieve the iOS and macOS platform side's plugin code
+        that responds to your plugin usage on the Dart side.
+        Without CocoaPods, plugins will not work on iOS or macOS.
+        For more info, see https://flutter.dev/platform-plugins
+      To install see
+      https://guides.cocoapods.org/using/getting-started.html#installation for
+      instructions.
+
+[✓] Chrome - develop for the web
+    • Chrome at /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
+
+[✓] Android Studio (version 2021.3)
+    • Android Studio at /Applications/Android Studio.app/Contents
+    • Flutter plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/9212-flutter
+    • Dart plugin can be installed from:
+      🔨 https://plugins.jetbrains.com/plugin/6351-dart
+    • Java version OpenJDK Runtime Environment (build 11.0.13+0-b1751.21-8125866)
+
+[✓] VS Code (version 1.72.2)
+    • VS Code at /Applications/Visual Studio Code.app/Contents
+    • Flutter extension version 3.50.0
+
+[✓] Connected device (3 available)
+    • Android SDK built for arm64 (mobile) • emulator-5554 • android-arm64  •
+      Android 10 (API 29) (emulator)
+    • macOS (desktop)                      • macos         • darwin-arm64   • macOS
+      12.3.1 21E258 darwin-arm
+    • Chrome (web)                         • chrome        • web-javascript • Google
+      Chrome 106.0.5249.119
+
+[✓] HTTP Host Availability
+    • All required HTTP hosts are available
+
+! Doctor found issues in 2 categories.
+```

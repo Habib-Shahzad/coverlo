@@ -745,6 +745,10 @@ class _Step2FormState extends State<Step2Form> {
   }
 
   setProductData(Object? value) {
+    setState(() {
+      _seatingCapacity = 1;
+    });
+
     String productName = _productListMap.firstWhere(
         (element) => element['productID'] == value.toString())['productName']!;
 
