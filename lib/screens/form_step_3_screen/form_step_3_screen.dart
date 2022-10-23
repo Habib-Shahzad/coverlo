@@ -10,6 +10,96 @@ import 'dart:io';
 
 import '../../components/custom_button.dart';
 
+class VehicleImageComponent extends StatelessWidget {
+  final String? imageName;
+  final String? imageAssetPath;
+  final XFile? imageValue;
+  final Function()? setImage;
+  final Function()? removeImage;
+
+  const VehicleImageComponent({
+    Key? key,
+    required this.imageName,
+    required this.imageValue,
+    required this.setImage,
+    required this.removeImage,
+    required this.imageAssetPath,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        SizedBox(
+          height: MediaQuery.of(context).size.width * 0.4,
+          width: MediaQuery.of(context).size.width * 0.4,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              image: DecorationImage(
+                  image: imageValue == null
+                      ? AssetImage(imageAssetPath!)
+                      : FileImage(File(imageValue!.path)) as ImageProvider),
+            ),
+          ),
+        ),
+        imageValue == null
+            ? const SizedBox()
+            : Positioned(
+                top: 0,
+                right: 0,
+                child: GestureDetector(
+                  onTap: removeImage,
+                  child: Container(
+                    height: 30,
+                    width: 30,
+                    decoration: const BoxDecoration(
+                      color: Colors.black,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+        imageValue == null
+            ? Positioned.fill(
+                child: Align(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                        height: 40.0,
+                        width: 40.0,
+                        child: IconButton(
+                          padding: const EdgeInsets.all(0.0),
+                          icon: const Icon(
+                            Icons.add_circle_outline,
+                            size: 40.0,
+                            color: Colors.black,
+                          ),
+                          onPressed: setImage,
+                        )),
+                    Text(
+                      imageName!,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16.0,
+                          backgroundColor: Colors.white),
+                    ),
+                  ],
+                ),
+              ))
+            : const SizedBox(),
+      ],
+    );
+  }
+}
+
 class FormStep3Screen extends StatefulWidget {
   static const String routeName = '/form_step_3_screen';
 
@@ -25,682 +115,421 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
   bool loaded = false;
   String? contribution;
   String? productName;
+  bool isCar = true;
 
-  XFile? _imageFront;
-  XFile? _imageBack;
-  XFile? _imageLeft;
-  XFile? _imageRight;
-  XFile? _imageHood;
-  XFile? _imageBoot;
+  XFile? _imageCarFront;
+  XFile? _imageCarBack;
+  XFile? _imageCarLeft;
+  XFile? _imageCarRight;
+  XFile? _imageCarHood;
+  XFile? _imageCarBoot;
+
+  XFile? _imageBikeFront;
+  XFile? _imageBikeBack;
 
   @override
   Widget build(BuildContext context) {
     if (!loaded) {
       final args =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+      if (args['productName'].toLowerCase().contains('car')) {
+        setState(() {
+          isCar = true;
+        });
+      } else {
+        setState(() {
+          isCar = false;
+        });
+      }
+
       setState(() {
         contribution = args['contribution'];
         productName = args['productName'];
-
-        print(productName);
 
         loaded = true;
       });
     }
 
     return MainLayout(
-      body: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: kDefaultPadding,
-            vertical: kDefaultPadding / 2,
-          ),
-          decoration: const BoxDecoration(color: kBackgroundColor),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: kDefaultPadding,
-                  ),
-                  child: Row(
-                    children: [
-                      NavigateButton(
-                          text: 'Step 1',
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          },
-                          color: kStepButtonColor),
-                      const Expanded(
-                        child: Divider(
-                          color: kStepButtonColor,
-                          thickness: 4,
-                        ),
-                      ),
-                      NavigateButton(
-                        text: 'Step 2',
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        color: kStepButtonColor,
-                      ),
-                      const Expanded(
-                        child: Divider(
-                          color: kStepButtonColor,
-                          thickness: 4,
-                        ),
-                      ),
-                      const NavigateButton(
-                        text: 'Step 3',
-                        onPressed: null,
-                        color: kStepButtonActiveColor,
-                      ),
-                    ],
-                  ),
+      body: loaded == true
+          ? SizedBox(
+              width: double.infinity,
+              height: double.infinity,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: kDefaultPadding,
+                  vertical: kDefaultPadding / 2,
                 ),
-                const SizedBox(height: kDefaultSpacing),
-                const MainHeading(
-                    headingText: 'Motor Vehicle Cover',
-                    color: kDarkTextColor,
-                    fontWeight: FontWeight.w600),
-                const SizedBox(height: kDefaultSpacing),
-                const Align(
-                  alignment: Alignment.topLeft,
-                  child: SubHeading(
-                    headingText: 'Vehicle Pictures',
-                    color: kDarkTextColor,
-                  ),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 5.0,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                  ),
+                decoration: const BoxDecoration(color: kBackgroundColor),
+                child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      Row(
-                        children: [
-                          Stack(
-                            children: [
-                              SizedBox(
-                                height: MediaQuery.of(context).size.width * 0.4,
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                        image: _imageFront == null
-                                            ? const AssetImage(
-                                                "assets/images/car_front.png")
-                                            : FileImage(File(_imageFront!.path))
-                                                as ImageProvider),
-                                  ),
-                                ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: kDefaultPadding,
+                        ),
+                        child: Row(
+                          children: [
+                            NavigateButton(
+                                text: 'Step 1',
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                },
+                                color: kStepButtonColor),
+                            const Expanded(
+                              child: Divider(
+                                color: kStepButtonColor,
+                                thickness: 4,
                               ),
-                              _imageFront == null
-                                  ? const SizedBox()
-                                  : Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _imageFront = null;
-                                          });
-                                        },
-                                        child: Container(
-                                          height: 30,
-                                          width: 30,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.black,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.delete,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                              _imageFront == null
-                                  ? Positioned.fill(
-                                      child: Align(
-                                      alignment: Alignment.center,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                              height: 40.0,
-                                              width: 40.0,
-                                              child: IconButton(
-                                                padding:
-                                                    const EdgeInsets.all(0.0),
-                                                icon: const Icon(
-                                                  Icons.add_circle_outline,
-                                                  size: 40.0,
-                                                  color: Colors.black,
-                                                ),
-                                                onPressed: _setImageFront,
-                                              )),
-                                          const Text(
-                                            'Front',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16.0,
-                                                backgroundColor: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ))
-                                  : const SizedBox(),
-                            ],
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10.0,
                             ),
-                          ),
-                          Stack(
-                            children: [
-                              SizedBox(
-                                height: MediaQuery.of(context).size.width * 0.4,
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                        image: _imageBack == null
-                                            ? const AssetImage(
-                                                "assets/images/car_front.png")
-                                            : FileImage(File(_imageBack!.path))
-                                                as ImageProvider),
-                                  ),
-                                ),
+                            NavigateButton(
+                              text: 'Step 2',
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              color: kStepButtonColor,
+                            ),
+                            const Expanded(
+                              child: Divider(
+                                color: kStepButtonColor,
+                                thickness: 4,
                               ),
-                              _imageBack == null
-                                  ? const SizedBox()
-                                  : Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _imageBack = null;
-                                          });
-                                        },
-                                        child: Container(
-                                          height: 30,
-                                          width: 30,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.black,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.delete,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                              _imageBack == null
-                                  ? Positioned.fill(
-                                      child: Align(
-                                      alignment: Alignment.center,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                              height: 40.0,
-                                              width: 40.0,
-                                              child: IconButton(
-                                                padding:
-                                                    const EdgeInsets.all(0.0),
-                                                icon: const Icon(
-                                                  Icons.add_circle_outline,
-                                                  size: 40.0,
-                                                  color: Colors.black,
-                                                ),
-                                                onPressed: _setImageBack,
-                                              )),
-                                          const Text(
-                                            'Back',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16.0,
-                                                backgroundColor: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ))
-                                  : const SizedBox(),
-                            ],
-                          ),
-                        ],
+                            ),
+                            const NavigateButton(
+                              text: 'Step 3',
+                              onPressed: null,
+                              color: kStepButtonActiveColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: kDefaultSpacing),
+                      const MainHeading(
+                          headingText: 'Motor Vehicle Cover',
+                          color: kDarkTextColor,
+                          fontWeight: FontWeight.w600),
+                      const SizedBox(height: kDefaultSpacing),
+                      const Align(
+                        alignment: Alignment.topLeft,
+                        child: SubHeading(
+                          headingText: 'Vehicle Pictures',
+                          color: kDarkTextColor,
+                        ),
                       ),
                       const Padding(
                         padding: EdgeInsets.symmetric(
-                          vertical: 10.0,
+                          vertical: 5.0,
                         ),
                       ),
-                      Row(
-                        children: [
-                          Stack(
-                            children: [
-                              SizedBox(
-                                height: MediaQuery.of(context).size.width * 0.4,
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                        image: _imageLeft == null
-                                            ? const AssetImage(
-                                                "assets/images/car_front.png")
-                                            : FileImage(File(_imageLeft!.path))
-                                                as ImageProvider),
-                                  ),
-                                ),
-                              ),
-                              _imageLeft == null
-                                  ? const SizedBox()
-                                  : Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _imageLeft = null;
-                                          });
-                                        },
-                                        child: Container(
-                                          height: 30,
-                                          width: 30,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.black,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.delete,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                              _imageLeft == null
-                                  ? Positioned.fill(
-                                      child: Align(
-                                      alignment: Alignment.center,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                              height: 40.0,
-                                              width: 40.0,
-                                              child: IconButton(
-                                                padding:
-                                                    const EdgeInsets.all(0.0),
-                                                icon: const Icon(
-                                                  Icons.add_circle_outline,
-                                                  size: 40.0,
-                                                  color: Colors.black,
-                                                ),
-                                                onPressed: _setImageLeft,
-                                              )),
-                                          const Text(
-                                            'Left',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16.0,
-                                                backgroundColor: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ))
-                                  : const SizedBox(),
-                            ],
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10.0,
-                            ),
-                          ),
-                          Stack(
-                            children: [
-                              SizedBox(
-                                height: MediaQuery.of(context).size.width * 0.4,
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                        image: _imageRight == null
-                                            ? const AssetImage(
-                                                "assets/images/car_front.png")
-                                            : FileImage(File(_imageRight!.path))
-                                                as ImageProvider),
-                                  ),
-                                ),
-                              ),
-                              _imageRight == null
-                                  ? const SizedBox()
-                                  : Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _imageRight = null;
-                                          });
-                                        },
-                                        child: Container(
-                                          height: 30,
-                                          width: 30,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.black,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.delete,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                              _imageRight == null
-                                  ? Positioned.fill(
-                                      child: Align(
-                                      alignment: Alignment.center,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                              height: 40.0,
-                                              width: 40.0,
-                                              child: IconButton(
-                                                padding:
-                                                    const EdgeInsets.all(0.0),
-                                                icon: const Icon(
-                                                  Icons.add_circle_outline,
-                                                  size: 40.0,
-                                                  color: Colors.black,
-                                                ),
-                                                onPressed: _setImageRight,
-                                              )),
-                                          const Text(
-                                            'Right',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16.0,
-                                                backgroundColor: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ))
-                                  : const SizedBox(),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 10.0,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0,
                         ),
+                        child: isCar == true
+                            ? Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      VehicleImageComponent(
+                                          imageName: 'Front',
+                                          imageValue: _imageCarFront,
+                                          setImage: _pickCarFrontImage,
+                                          removeImage: _removeCarFrontImage,
+                                          imageAssetPath:
+                                              "assets/images/car_front.png"),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                        ),
+                                      ),
+                                      VehicleImageComponent(
+                                          imageName: 'Back',
+                                          imageValue: _imageCarBack,
+                                          setImage: _pickCarBackImage,
+                                          removeImage: _removeCarBackImage,
+                                          imageAssetPath:
+                                              "assets/images/car_back.png"),
+                                    ],
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 10.0,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      VehicleImageComponent(
+                                          imageName: 'Left',
+                                          imageValue: _imageCarLeft,
+                                          setImage: _pickCarLeftImage,
+                                          removeImage: _removeCarLeftImage,
+                                          imageAssetPath:
+                                              "assets/images/car_left.png"),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                        ),
+                                      ),
+                                      VehicleImageComponent(
+                                          imageName: 'Right',
+                                          imageValue: _imageCarRight,
+                                          setImage: _pickCarRightImage,
+                                          removeImage: _removeCarRightImage,
+                                          imageAssetPath:
+                                              "assets/images/car_right.png"),
+                                    ],
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 10.0,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      VehicleImageComponent(
+                                          imageName: 'Hood',
+                                          imageValue: _imageCarHood,
+                                          setImage: _pickCarHoodImage,
+                                          removeImage: _removeCarHoodImage,
+                                          imageAssetPath:
+                                              "assets/images/car_hood.png"),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                        ),
+                                      ),
+                                      VehicleImageComponent(
+                                          imageName: 'Boot',
+                                          imageValue: _imageCarBoot,
+                                          setImage: _pickCarBootImage,
+                                          removeImage: _removeCarBootImage,
+                                          imageAssetPath:
+                                              "assets/images/car_boot.png"),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            : Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      VehicleImageComponent(
+                                          imageName: 'Front Picture',
+                                          imageValue: _imageBikeFront,
+                                          setImage: _pickBikeFrontImage,
+                                          removeImage: _removeBikeFrontImage,
+                                          imageAssetPath:
+                                              "assets/images/bike_front.png"),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                        ),
+                                      ),
+                                      VehicleImageComponent(
+                                          imageName: 'Back Picture',
+                                          imageValue: _imageBikeBack,
+                                          setImage: _pickBikeBackImage,
+                                          removeImage: _removeBikeBackImage,
+                                          imageAssetPath:
+                                              "assets/images/bike_back.png"),
+                                    ],
+                                  ),
+                                ],
+                              ),
                       ),
-                      Row(
-                        children: [
-                          Stack(
-                            children: [
-                              SizedBox(
-                                height: MediaQuery.of(context).size.width * 0.4,
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                        image: _imageHood == null
-                                            ? const AssetImage(
-                                                "assets/images/car_front.png")
-                                            : FileImage(File(_imageHood!.path))
-                                                as ImageProvider),
-                                  ),
-                                ),
-                              ),
-                              _imageHood == null
-                                  ? const SizedBox()
-                                  : Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _imageHood = null;
-                                          });
-                                        },
-                                        child: Container(
-                                          height: 30,
-                                          width: 30,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.black,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.delete,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                              _imageHood == null
-                                  ? Positioned.fill(
-                                      child: Align(
-                                      alignment: Alignment.center,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                              height: 40.0,
-                                              width: 40.0,
-                                              child: IconButton(
-                                                padding:
-                                                    const EdgeInsets.all(0.0),
-                                                icon: const Icon(
-                                                  Icons.add_circle_outline,
-                                                  size: 40.0,
-                                                  color: Colors.black,
-                                                ),
-                                                onPressed: _setImageHood,
-                                              )),
-                                          const Text(
-                                            'Hood',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16.0,
-                                                backgroundColor: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ))
-                                  : const SizedBox(),
-                            ],
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10.0,
-                            ),
-                          ),
-                          Stack(
-                            children: [
-                              SizedBox(
-                                height: MediaQuery.of(context).size.width * 0.4,
-                                width: MediaQuery.of(context).size.width * 0.4,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: DecorationImage(
-                                        image: _imageBoot == null
-                                            ? const AssetImage(
-                                                "assets/images/car_front.png")
-                                            : FileImage(File(_imageBoot!.path))
-                                                as ImageProvider),
-                                  ),
-                                ),
-                              ),
-                              _imageBoot == null
-                                  ? const SizedBox()
-                                  : Positioned(
-                                      top: 0,
-                                      right: 0,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            _imageBoot = null;
-                                          });
-                                        },
-                                        child: Container(
-                                          height: 30,
-                                          width: 30,
-                                          decoration: const BoxDecoration(
-                                            color: Colors.black,
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: const Icon(
-                                            Icons.delete,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                              _imageBoot == null
-                                  ? Positioned.fill(
-                                      child: Align(
-                                      alignment: Alignment.center,
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                              height: 40.0,
-                                              width: 40.0,
-                                              child: IconButton(
-                                                padding:
-                                                    const EdgeInsets.all(0.0),
-                                                icon: const Icon(
-                                                  Icons.add_circle_outline,
-                                                  size: 40.0,
-                                                  color: Colors.black,
-                                                ),
-                                                onPressed: _setImageBoot,
-                                              )),
-                                          const Text(
-                                            'Boot',
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16.0,
-                                                backgroundColor: Colors.white),
-                                          ),
-                                        ],
-                                      ),
-                                    ))
-                                  : const SizedBox(),
-                            ],
-                          ),
-                        ],
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      CustomButton(
+                        buttonText: "Submit and Pay",
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            PaymentScreen.routeName,
+                            arguments: {"contribution": contribution},
+                          );
+                        },
+                        buttonColor: kSecondaryColor,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                CustomButton(
-                  buttonText: "Submit and Pay",
-                  onPressed: () {
-                    
-                    Navigator.pushNamed(
-                      context,
-                      PaymentScreen.routeName,
-                      arguments: {"contribution": contribution},
-                    );
-                  },
-                  buttonColor: kSecondaryColor,
-                ),
-              ],
+              ),
+            )
+          : const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
-  _openGallery() async {
-    XFile? imageFile;
-    imageFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    return imageFile;
-  }
-
-  _setImageFront() {
-    _openGallery().then((value) {
-      setState(() {
-        _imageFront = value;
-      });
+  _setCarFrontImage(value) {
+    setState(() {
+      _imageCarFront = value;
     });
   }
 
-  _setImageBack() {
-    _openGallery().then((value) {
-      setState(() {
-        _imageBack = value;
-      });
+  _setCarBackImage(value) {
+    setState(() {
+      _imageCarBack = value;
     });
   }
 
-  _setImageLeft() {
-    _openGallery().then((value) {
-      setState(() {
-        _imageLeft = value;
-      });
+  _setCarLeftImage(value) {
+    setState(() {
+      _imageCarLeft = value;
     });
   }
 
-  _setImageRight() {
-    _openGallery().then((value) {
-      setState(() {
-        _imageRight = value;
-      });
+  _setCarRightImage(value) {
+    setState(() {
+      _imageCarRight = value;
     });
   }
 
-  _setImageHood() {
-    _openGallery().then((value) {
-      setState(() {
-        _imageHood = value;
-      });
+  _setCarHoodImage(value) {
+    setState(() {
+      _imageCarHood = value;
     });
   }
 
-  _setImageBoot() {
-    _openGallery().then((value) {
-      setState(() {
-        _imageBoot = value;
-      });
+  _setCarBootImage(value) {
+    setState(() {
+      _imageCarBoot = value;
+    });
+  }
+
+  _setBikeFrontImage(value) {
+    setState(() {
+      _imageBikeFront = value;
+    });
+  }
+
+  _setBikeBackImage(value) {
+    setState(() {
+      _imageBikeBack = value;
+    });
+  }
+
+  _removeCarFrontImage() {
+    setState(() {
+      _imageCarFront = null;
+    });
+  }
+
+  _removeCarBackImage() {
+    setState(() {
+      _imageCarBack = null;
+    });
+  }
+
+  _removeCarLeftImage() {
+    setState(() {
+      _imageCarLeft = null;
+    });
+  }
+
+  _removeCarRightImage() {
+    setState(() {
+      _imageCarRight = null;
+    });
+  }
+
+  _removeCarHoodImage() {
+    setState(() {
+      _imageCarHood = null;
+    });
+  }
+
+  _removeCarBootImage() {
+    setState(() {
+      _imageCarBoot = null;
+    });
+  }
+
+  _removeBikeFrontImage() {
+    setState(() {
+      _imageBikeFront = null;
+    });
+  }
+
+  _removeBikeBackImage() {
+    setState(() {
+      _imageBikeBack = null;
+    });
+  }
+
+  _pickCarFrontImage() {
+    _pickImage(_setCarFrontImage);
+  }
+
+  _pickCarBackImage() {
+    _pickImage(_setCarBackImage);
+  }
+
+  _pickCarLeftImage() {
+    _pickImage(_setCarLeftImage);
+  }
+
+  _pickCarRightImage() {
+    _pickImage(_setCarRightImage);
+  }
+
+  _pickCarHoodImage() {
+    _pickImage(_setCarHoodImage);
+  }
+
+  _pickCarBootImage() {
+    _pickImage(_setCarBootImage);
+  }
+
+  _pickBikeFrontImage() {
+    _pickImage(_setBikeFrontImage);
+  }
+
+  _pickBikeBackImage() {
+    _pickImage(_setBikeBackImage);
+  }
+
+  _pickImage(Function setImageFunction) {
+    showDialog<ImageSource>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera),
+              title: const Text('Camera'),
+              onTap: () {
+                Navigator.pop(context, ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.image),
+              title: const Text('Gallery'),
+              onTap: () {
+                Navigator.pop(context, ImageSource.gallery);
+              },
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: TextButton(
+                child: const Text("Cancel"),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ).then((source) async {
+      if (source != null) {
+        final pickedFile = await ImagePicker().getImage(source: source);
+        setImageFunction(XFile(pickedFile!.path));
+      }
     });
   }
 }

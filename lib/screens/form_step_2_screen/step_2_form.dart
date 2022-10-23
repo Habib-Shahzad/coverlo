@@ -41,7 +41,11 @@ import 'package:coverlo/models/color_model.dart';
 
 class Step2Form extends StatefulWidget {
   final TextEditingController contributionController;
-  const Step2Form({Key? key, required this.contributionController})
+  final TextEditingController productNameController;
+  const Step2Form(
+      {Key? key,
+      required this.contributionController,
+      required this.productNameController})
       : super(key: key);
 
   @override
@@ -504,6 +508,11 @@ class _Step2FormState extends State<Step2Form> {
                       },
                     );
                   }
+                } else if (productName ==
+                    'Private Motor Cycle - TPL+Total Loss+Theft') {
+                  estimatedValue = estimatedValue + 777;
+                  widget.contributionController.text =
+                      estimatedValue.toStringAsFixed(2);
                 } else {
                   AlertDialog alert = messageDialog(
                       context,
@@ -543,6 +552,7 @@ class _Step2FormState extends State<Step2Form> {
                 Navigator.pushNamed(context, FormStep3Screen.routeName,
                     arguments: {
                       'contribution': widget.contributionController.text,
+                      'productName': _productValue,
                     });
               } else {
                 AlertDialog alert = messageDialog(
@@ -747,6 +757,7 @@ class _Step2FormState extends State<Step2Form> {
   setProductData(Object? value) {
     setState(() {
       _seatingCapacity = 1;
+
     });
 
     String productName = _productListMap.firstWhere(
@@ -759,6 +770,9 @@ class _Step2FormState extends State<Step2Form> {
     } else {
       maxCap = 2;
     }
+
+    widget.contributionController.text = "";
+    widget.productNameController.text = productName;
 
     setState(() {
       _productValue = productName;
