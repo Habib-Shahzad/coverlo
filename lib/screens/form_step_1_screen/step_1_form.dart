@@ -78,6 +78,24 @@ class _Step1FormState extends State<Step1Form> {
   List<DropdownMenuItem<Object>> _professionList = [];
   List<Map<String, String>> _professionListMap = [];
 
+  late FocusNode cnicFocusNode;
+  bool cnicHasInputError = false;
+
+  late FocusNode mobileFocusNode;
+  bool mobileHasInputError = false;
+
+
+  bool cnicValidated() {
+    return regexMatched(_cnicController.text, cnicRegex) &&
+        _cnicController.text.isNotEmpty &&
+        _cnicController.text.length == 13;
+  }
+
+  bool mobileValidated() {
+    return regexMatched(_mobileNoController.text, pkPhoneRegex) &&
+        _mobileNoController.text.isNotEmpty;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -87,6 +105,24 @@ class _Step1FormState extends State<Step1Form> {
     StaticGlobal.blocs.addListener(checkBlocsQueue);
     setHardcodedData();
     getData();
+
+    cnicFocusNode = FocusNode();
+    cnicFocusNode.addListener(() {
+      if (!cnicFocusNode.hasFocus) {
+        setState(() {
+          cnicHasInputError = !cnicValidated();
+        });
+      }
+    });
+
+    mobileFocusNode = FocusNode();
+    mobileFocusNode.addListener(() {
+      if (!mobileFocusNode.hasFocus) {
+        setState(() {
+          mobileHasInputError = !mobileValidated();
+        });
+      }
+    });
   }
 
   @override
@@ -244,6 +280,7 @@ class _Step1FormState extends State<Step1Form> {
   @override
   Widget build(BuildContext context) {
     return Form(
+      // autovalidateMode: AutovalidateMode.onUserInteraction,
       key: widget.formKey,
       child: Column(
         children: [
@@ -273,7 +310,9 @@ class _Step1FormState extends State<Step1Form> {
               regexValidation: true,
               regexPattern: cnicRegex,
               regexValidationText: "Invalid CNIC",
-              nullValidation: true),
+              nullValidation: true,
+              focusNode: cnicFocusNode,
+              fieldInputError: cnicHasInputError),
           const SizedBox(height: kMinSpacing),
           dateTimeFormFieldMethod(
               context, 'CNIC/Passport Issue Date', setCnicIssueDate),
@@ -298,7 +337,10 @@ class _Step1FormState extends State<Step1Form> {
               false, TextInputType.number,
               regexValidation: true,
               regexPattern: pkPhoneRegex,
-              nullValidation: true),
+              regexValidationText: "Invalid Mobile No",
+              nullValidation: true,
+              focusNode: mobileFocusNode,
+              fieldInputError: mobileHasInputError),
           const SizedBox(height: kMinSpacing),
           textFormFieldMethod(context, 'Email', _emailController, false, false,
               TextInputType.text,
@@ -309,7 +351,17 @@ class _Step1FormState extends State<Step1Form> {
           CustomButton(
             buttonText: buttonText,
             onPressed: () {
-              if (widget.formKey.currentState!.validate()) {
+              bool formValidated = widget.formKey.currentState!.validate();
+
+              bool invalidMobile = !mobileValidated();
+              bool invalidCnic = !cnicValidated();
+
+              if (invalidMobile || invalidCnic) {
+                setState(() {
+                  mobileHasInputError = invalidMobile;
+                  cnicHasInputError = invalidCnic;
+                });
+              } else if (formValidated) {
                 Navigator.pushNamed(context, FormStep2Screen.routeName);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -324,237 +376,4 @@ class _Step1FormState extends State<Step1Form> {
       ),
     );
   }
-
-  // TextFormField textFormFieldMethod(
-  //     String hintText, TextEditingController controller) {
-  //   return TextFormField(
-  //     cursorColor: kTextColor,
-  //     controller: controller,
-  //     style: TextStyle(
-  //       color: kFormTextColor,
-  //       fontSize: ResponsiveValue(
-  //         context,
-  //         defaultValue: kDefaultFontSize,
-  //         valueWhen: [
-  //           const Condition.largerThan(
-  //             name: MOBILE,
-  //             value: 18.0,
-  //           ),
-  //         ],
-  //       ).value,
-  //       fontWeight: FontWeight.w400,
-  //     ),
-  //     decoration: InputDecoration(
-  //       hintText: hintText,
-  //       contentPadding: const EdgeInsets.symmetric(
-  //         horizontal: kDefaultFontSize,
-  //       ),
-  //       fillColor: kFormFieldBackgroundColor,
-  //       filled: true,
-  //       enabledBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //           borderSide: const BorderSide(color: kFormBorderColor)),
-  //       focusedBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //           borderSide: const BorderSide(color: kFormBorderColor)),
-  //       errorStyle: const TextStyle(color: kErrorColor),
-  //       errorBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //           borderSide: const BorderSide(color: kErrorColor)),
-  //       focusedErrorBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //           borderSide: const BorderSide(color: kErrorColor)),
-  //       hintStyle: TextStyle(
-  //         color: kFormLabelColor,
-  //         fontSize: ResponsiveValue(
-  //           context,
-  //           defaultValue: kDefaultFontSize,
-  //           valueWhen: [
-  //             const Condition.largerThan(
-  //               name: MOBILE,
-  //               value: 18.0,
-  //             ),
-  //           ],
-  //         ).value,
-  //         fontWeight: FontWeight.w400,
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // DropdownButtonFormField dropDownFormFieldMethod(
-  //     String hintText,
-  //     TextEditingController controller,
-  //     List<DropdownMenuItem<Object>> items,
-  //     List<Map<String, String>> itemMap,
-  //     String name) {
-  //   return DropdownButtonFormField(
-  //     items: items,
-  //     onChanged: (value) {},
-  //     iconSize: 5,
-  //     value: items.isNotEmpty
-  //         ? _cityController.text.isNotEmpty
-  //             ? itemMap[int.parse(_cityController.text)][name]
-  //             : null
-  //         : null,
-  //     validator: (value) {
-  //       if (value == null) {
-  //         return 'Please select a city!';
-  //       }
-  //       return null;
-  //     },
-  //     style: TextStyle(
-  //       color: kFormTextColor,
-  //       fontSize: ResponsiveValue(
-  //         context,
-  //         defaultValue: kDefaultFontSize,
-  //         valueWhen: [
-  //           const Condition.largerThan(
-  //             name: MOBILE,
-  //             value: 18.0,
-  //           ),
-  //         ],
-  //       ).value,
-  //       fontWeight: FontWeight.w400,
-  //     ),
-  //     decoration: InputDecoration(
-  //       hintText: hintText,
-  //       suffixIcon: Icon(
-  //         Icons.arrow_drop_down,
-  //         color: kFormIconColor,
-  //         size: ResponsiveValue(
-  //           context,
-  //           defaultValue: kFormArrowIconFontSize,
-  //           valueWhen: [
-  //             const Condition.largerThan(
-  //               name: MOBILE,
-  //               value: 24.0,
-  //             ),
-  //           ],
-  //         ).value,
-  //       ),
-  //       suffixIconColor: kFormLabelColor,
-  //       contentPadding: const EdgeInsets.symmetric(
-  //         horizontal: kDefaultFontSize,
-  //       ),
-  //       fillColor: kFormFieldBackgroundColor,
-  //       filled: true,
-  //       enabledBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //           borderSide: const BorderSide(color: kFormBorderColor)),
-  //       focusedBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //           borderSide: const BorderSide(color: kFormBorderColor)),
-  //       errorStyle: const TextStyle(color: kErrorColor),
-  //       errorBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //           borderSide: const BorderSide(color: kErrorColor)),
-  //       focusedErrorBorder: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //           borderSide: const BorderSide(color: kErrorColor)),
-  //       hintStyle: TextStyle(
-  //         color: kFormLabelColor,
-  //         fontSize: ResponsiveValue(
-  //           context,
-  //           defaultValue: kDefaultFontSize,
-  //           valueWhen: [
-  //             const Condition.largerThan(
-  //               name: MOBILE,
-  //               value: 18.0,
-  //             ),
-  //           ],
-  //         ).value,
-  //         fontWeight: FontWeight.w400,
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Theme dateTimeFormFieldMethod(String hintText, Function(DateTime?) setDate) {
-  //   return Theme(
-  //     data: Theme.of(context).copyWith(
-  //       colorScheme: const ColorScheme.light(
-  //         primary: kPrimaryColor,
-  //         onPrimary: Colors.white,
-  //         onSurface: kFormTextColor,
-  //       ),
-  //       textButtonTheme: TextButtonThemeData(
-  //         style: TextButton.styleFrom(primary: kPrimaryColor),
-  //       ),
-  //     ),
-  //     child: DateTimeFormField(
-  //       onSaved: (value) {
-  //         setDate(value);
-  //       },
-  //       initialEntryMode: DatePickerEntryMode.calendarOnly,
-  //       dateTextStyle: TextStyle(
-  //         color: kFormTextColor,
-  //         fontSize: ResponsiveValue(
-  //           context,
-  //           defaultValue: kDefaultFontSize,
-  //           valueWhen: [
-  //             const Condition.largerThan(
-  //               name: MOBILE,
-  //               value: 18.0,
-  //             ),
-  //           ],
-  //         ).value,
-  //         fontWeight: FontWeight.w400,
-  //       ),
-  //       mode: DateTimeFieldPickerMode.date,
-  //       decoration: InputDecoration(
-  //         prefixIconConstraints: const BoxConstraints(
-  //           maxWidth: kFormCalendarIconFontSize,
-  //         ),
-  //         suffixIcon: Icon(
-  //           Icons.calendar_month,
-  //           color: kFormIconColor,
-  //           size: ResponsiveValue(
-  //             context,
-  //             defaultValue: kFormCalendarIconFontSize,
-  //             valueWhen: [
-  //               const Condition.largerThan(
-  //                 name: MOBILE,
-  //                 value: 24.0,
-  //               ),
-  //             ],
-  //           ).value,
-  //         ),
-  //         hintText: hintText,
-  //         contentPadding: const EdgeInsets.symmetric(
-  //           horizontal: kDefaultFontSize,
-  //         ),
-  //         fillColor: kFormFieldBackgroundColor,
-  //         filled: true,
-  //         enabledBorder: OutlineInputBorder(
-  //             borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //             borderSide: const BorderSide(color: kFormBorderColor)),
-  //         focusedBorder: OutlineInputBorder(
-  //             borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //             borderSide: const BorderSide(color: kFormBorderColor)),
-  //         errorStyle: const TextStyle(color: kErrorColor),
-  //         errorBorder: OutlineInputBorder(
-  //             borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //             borderSide: const BorderSide(color: kErrorColor)),
-  //         focusedErrorBorder: OutlineInputBorder(
-  //             borderRadius: BorderRadius.circular(kDefaultBorderRadius),
-  //             borderSide: const BorderSide(color: kErrorColor)),
-  //         hintStyle: TextStyle(
-  //           color: kFormLabelColor,
-  //           fontSize: ResponsiveValue(
-  //             context,
-  //             defaultValue: kDefaultFontSize,
-  //             valueWhen: [
-  //               const Condition.largerThan(
-  //                 name: MOBILE,
-  //                 value: 18.0,
-  //               ),
-  //             ],
-  //           ).value,
-  //           fontWeight: FontWeight.w400,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }

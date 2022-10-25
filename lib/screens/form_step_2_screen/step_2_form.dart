@@ -426,6 +426,7 @@ class _Step2FormState extends State<Step2Form> {
               try {
                 String productName = _productValue!;
                 String year = _vehicleModelValue!;
+                String vehcileMake = _vehicleMakeValue!;
 
                 String hasTracker = _trackerInstalled;
                 String personalAccident = _personalAccident;
@@ -436,20 +437,19 @@ class _Step2FormState extends State<Step2Form> {
 
                 int personalAccidentAmount =
                     personalAccident == 'yes' ? 1200 : 0;
+                int yearsOld = currentYear - int.parse(year);
+
                 if (productName == 'Private Motor Car - Comprehensive') {
-                  if (currentYear - int.parse(year) <= 5) {
+                  if (yearsOld <= 5) {
                     if (hasTracker == 'yes') {
-                      // increase the estimated value by 1.75%
                       estimatedValue = estimatedValue * 1.0175;
                     } else {
-                      // increase the estimated value by 1.90%
                       estimatedValue = estimatedValue * 1.0190;
                     }
                     estimatedValue = estimatedValue + personalAccidentAmount;
                     widget.contributionController.text =
                         estimatedValue.toStringAsFixed(2);
-                  } else if (currentYear - int.parse(year) > 5 &&
-                      currentYear - int.parse(year) <= 15) {
+                  } else if (yearsOld > 5 && yearsOld <= 15) {
                     estimatedValue = estimatedValue * 1.015;
                     estimatedValue = estimatedValue + personalAccidentAmount;
                     widget.contributionController.text =
@@ -469,11 +469,17 @@ class _Step2FormState extends State<Step2Form> {
                   }
                 } else if (productName ==
                     'Private Motor Car - Third Party Liability (TPL)') {
-                  if (currentYear - int.parse(year) <= 10) {
+                  if (yearsOld <= 10) {
                     String cubicCapacity = _cubicCapacityController.text;
                     cubicCapacity = cubicCapacity.replaceAll(RegExp(r'\D'), '');
                     int cubicCapacityInt = int.parse(cubicCapacity);
-                    if (cubicCapacityInt >= 1000 && cubicCapacityInt <= 2000) {
+
+                    if (cubicCapacityInt < 1000) {
+                      estimatedValue = estimatedValue + 1500;
+                      widget.contributionController.text =
+                          estimatedValue.toStringAsFixed(2);
+                    } else if (cubicCapacityInt >= 1000 &&
+                        cubicCapacityInt <= 2000) {
                       estimatedValue = estimatedValue + 1500;
                       widget.contributionController.text =
                           estimatedValue.toStringAsFixed(2);
@@ -510,9 +516,27 @@ class _Step2FormState extends State<Step2Form> {
                   }
                 } else if (productName ==
                     'Private Motor Cycle - TPL+Total Loss+Theft') {
-                  estimatedValue = estimatedValue + 777;
-                  widget.contributionController.text =
-                      estimatedValue.toStringAsFixed(2);
+                  if (yearsOld <= 5) {
+                    if (vehcileMake.toLowerCase().contains('honda')) {
+                      estimatedValue = estimatedValue * 1.1;
+                    } else {
+                      estimatedValue = estimatedValue * 1.08;
+                    }
+                    widget.contributionController.text =
+                        estimatedValue.toStringAsFixed(2);
+                  } else {
+                    AlertDialog alert = messageDialog(
+                        context,
+                        'Error',
+                        'The model of the vehicle is greater than 5 years. '
+                            'Please contact the administrator.');
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return alert;
+                      },
+                    );
+                  }
                 } else {
                   AlertDialog alert = messageDialog(
                       context,
@@ -757,7 +781,6 @@ class _Step2FormState extends State<Step2Form> {
   setProductData(Object? value) {
     setState(() {
       _seatingCapacity = 1;
-
     });
 
     String productName = _productListMap.firstWhere(

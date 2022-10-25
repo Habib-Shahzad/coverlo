@@ -8,35 +8,43 @@ bool regexMatched(String value, regexPattern) {
 }
 
 TextFormField textFormFieldMethod(
-    BuildContext context,
-    String hintText,
-    TextEditingController controller,
-    bool hasPrefix,
-    bool isReadOnly,
-    TextInputType type,
-    {bool regexValidation = false,
-    String regexPattern = "",
-    String? regexValidationText,
-    bool nullValidation = false}) {
+  BuildContext context,
+  String hintText,
+  TextEditingController controller,
+  bool hasPrefix,
+  bool isReadOnly,
+  TextInputType type, {
+  bool regexValidation = false,
+  String regexPattern = "",
+  String? regexValidationText,
+  bool nullValidation = false,
+  FocusNode? focusNode,
+  bool fieldInputError = false,
+  
+}) {
   return TextFormField(
+    focusNode: focusNode,
     cursorColor: kCursorColor,
     controller: controller,
     readOnly: isReadOnly,
     keyboardType: type,
     validator: (value) {
-      if (nullValidation) {
-        if (value != null && value.isEmpty) {
-          return "$hintText is required";
-        }
-      }
-      if (regexValidation) {
-        if (!regexMatched(value!, regexPattern)) {
-          if (regexValidationText != null) {
-            return regexValidationText;
-          } else {
-            return "Please enter valid $hintText";
+      if (focusNode == null) {
+        if (nullValidation) {
+          if (value != null && value.isEmpty) {
+            return "$hintText is required";
           }
         }
+        if (regexValidation) {
+          if (!regexMatched(value!, regexPattern)) {
+            if (regexValidationText != null) {
+              return regexValidationText;
+            } else {
+              return "Please enter valid $hintText";
+            }
+          }
+        }
+        return null;
       }
       return null;
     },
@@ -56,6 +64,7 @@ TextFormField textFormFieldMethod(
     ),
     decoration: InputDecoration(
       hintText: hintText,
+      errorText: fieldInputError ? regexValidationText : null,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: kDefaultFontSize,
       ),
