@@ -2,6 +2,7 @@ import 'package:coverlo/components/main_heading.dart';
 import 'package:coverlo/components/navigate_button.dart';
 import 'package:coverlo/components/sub_heading.dart';
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/helpers/dialogs/message_dialog.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/screens/form_step_2_screen/step_2_form.dart';
@@ -20,9 +21,6 @@ class FormStep2Screen extends StatefulWidget {
 }
 
 class _FormStep2ScreenState extends State<FormStep2Screen> {
-  final TextEditingController _contributionController = TextEditingController();
-  final TextEditingController _productNameController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return MainLayout(
@@ -71,14 +69,15 @@ class _FormStep2ScreenState extends State<FormStep2Screen> {
                       NavigateButton(
                         text: 'Step 3',
                         onPressed: () {
-                          if (_contributionController.text.isNotEmpty &&
-                              _productNameController.text.isNotEmpty) {
+                          if (contributionController.text.isNotEmpty &&
+                              productValue != null &&
+                              productValue!.isNotEmpty) {
                             Navigator.pushNamed(
                               context,
                               FormStep3Screen.routeName,
                               arguments: {
-                                "contribution": _contributionController.text,
-                                "productName": _productNameController.text,
+                                "contribution": contributionController.text,
+                                "productName": productValue,
                               },
                             );
                           } else {
@@ -108,9 +107,7 @@ class _FormStep2ScreenState extends State<FormStep2Screen> {
                 const SubHeading(
                     headingText: 'Vehicle Details', color: kDarkTextColor),
                 const SizedBox(height: kMinSpacing),
-                Step2Form(
-                    contributionController: _contributionController,
-                    productNameController: _productNameController),
+                const Step2Form(),
               ],
             ),
           ),

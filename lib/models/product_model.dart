@@ -1,7 +1,6 @@
 import 'package:coverlo/des/des.dart';
 import 'package:coverlo/env/env.dart';
 
-
 class ProductModel {
   List<ProductResponse> productList = [];
 
@@ -35,8 +34,7 @@ class ProductResponse {
   });
 
   factory ProductResponse.fromJson(Map<String, dynamic> json) {
-    Map<String, String> decryptedData =
-        Des.decryptMap(Env.appKey, {
+    Map<String, String> decryptedData = Des.decryptMap(Env.appKey, {
       'productName': json['productName'],
     });
 

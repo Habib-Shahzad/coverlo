@@ -9,6 +9,7 @@ import 'package:coverlo/form_fields/date_time_form_field.dart';
 import 'package:coverlo/form_fields/drop_down_form_field.dart';
 import 'package:coverlo/form_fields/text_form_field.dart';
 import 'package:coverlo/globals.dart';
+import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/helpers/dialogs/message_dialog.dart';
 import 'package:coverlo/helpers/get_city_api.dart';
 import 'package:coverlo/helpers/get_country_api.dart';
@@ -39,32 +40,27 @@ class Step1Form extends StatefulWidget {
 }
 
 class _Step1FormState extends State<Step1Form> {
-  // final _formKey = GlobalKey<FormState>();
   String buttonText = 'Next';
 
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  // final TextEditingController _cityController = TextEditingController();
   Object? _cityValue;
   final GlobalKey<FormFieldState> _cityKey = GlobalKey<FormFieldState>();
-  // final TextEditingController _nationalityController = TextEditingController();
+
   Object? _nationalityValue;
   final GlobalKey<FormFieldState> _nationalityKey = GlobalKey<FormFieldState>();
-  final TextEditingController _cnicController = TextEditingController();
-  // DateTime? _cnicIssueDate;
-  // DateTime? _dob;
-  // final TextEditingController _genderController = TextEditingController();
+
   Object? _genderValue;
   final GlobalKey<FormFieldState> _genderKey = GlobalKey<FormFieldState>();
-  // final TextEditingController _professionController = TextEditingController();
+
   Object? _professionValue;
   final GlobalKey<FormFieldState> _professionKey = GlobalKey<FormFieldState>();
-  final TextEditingController _mobileNoController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
 
   late Bloc _cityBloc;
   late Bloc _countryBloc;
   late Bloc _professionBloc;
+
+  bool cityLoaded = false;
+  bool countryLoaded = false;
+  bool professionLoaded = false;
 
   List<DropdownMenuItem<Object>> _cityList = [];
   List<Map<String, String>> _cityListMap = [];
@@ -84,16 +80,15 @@ class _Step1FormState extends State<Step1Form> {
   late FocusNode mobileFocusNode;
   bool mobileHasInputError = false;
 
-
   bool cnicValidated() {
-    return regexMatched(_cnicController.text, cnicRegex) &&
-        _cnicController.text.isNotEmpty &&
-        _cnicController.text.length == 13;
+    return regexMatched(cnicController.text, cnicRegex) &&
+        cnicController.text.isNotEmpty &&
+        cnicController.text.length == 13;
   }
 
   bool mobileValidated() {
-    return regexMatched(_mobileNoController.text, pkPhoneRegex) &&
-        _mobileNoController.text.isNotEmpty;
+    return regexMatched(mobileNoController.text, pkPhoneRegex) &&
+        mobileNoController.text.isNotEmpty;
   }
 
   @override
@@ -138,10 +133,12 @@ class _Step1FormState extends State<Step1Form> {
     List<DropdownMenuItem<Object>> items = [
       const DropdownMenuItem(value: 0, child: Text('Male')),
       const DropdownMenuItem(value: 1, child: Text('Female')),
+      const DropdownMenuItem(value: 2, child: Text('Transgender')),
     ];
     List<Map<String, String>> genders = [
       {'genderName': 'Male', 'genderID': '0'},
       {'genderName': 'Female', 'genderID': '1'},
+      {'genderName': 'Transgender', 'genderID': '2'},
     ];
     setState(() {
       _genderList = items;
@@ -192,6 +189,7 @@ class _Step1FormState extends State<Step1Form> {
       setState(() {
         _cityList = items;
         _cityListMap = cities;
+        cityLoaded = true;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -222,6 +220,7 @@ class _Step1FormState extends State<Step1Form> {
       setState(() {
         _countryList = items;
         _countryListMap = countries;
+        countryLoaded = true;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -253,6 +252,7 @@ class _Step1FormState extends State<Step1Form> {
       setState(() {
         _professionList = items;
         _professionListMap = professions;
+        professionLoaded = true;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -265,62 +265,210 @@ class _Step1FormState extends State<Step1Form> {
     }
   }
 
+  setCityData(Object? value) {
+    String? dataIndex = _cityKey.currentState?.value.toString();
+
+    if (dataIndex != null) {
+      cityController.text = dataIndex;
+    }
+
+    String cityName =
+        _cityListMap[int.parse(dataIndex ?? '0')]['cityName'] ?? '';
+
+    setState(() {
+      cityValue = cityName;
+    });
+  }
+
+  setCountryData(Object? value) {
+    String? dataIndex = _nationalityKey.currentState?.value.toString();
+
+    if (dataIndex != null) {
+      countryController.text = dataIndex;
+    }
+
+    String countryName =
+        _countryListMap[int.parse(dataIndex ?? '0')]['countryName'] ?? '';
+
+    setState(() {
+      countryValue = countryName;
+    });
+  }
+
+  setGenderData(Object? value) {
+    String? dataIndex = _genderKey.currentState?.value.toString();
+
+    if (dataIndex != null) {
+      genderController.text = dataIndex;
+    }
+
+    String genderName =
+        _genderListMap[int.parse(dataIndex ?? '0')]['genderName'] ?? '';
+
+    setState(() {
+      genderValue = genderName;
+    });
+  }
+
+  setProfessionData(Object? value) {
+    String? dataIndex = _professionKey.currentState?.value.toString();
+
+    if (dataIndex != null) {
+      professionController.text = dataIndex;
+    }
+
+    String professionName =
+        _professionListMap[int.parse(dataIndex ?? '0')]['professionName'] ?? '';
+
+    setState(() {
+      professionValue = professionName;
+    });
+  }
+
   setCnicIssueDate(DateTime? date) {
     setState(() {
-      // _cnicIssueDate = date;
+      cnicIssueDateValue = date;
     });
   }
 
   setDob(DateTime? date) {
     setState(() {
-      // _dob = date;
+      dateOfBirthValue = date;
     });
   }
 
+  bool dataIsSet = false;
+
   @override
   Widget build(BuildContext context) {
+    if (!dataIsSet && countryLoaded && cityLoaded && professionLoaded) {
+      if (cityController.text.isNotEmpty) {
+        setCityData(int.parse(cityController.text));
+      }
+      if (countryController.text.isNotEmpty) {
+        setCountryData(int.parse(countryController.text));
+      }
+      if (genderController.text.isNotEmpty) {
+        setGenderData(int.parse(genderController.text));
+      }
+      if (professionController.text.isNotEmpty) {
+        setProfessionData(int.parse(professionController.text));
+      }
+
+      setState(() {
+        dataIsSet = true;
+      });
+    }
     return Form(
       // autovalidateMode: AutovalidateMode.onUserInteraction,
       key: widget.formKey,
       child: Column(
         children: [
-          textFormFieldMethod(context, 'Name', _nameController, false, false,
-              TextInputType.text,
-              nullValidation: true),
+          textFormFieldMethod(
+            context,
+            'Name',
+            nameController,
+            false,
+            false,
+            TextInputType.text,
+            nullValidation: true,
+          ),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(context, 'Address', _addressController, false,
-              false, TextInputType.text),
-          const SizedBox(height: kMinSpacing),
-          dropDownFormFieldMethod(context, _cityKey, 'City', _cityValue,
-              _cityList, _cityListMap, 'cityName', false, null),
+          textFormFieldMethod(
+            context,
+            'Address',
+            addressController,
+            false,
+            false,
+            TextInputType.text,
+            nullValidation: true,
+          ),
           const SizedBox(height: kMinSpacing),
           dropDownFormFieldMethod(
-              context,
-              _nationalityKey,
-              'Nationality',
-              _nationalityValue,
-              _countryList,
-              _countryListMap,
-              'countryName',
-              false,
-              null),
+            context,
+            _cityKey,
+            'City',
+            _cityValue,
+            _cityList,
+            _cityListMap,
+            'cityName',
+            false,
+            setCityData,
+            nullValidation: true,
+            controlled: true,
+            dropDownValue: cityController.text != ""
+                ? int.parse(cityController.text)
+                : null,
+          ),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(context, 'CNIC/Passport No', _cnicController,
-              false, false, TextInputType.text,
-              regexValidation: true,
-              regexPattern: cnicRegex,
-              regexValidationText: "Invalid CNIC",
-              nullValidation: true,
-              focusNode: cnicFocusNode,
-              fieldInputError: cnicHasInputError),
+          dropDownFormFieldMethod(
+            context,
+            _nationalityKey,
+            'Nationality',
+            _nationalityValue,
+            _countryList,
+            _countryListMap,
+            'countryName',
+            false,
+            setCountryData,
+            nullValidation: true,
+            controlled: true,
+            dropDownValue: countryController.text != ""
+                ? int.parse(countryController.text)
+                : null,
+          ),
+          const SizedBox(height: kMinSpacing),
+          textFormFieldMethod(
+            context,
+            'CNIC/Passport No',
+            cnicController,
+            false,
+            false,
+            TextInputType.text,
+            regexValidation: true,
+            regexPattern: cnicRegex,
+            regexValidationText: "Invalid CNIC",
+            nullValidation: true,
+            focusNode: cnicFocusNode,
+            fieldInputError: cnicHasInputError,
+            maxLength: 13,
+            denyMoreThanMaxLength: true,
+          ),
           const SizedBox(height: kMinSpacing),
           dateTimeFormFieldMethod(
-              context, 'CNIC/Passport Issue Date', setCnicIssueDate),
+            context,
+            'CNIC/Passport Issue Date',
+            setCnicIssueDate,
+            ignoreFuture: true,
+            nullValidation: true,
+            inititalDate: cnicIssueDateValue,
+          ),
           const SizedBox(height: kMinSpacing),
-          dateTimeFormFieldMethod(context, 'Date of Birth', setDob),
+          dateTimeFormFieldMethod(
+            context,
+            'Date of Birth',
+            setDob,
+            ignoreFuture: true,
+            nullValidation: true,
+            inititalDate: dateOfBirthValue,
+          ),
           const SizedBox(height: kMinSpacing),
-          dropDownFormFieldMethod(context, _genderKey, 'Gender', _genderValue,
-              _genderList, _genderListMap, 'genderName', false, null),
+          dropDownFormFieldMethod(
+            context,
+            _genderKey,
+            'Gender',
+            _genderValue,
+            _genderList,
+            _genderListMap,
+            'genderName',
+            false,
+            setGenderData,
+            nullValidation: true,
+            controlled: true,
+            dropDownValue: genderController.text != ""
+                ? int.parse(genderController.text)
+                : null,
+          ),
           const SizedBox(height: kMinSpacing),
           dropDownFormFieldMethod(
               context,
@@ -331,22 +479,42 @@ class _Step1FormState extends State<Step1Form> {
               _professionListMap,
               'professionName',
               false,
-              null),
-          const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(context, 'Mobile No', _mobileNoController, false,
-              false, TextInputType.number,
-              regexValidation: true,
-              regexPattern: pkPhoneRegex,
-              regexValidationText: "Invalid Mobile No",
+              setProfessionData,
               nullValidation: true,
-              focusNode: mobileFocusNode,
-              fieldInputError: mobileHasInputError),
+              controlled: true,
+              dropDownValue: professionController.text != ""
+                  ? int.parse(professionController.text)
+                  : null),
           const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(context, 'Email', _emailController, false, false,
-              TextInputType.text,
-              regexValidation: true,
-              regexPattern: emailRegex,
-              nullValidation: true),
+          textFormFieldMethod(
+            context,
+            'Mobile No',
+            mobileNoController,
+            false,
+            false,
+            TextInputType.number,
+            regexValidation: true,
+            regexPattern: pkPhoneRegex,
+            regexValidationText: "Invalid Mobile No",
+            nullValidation: true,
+            focusNode: mobileFocusNode,
+            fieldInputError: mobileHasInputError,
+            maxLength: 11,
+            denyMoreThanMaxLength: true,
+          ),
+          const SizedBox(height: kMinSpacing),
+          textFormFieldMethod(
+            context,
+            'Email',
+            emailController,
+            false,
+            false,
+            TextInputType.emailAddress,
+            regexValidation: true,
+            regexPattern: emailRegex,
+            nullValidation: true,
+            denySpaces: true,
+          ),
           const SizedBox(height: kMinSpacing),
           CustomButton(
             buttonText: buttonText,

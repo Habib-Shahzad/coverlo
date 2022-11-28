@@ -2,6 +2,7 @@ import 'package:coverlo/components/custom_button.dart';
 import 'package:coverlo/components/navigate_button.dart';
 import 'package:coverlo/components/web_view.dart';
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/screens/payment_screen/hbl_payment.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +29,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     if (!loaded) {
-      final args =
-          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
       setState(() {
-        contribution = args['contribution'];
+        contribution = contributionController.text;
         loaded = true;
       });
     }

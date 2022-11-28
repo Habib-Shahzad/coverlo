@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:coverlo/screens/payment_screen/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -66,126 +67,142 @@ class WebView extends State<MyWebView> {
     super.dispose();
   }
 
+  Future<bool> _goBack(BuildContext context) async {
+    if (await webViewController!.canGoBack()) {
+      webViewController!.goBack();
+      return Future.value(false);
+    } else {
+
+      Navigator.popAndPushNamed(context, PaymentScreen.routeName);
+
+      return Future.value(true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: Text(widget.webViewName)),
-        body: SafeArea(
-            child: Column(children: <Widget>[
-          Expanded(
-            child: Stack(
-              children: [
-                InAppWebView(
-                  key: webViewKey,
-                  initialUrlRequest: URLRequest(
-                      url: Uri.parse(widget.webUrl),
-                      body: Uint8List.fromList(utf8.encode(widget.paymentData)),
-                      method: "POST",
-                      headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                      }),
-                  initialUserScripts: UnmodifiableListView<UserScript>([]),
-                  initialOptions: options,
-                  pullToRefreshController: pullToRefreshController,
-                  onWebViewCreated: (controller) {
-                    webViewController = controller;
-                  },
-                  onLoadStart: (controller, url) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  androidOnPermissionRequest:
-                      (controller, origin, resources) async {
-                    return PermissionRequestResponse(
-                        resources: resources,
-                        action: PermissionRequestResponseAction.GRANT);
-                  },
-                  shouldOverrideUrlLoading:
-                      (controller, navigationAction) async {
-                    var uri = navigationAction.request.url!;
+    return WillPopScope(
+        onWillPop: () => _goBack(context),
+        child: Scaffold(
+            appBar: AppBar(title: Text(widget.webViewName)),
+            body: SafeArea(
+                child: Column(children: <Widget>[
+              Expanded(
+                child: Stack(
+                  children: [
+                    InAppWebView(
+                      key: webViewKey,
+                      initialUrlRequest: URLRequest(
+                          url: Uri.parse(widget.webUrl),
+                          body: Uint8List.fromList(
+                              utf8.encode(widget.paymentData)),
+                          method: "POST",
+                          headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                          }),
+                      initialUserScripts: UnmodifiableListView<UserScript>([]),
+                      initialOptions: options,
+                      pullToRefreshController: pullToRefreshController,
+                      onWebViewCreated: (controller) {
+                        webViewController = controller;
+                      },
+                      onLoadStart: (controller, url) {
+                        setState(() {
+                          this.url = url.toString();
+                          urlController.text = this.url;
+                        });
+                      },
+                      androidOnPermissionRequest:
+                          (controller, origin, resources) async {
+                        return PermissionRequestResponse(
+                            resources: resources,
+                            action: PermissionRequestResponseAction.GRANT);
+                      },
+                      shouldOverrideUrlLoading:
+                          (controller, navigationAction) async {
+                        var uri = navigationAction.request.url!;
 
-                    if (![
-                      "http",
-                      "https",
-                      "file",
-                      "chrome",
-                      "data",
-                      "javascript",
-                      "about"
-                    ].contains(uri.scheme)) {
-                      if (await canLaunch(url)) {
-                        // Launch the App
-                        await launch(
-                          url,
-                        );
-                        // and cancel the request
-                        return NavigationActionPolicy.CANCEL;
-                      }
-                    }
+                        if (![
+                          "http",
+                          "https",
+                          "file",
+                          "chrome",
+                          "data",
+                          "javascript",
+                          "about"
+                        ].contains(uri.scheme)) {
+                          if (await canLaunch(url)) {
+                            // Launch the App
+                            await launch(
+                              url,
+                            );
+                            // and cancel the request
+                            return NavigationActionPolicy.CANCEL;
+                          }
+                        }
 
-                    return NavigationActionPolicy.ALLOW;
-                  },
-                  onLoadStop: (controller, url) async {
-                    pullToRefreshController.endRefreshing();
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onLoadError: (controller, url, code, message) {
-                    pullToRefreshController.endRefreshing();
-                  },
-                  onProgressChanged: (controller, progress) {
-                    if (progress == 100) {
-                      pullToRefreshController.endRefreshing();
-                    }
-                    setState(() {
-                      this.progress = progress / 100;
-                      urlController.text = url;
-                    });
-                  },
-                  onUpdateVisitedHistory: (controller, url, androidIsReload) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onConsoleMessage: (controller, consoleMessage) {
-                    // ignore: avoid_print
-                    print("CONSOLE MESSAGE: $consoleMessage");
-                  },
+                        return NavigationActionPolicy.ALLOW;
+                      },
+                      onLoadStop: (controller, url) async {
+                        pullToRefreshController.endRefreshing();
+                        setState(() {
+                          this.url = url.toString();
+                          urlController.text = this.url;
+                        });
+                      },
+                      onLoadError: (controller, url, code, message) {
+                        pullToRefreshController.endRefreshing();
+                      },
+                      onProgressChanged: (controller, progress) {
+                        if (progress == 100) {
+                          pullToRefreshController.endRefreshing();
+                        }
+                        setState(() {
+                          this.progress = progress / 100;
+                          urlController.text = url;
+                        });
+                      },
+                      onUpdateVisitedHistory:
+                          (controller, url, androidIsReload) {
+                        setState(() {
+                          this.url = url.toString();
+                          urlController.text = this.url;
+                        });
+                      },
+                      onConsoleMessage: (controller, consoleMessage) {
+                        // ignore: avoid_print
+                        print("CONSOLE MESSAGE: $consoleMessage");
+                      },
+                    ),
+                    progress < 1.0
+                        ? LinearProgressIndicator(value: progress)
+                        : Container(),
+                  ],
                 ),
-                progress < 1.0
-                    ? LinearProgressIndicator(value: progress)
-                    : Container(),
-              ],
-            ),
-          ),
-          ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ElevatedButton(
-                child: const Icon(Icons.arrow_back),
-                onPressed: () {
-                  webViewController?.goBack();
-                },
               ),
-              ElevatedButton(
-                child: const Icon(Icons.arrow_forward),
-                onPressed: () {
-                  webViewController?.goForward();
-                },
+              ButtonBar(
+                alignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  ElevatedButton(
+                    child: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      webViewController?.goBack();
+                    },
+                  ),
+                  ElevatedButton(
+                    child: const Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      webViewController?.goForward();
+                    },
+                  ),
+                  ElevatedButton(
+                    child: const Icon(Icons.refresh),
+                    onPressed: () {
+                      webViewController?.reload();
+                    },
+                  ),
+                ],
               ),
-              ElevatedButton(
-                child: const Icon(Icons.refresh),
-                onPressed: () {
-                  webViewController?.reload();
-                },
-              ),
-            ],
-          ),
-        ])));
+            ]))));
   }
 }

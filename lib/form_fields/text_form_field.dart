@@ -1,5 +1,6 @@
 import 'package:coverlo/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 bool regexMatched(String value, regexPattern) {
@@ -20,14 +21,21 @@ TextFormField textFormFieldMethod(
   bool nullValidation = false,
   FocusNode? focusNode,
   bool fieldInputError = false,
-  
+  bool denySpaces = false,
+  int maxLength = 0,
+  bool denyMoreThanMaxLength = false,
 }) {
   return TextFormField(
     focusNode: focusNode,
+    // keyboard type
     cursorColor: kCursorColor,
     controller: controller,
     readOnly: isReadOnly,
     keyboardType: type,
+    maxLength: denyMoreThanMaxLength ? maxLength : null,
+    inputFormatters: [
+      if (denySpaces) FilteringTextInputFormatter.deny(RegExp(r'\s')),
+    ],
     validator: (value) {
       if (focusNode == null) {
         if (nullValidation) {
@@ -63,6 +71,7 @@ TextFormField textFormFieldMethod(
       fontWeight: FontWeight.w400,
     ),
     decoration: InputDecoration(
+      counterText: "",
       hintText: hintText,
       errorText: fieldInputError ? regexValidationText : null,
       contentPadding: const EdgeInsets.symmetric(

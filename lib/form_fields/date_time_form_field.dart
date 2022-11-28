@@ -5,7 +5,15 @@ import 'package:intl/intl.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 Theme dateTimeFormFieldMethod(
-    BuildContext context, String hintText, Function(DateTime?) setDate) {
+  BuildContext context,
+  String hintText,
+  Function(DateTime?) setDate, {
+  bool disabled = false,
+  bool ignoreFuture = false,
+  DateTime? inititalDate,
+  DateTime? disabledValue,
+  bool nullValidation = false,
+}) {
   return Theme(
     data: Theme.of(context).copyWith(
       colorScheme: const ColorScheme.light(
@@ -21,20 +29,27 @@ Theme dateTimeFormFieldMethod(
       onSaved: (value) {
         setDate(value);
       },
+      onDateSelected: (value) => {
+        setDate(value),
+      },
+          validator: (value) {
+        if (nullValidation) {
+          if (value == null) {
+            return "$hintText is required";
+          }
+        }
+        return null;
+      },
+      enabled: !disabled,
+      initialValue: inititalDate,
+      firstDate: DateTime.now().subtract(const Duration(days: 365 * 100)),
+      lastDate: ignoreFuture ? DateTime.now() : null,
       dateFormat: DateFormat('dd-MM-yyyy'),
       initialEntryMode: DatePickerEntryMode.calendarOnly,
       dateTextStyle: TextStyle(
+        overflow: TextOverflow.ellipsis,
         color: kFormTextColor,
-        fontSize: ResponsiveValue(
-          context,
-          defaultValue: kDefaultFontSize,
-          valueWhen: [
-            const Condition.largerThan(
-              name: MOBILE,
-              value: 18.0,
-            ),
-          ],
-        ).value,
+        fontSize: disabled ? 14.0 : kDefaultFontSize,
         fontWeight: FontWeight.w400,
       ),
       mode: DateTimeFieldPickerMode.date,
@@ -56,9 +71,14 @@ Theme dateTimeFormFieldMethod(
             ],
           ).value,
         ),
-        hintText: hintText,
+        hintText: disabled
+            ? disabledValue != null
+                ? DateFormat('dd-MM-yyyy').format(disabledValue)
+                : ''
+            : hintText,
+        // remove padding
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: kDefaultFontSize,
+          horizontal: 10.0,
         ),
         fillColor: kFormFieldBackgroundColor,
         filled: true,
@@ -76,10 +96,10 @@ Theme dateTimeFormFieldMethod(
             borderRadius: BorderRadius.circular(kDefaultBorderRadius),
             borderSide: const BorderSide(color: kErrorColor)),
         hintStyle: TextStyle(
-          color: kFormLabelColor,
+          color: disabled ? Colors.black : kFormLabelColor,
           fontSize: ResponsiveValue(
             context,
-            defaultValue: kDefaultFontSize,
+            defaultValue: disabled ? 14.0 : kDefaultFontSize,
             valueWhen: [
               const Condition.largerThan(
                 name: MOBILE,

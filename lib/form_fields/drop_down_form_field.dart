@@ -3,18 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 dropDownFormFieldMethod(
-    BuildContext context,
-    GlobalKey<FormFieldState> key,
-    String hintText,
-    Object? value,
-    List<DropdownMenuItem<Object>> items,
-    List<Map<String, String>> itemMap,
-    String name,
-    bool isReadOnly,
-    Function(Object?)? callBack) {
+  BuildContext context,
+  GlobalKey<FormFieldState> key,
+  String hintText,
+  Object? val,
+  List<DropdownMenuItem<Object>> items,
+  List<Map<String, String>> itemMap,
+  String name,
+  bool isReadOnly,
+  Function(Object?)? callBack, {
+  bool nullValidation = false,
+  bool controlled = false,
+  int? dropDownValue,
+}) {
   return DropdownButtonFormField(
     items: items,
+    validator: (value) {
+      if (nullValidation) {
+        if (value == null) {
+          return "$hintText is required";
+        }
+      }
+      return null;
+    },
     isExpanded: true,
+    // optional value param based on controlled bool
+    value: controlled ? dropDownValue : null,
     key: key,
     onChanged: isReadOnly
         ? null

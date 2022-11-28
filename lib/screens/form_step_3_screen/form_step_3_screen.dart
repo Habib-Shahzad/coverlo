@@ -508,13 +508,6 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                 Navigator.pop(context, ImageSource.camera);
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.image),
-              title: const Text('Gallery'),
-              onTap: () {
-                Navigator.pop(context, ImageSource.gallery);
-              },
-            ),
             Align(
               alignment: Alignment.bottomRight,
               child: TextButton(
