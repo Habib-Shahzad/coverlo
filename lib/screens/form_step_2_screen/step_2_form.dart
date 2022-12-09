@@ -433,21 +433,24 @@ class _Step2FormState extends State<Step2Form> {
             ],
           ),
           const SizedBox(height: kMinSpacing),
-          dropDownFormFieldMethod(
-            context,
-            _trackingCompanyKey,
-            'Tracking Company',
-            trackingCompanyValue,
-            _trackingCompanyList,
-            _trackingCompanyListMap,
-            'trackingCompanyName',
-            false,
-            setTrackingCompanyData,
-            controlled: true,
-            dropDownValue: trackingCompanyController.text != ""
-                ? int.parse(trackingCompanyController.text)
-                : null,
-          ),
+          showTrackers
+              ? dropDownFormFieldMethod(
+                  context,
+                  _trackingCompanyKey,
+                  'Tracking Company',
+                  trackingCompanyValue,
+                  _trackingCompanyList,
+                  _trackingCompanyListMap,
+                  'trackingCompanyName',
+                  false,
+                  setTrackingCompanyData,
+                  controlled: true,
+                  dropDownValue: trackingCompanyController.text != ""
+                      ? int.parse(trackingCompanyController.text)
+                      : null,
+                )
+              : const SizedBox(),
+
           const SizedBox(height: kMinSpacing),
           const CustomText(
               text: '(For Motor Cars Only)', color: kFormSubHeadingColor),
@@ -1111,6 +1114,15 @@ class _Step2FormState extends State<Step2Form> {
     setState(() {
       trackerInstalled = value;
     });
+    if (value == "yes") {
+      setState(() {
+        showTrackers = true;
+      });
+    } else {
+      setState(() {
+        showTrackers = false;
+      });
+    }
   }
 
   setAdditionalAccessories(String value) {

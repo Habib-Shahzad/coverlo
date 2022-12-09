@@ -24,6 +24,7 @@ TextEditingController professionController = TextEditingController();
 String? professionValue;
 
 // STEP 02 data
+bool showTrackers = true;
 String appliedForRegistartion = 'yes';
 double seatingCapacity = 1;
 String trackerInstalled = 'yes';
