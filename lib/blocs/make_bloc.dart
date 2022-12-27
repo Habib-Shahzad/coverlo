@@ -14,7 +14,8 @@ class MakeBloc extends Bloc with ChangeNotifier {
   late MakeRepository _makeRepository;
   late StreamController _makeListController;
 
-  static const String GET_MAKES = 'GET_MAKES';
+  static const String GET_MAKES_VEHICLE = 'GET_MAKES_VEHICLE';
+  static const String GET_MAKES_MOTORCYCLE = 'GET_MAKES_MOTORCYCLE';
 
   @override
   StreamSink<Response<MakeModel>> get getSink =>
@@ -32,10 +33,18 @@ class MakeBloc extends Bloc with ChangeNotifier {
   @override
   connect(Map<String, dynamic> map, String function) async {
     switch (function) {
-      case GET_MAKES:
+      case GET_MAKES_VEHICLE:
         PairBloc pairBloc = PairBloc(WAITING, CITY_BLOC, () {
           _fetchData(
-              map['uniqueID'] ?? '', map['deviceUniqueIdentifier'] ?? '');
+              map['uniqueID'] ?? '', map['deviceUniqueIdentifier'] ?? '', VehicleType.Car);
+        });
+        StaticGlobal.blocs.value.add(pairBloc);
+        StaticGlobal.blocs.notifyListeners();
+        break;
+      case GET_MAKES_MOTORCYCLE:
+        PairBloc pairBloc = PairBloc(WAITING, CITY_BLOC, () {
+          _fetchData(
+              map['uniqueID'] ?? '', map['deviceUniqueIdentifier'] ?? '', VehicleType.Motorcycle);
         });
         StaticGlobal.blocs.value.add(pairBloc);
         StaticGlobal.blocs.notifyListeners();
@@ -44,11 +53,11 @@ class MakeBloc extends Bloc with ChangeNotifier {
     }
   }
 
-  _fetchData(String uniqueID, String deviceUniqueIdentifier) async {
+  _fetchData(String uniqueID, String deviceUniqueIdentifier, VehicleType vehicleType) async {
     try {
       getSink.add(Response.loading('Loading data...'));
       MakeModel data =
-          await _makeRepository.fetchData(uniqueID, deviceUniqueIdentifier);
+          await _makeRepository.fetchData(uniqueID, deviceUniqueIdentifier, vehicleType);
       getSink.add(Response.completed(data));
       StaticGlobal.blocs.value.removeAt(0);
       StaticGlobal.blocs.notifyListeners();

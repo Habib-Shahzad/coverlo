@@ -14,7 +14,8 @@ class ModelBloc extends Bloc with ChangeNotifier {
   late ModelRepository _modelRepository;
   late StreamController _modelListController;
 
-  static const String GET_MODELS = 'GET_MODELS';
+  static const String GET_MODELS_CAR = 'GET_MODELS_CAR';
+  static const String GET_MODELS_MOTORCYCLE = 'GET_MODELS_MOTORCYCLE';
 
   @override
   StreamSink<Response<ModelModel>> get getSink =>
@@ -32,10 +33,18 @@ class ModelBloc extends Bloc with ChangeNotifier {
   @override
   connect(Map<String, dynamic> map, String function) async {
     switch (function) {
-      case GET_MODELS:
+      case GET_MODELS_CAR:
         PairBloc pairBloc = PairBloc(WAITING, CITY_BLOC, () {
-          _fetchData(
-              map['uniqueID'] ?? '', map['deviceUniqueIdentifier'] ?? '');
+          _fetchData(map['uniqueID'] ?? '', map['deviceUniqueIdentifier'] ?? '',
+              VehicleType.Car);
+        });
+        StaticGlobal.blocs.value.add(pairBloc);
+        StaticGlobal.blocs.notifyListeners();
+        break;
+      case GET_MODELS_MOTORCYCLE:
+        PairBloc pairBloc = PairBloc(WAITING, CITY_BLOC, () {
+          _fetchData(map['uniqueID'] ?? '', map['deviceUniqueIdentifier'] ?? '',
+              VehicleType.Motorcycle);
         });
         StaticGlobal.blocs.value.add(pairBloc);
         StaticGlobal.blocs.notifyListeners();
@@ -44,11 +53,11 @@ class ModelBloc extends Bloc with ChangeNotifier {
     }
   }
 
-  _fetchData(String uniqueID, String deviceUniqueIdentifier) async {
+  _fetchData(String uniqueID, String deviceUniqueIdentifier, VehicleType vehicleType) async {
     try {
       getSink.add(Response.loading('Loading data...'));
       ModelModel data =
-          await _modelRepository.fetchData(uniqueID, deviceUniqueIdentifier);
+          await _modelRepository.fetchData(uniqueID, deviceUniqueIdentifier, vehicleType);
       getSink.add(Response.completed(data));
       StaticGlobal.blocs.value.removeAt(0);
       StaticGlobal.blocs.notifyListeners();

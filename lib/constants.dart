@@ -78,3 +78,8 @@ const GET_PROFESSIONS_API = 'CoverLo_GetProfessions';
 const GET_TRACKING_COMPANIES_API = 'CoverLo_GetTrackingCompanies';
 const GET_YEAR_API = 'CoverLo_GetYears';
 const GET_COLOR_API = 'CoverLo_GetColors';
+
+enum VehicleType {
+  Car,
+  Motorcycle,
+}

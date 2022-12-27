@@ -14,7 +14,8 @@ class ColorBloc extends Bloc with ChangeNotifier {
   late ColorRepository _colorRepository;
   late StreamController _colorListController;
 
-  static const String GET_COLORS = 'GET_COLORS';
+  static const String GET_COLORS_VEHICLE = 'GET_COLORS_VEHICLE';
+  static const String GET_COLORS_MOTORCYCLE = 'GET_COLORS_MOTORCYCLE';
 
   @override
   StreamSink<Response<ColorModel>> get getSink =>
@@ -32,10 +33,18 @@ class ColorBloc extends Bloc with ChangeNotifier {
   @override
   connect(Map<String, dynamic> map, String function) async {
     switch (function) {
-      case GET_COLORS:
+      case GET_COLORS_VEHICLE:
         PairBloc pairBloc = PairBloc(WAITING, COLOR_BLOC, () {
-          _fetchData(
-              map['uniqueID'] ?? '', map['deviceUniqueIdentifier'] ?? '');
+          _fetchData(map['uniqueID'] ?? '', map['deviceUniqueIdentifier'] ?? '',
+              VehicleType.Car);
+        });
+        StaticGlobal.blocs.value.add(pairBloc);
+        StaticGlobal.blocs.notifyListeners();
+        break;
+      case GET_COLORS_MOTORCYCLE:
+        PairBloc pairBloc = PairBloc(WAITING, COLOR_BLOC, () {
+          _fetchData(map['uniqueID'] ?? '', map['deviceUniqueIdentifier'] ?? '',
+              VehicleType.Motorcycle);
         });
         StaticGlobal.blocs.value.add(pairBloc);
         StaticGlobal.blocs.notifyListeners();
@@ -44,11 +53,12 @@ class ColorBloc extends Bloc with ChangeNotifier {
     }
   }
 
-  _fetchData(String uniqueID, String deviceUniqueIdentifier) async {
+  _fetchData(String uniqueID, String deviceUniqueIdentifier,
+      VehicleType vehicleType) async {
     try {
       getSink.add(Response.loading('Loading data...'));
-      ColorModel data =
-          await _colorRepository.fetchData(uniqueID, deviceUniqueIdentifier);
+      ColorModel data = await _colorRepository.fetchData(
+          uniqueID, deviceUniqueIdentifier, vehicleType);
       getSink.add(Response.completed(data));
       StaticGlobal.blocs.value.removeAt(0);
       StaticGlobal.blocs.notifyListeners();

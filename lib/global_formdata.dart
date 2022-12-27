@@ -24,6 +24,10 @@ TextEditingController professionController = TextEditingController();
 String? professionValue;
 
 // STEP 02 data
+DateTime insurancePeriodIssueDate = DateTime.now();
+DateTime insurancePeriodExpiryDate =
+    insurancePeriodIssueDate.add(const Duration(days: 364));
+
 bool showTrackers = true;
 String appliedForRegistartion = 'yes';
 double seatingCapacity = 1;
@@ -56,7 +60,7 @@ TextEditingController bodyTypeController = TextEditingController();
 String? bodyTypeValue;
 
 TextEditingController vehicleVariantController = TextEditingController();
-String? vehicleVariant;
+String? vehicleVariantValue;
 
 TextEditingController trackingCompanyController = TextEditingController();
 String? trackingCompanyValue;

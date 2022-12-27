@@ -126,6 +126,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
 
   XFile? _imageBikeFront;
   XFile? _imageBikeBack;
+  XFile? _imageBikeLeft;
+  XFile? _imageBikeRight;
 
   @override
   Widget build(BuildContext context) {
@@ -336,6 +338,34 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                               "assets/images/bike_back.png"),
                                     ],
                                   ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: 10.0,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      VehicleImageComponent(
+                                          imageName: 'Left Picture',
+                                          imageValue: _imageBikeLeft,
+                                          setImage: _pickBikeLeftImage,
+                                          removeImage: _removeBikeLeftImage,
+                                          imageAssetPath:
+                                              "assets/images/bike_left.png"),
+                                      const Padding(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 10.0,
+                                        ),
+                                      ),
+                                      VehicleImageComponent(
+                                          imageName: 'Right Picture',
+                                          imageValue: _imageBikeRight,
+                                          setImage: _pickBikeRightImage,
+                                          removeImage: _removeBikeRightImage,
+                                          imageAssetPath:
+                                              "assets/images/bike_right.png"),
+                                    ],
+                                  ),
                                 ],
                               ),
                       ),
@@ -462,6 +492,18 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
     });
   }
 
+  _removeBikeLeftImage() {
+    setState(() {
+      _imageBikeLeft = null;
+    });
+  }
+
+  _removeBikeRightImage() {
+    setState(() {
+      _imageBikeRight = null;
+    });
+  }
+
   _pickCarFrontImage() {
     _pickImage(_setCarFrontImage);
   }
@@ -491,6 +533,14 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
   }
 
   _pickBikeBackImage() {
+    _pickImage(_setBikeBackImage);
+  }
+
+  _pickBikeLeftImage() {
+    _pickImage(_setBikeBackImage);
+  }
+
+  _pickBikeRightImage() {
     _pickImage(_setBikeBackImage);
   }
 

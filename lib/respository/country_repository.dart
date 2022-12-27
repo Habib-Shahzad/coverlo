@@ -10,6 +10,8 @@ class CountryRepository {
       String uniqueID, String deviceUniqueIdentifier) async {
     final response = await _provider.post(GET_CITIES_API,
         _bodyInterpolateFetch(uniqueID, deviceUniqueIdentifier));
+      
+
     return CountryModel.fromJson(response);
   }
 

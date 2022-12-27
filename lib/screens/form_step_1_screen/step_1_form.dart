@@ -30,6 +30,7 @@ String pkPhoneRegex =
     r'^((\+92)|(0092))-{0,1}\d{3}-{0,1}\d{7}$|^\d{11}$|^\d{4}-\d{7}$';
 
 String cnicRegex = r'^[0-9]{1,13}$';
+String passportRegex = r'^(?!^0+$)[a-zA-Z0-9]{3,20}$';
 
 class Step1Form extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -75,15 +76,19 @@ class _Step1FormState extends State<Step1Form> {
   List<Map<String, String>> _professionListMap = [];
 
   late FocusNode cnicFocusNode;
+  
   bool cnicHasInputError = false;
-
-  late FocusNode mobileFocusNode;
   bool mobileHasInputError = false;
 
+  late FocusNode mobileFocusNode;
+  
+
   bool cnicValidated() {
-    return regexMatched(cnicController.text, cnicRegex) &&
+    String regexToCheck =
+        countryValue == "PAKISTAN" ? cnicRegex : passportRegex;
+    return regexMatched(cnicController.text, regexToCheck) &&
         cnicController.text.isNotEmpty &&
-        cnicController.text.length == 13;
+        cnicController.text.length == (countryValue == "PAKISTAN" ? 13 : 9);
   }
 
   bool mobileValidated() {
@@ -420,18 +425,21 @@ class _Step1FormState extends State<Step1Form> {
           const SizedBox(height: kMinSpacing),
           textFormFieldMethod(
             context,
-            'CNIC/Passport No',
+            countryValue == "PAKISTAN" ? 'CNIC' : 'Passport No',
             cnicController,
             false,
             false,
             TextInputType.text,
             regexValidation: true,
-            regexPattern: cnicRegex,
-            regexValidationText: "Invalid CNIC",
+            regexPattern:
+                countryValue == "PAKISTAN" ? cnicRegex : passportRegex,
+            regexValidationText: countryValue == "PAKISTAN"
+                ? 'Invalid CNIC'
+                : 'Invalid Passport',
             nullValidation: true,
             focusNode: cnicFocusNode,
             fieldInputError: cnicHasInputError,
-            maxLength: 13,
+            maxLength: countryValue == "PAKISTAN" ? 13 : 9,
             denyMoreThanMaxLength: true,
           ),
           const SizedBox(height: kMinSpacing),
