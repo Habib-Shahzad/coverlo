@@ -2,6 +2,7 @@ import 'package:coverlo/components/main_heading.dart';
 import 'package:coverlo/components/navigate_button.dart';
 import 'package:coverlo/components/sub_heading.dart';
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/screens/payment_screen/payment_screen.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +26,9 @@ class VehicleImageComponent extends StatelessWidget {
     required this.removeImage,
     required this.imageAssetPath,
   }) : super(key: key);
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -117,17 +121,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
   String? productName;
   bool isCar = true;
 
-  XFile? _imageCarFront;
-  XFile? _imageCarBack;
-  XFile? _imageCarLeft;
-  XFile? _imageCarRight;
-  XFile? _imageCarHood;
-  XFile? _imageCarBoot;
 
-  XFile? _imageBikeFront;
-  XFile? _imageBikeBack;
-  XFile? _imageBikeLeft;
-  XFile? _imageBikeRight;
 
   @override
   Widget build(BuildContext context) {
@@ -236,7 +230,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                     children: [
                                       VehicleImageComponent(
                                           imageName: 'Front',
-                                          imageValue: _imageCarFront,
+                                          imageValue: imageCarFront,
                                           setImage: _pickCarFrontImage,
                                           removeImage: _removeCarFrontImage,
                                           imageAssetPath:
@@ -248,7 +242,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                       ),
                                       VehicleImageComponent(
                                           imageName: 'Back',
-                                          imageValue: _imageCarBack,
+                                          imageValue: imageCarBack,
                                           setImage: _pickCarBackImage,
                                           removeImage: _removeCarBackImage,
                                           imageAssetPath:
@@ -264,7 +258,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                     children: [
                                       VehicleImageComponent(
                                           imageName: 'Left',
-                                          imageValue: _imageCarLeft,
+                                          imageValue: imageCarLeft,
                                           setImage: _pickCarLeftImage,
                                           removeImage: _removeCarLeftImage,
                                           imageAssetPath:
@@ -276,7 +270,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                       ),
                                       VehicleImageComponent(
                                           imageName: 'Right',
-                                          imageValue: _imageCarRight,
+                                          imageValue: imageCarRight,
                                           setImage: _pickCarRightImage,
                                           removeImage: _removeCarRightImage,
                                           imageAssetPath:
@@ -292,7 +286,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                     children: [
                                       VehicleImageComponent(
                                           imageName: 'Hood',
-                                          imageValue: _imageCarHood,
+                                          imageValue: imageCarHood,
                                           setImage: _pickCarHoodImage,
                                           removeImage: _removeCarHoodImage,
                                           imageAssetPath:
@@ -304,7 +298,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                       ),
                                       VehicleImageComponent(
                                           imageName: 'Boot',
-                                          imageValue: _imageCarBoot,
+                                          imageValue: imageCarBoot,
                                           setImage: _pickCarBootImage,
                                           removeImage: _removeCarBootImage,
                                           imageAssetPath:
@@ -319,7 +313,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                     children: [
                                       VehicleImageComponent(
                                           imageName: 'Front Picture',
-                                          imageValue: _imageBikeFront,
+                                          imageValue: imageBikeFront,
                                           setImage: _pickBikeFrontImage,
                                           removeImage: _removeBikeFrontImage,
                                           imageAssetPath:
@@ -331,7 +325,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                       ),
                                       VehicleImageComponent(
                                           imageName: 'Back Picture',
-                                          imageValue: _imageBikeBack,
+                                          imageValue: imageBikeBack,
                                           setImage: _pickBikeBackImage,
                                           removeImage: _removeBikeBackImage,
                                           imageAssetPath:
@@ -347,7 +341,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                     children: [
                                       VehicleImageComponent(
                                           imageName: 'Left Picture',
-                                          imageValue: _imageBikeLeft,
+                                          imageValue: imageBikeLeft,
                                           setImage: _pickBikeLeftImage,
                                           removeImage: _removeBikeLeftImage,
                                           imageAssetPath:
@@ -359,7 +353,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                       ),
                                       VehicleImageComponent(
                                           imageName: 'Right Picture',
-                                          imageValue: _imageBikeRight,
+                                          imageValue: imageBikeRight,
                                           setImage: _pickBikeRightImage,
                                           removeImage: _removeBikeRightImage,
                                           imageAssetPath:
@@ -396,111 +390,111 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
     );
   }
 
-  _setCarFrontImage(value) {
+  _setCarFrontImage(value) async {
     setState(() {
-      _imageCarFront = value;
+      imageCarFront = value;
     });
   }
 
   _setCarBackImage(value) {
     setState(() {
-      _imageCarBack = value;
+      imageCarBack = value;
     });
   }
 
   _setCarLeftImage(value) {
     setState(() {
-      _imageCarLeft = value;
+      imageCarLeft = value;
     });
   }
 
   _setCarRightImage(value) {
     setState(() {
-      _imageCarRight = value;
+      imageCarRight = value;
     });
   }
 
   _setCarHoodImage(value) {
     setState(() {
-      _imageCarHood = value;
+      imageCarHood = value;
     });
   }
 
   _setCarBootImage(value) {
     setState(() {
-      _imageCarBoot = value;
+      imageCarBoot = value;
     });
   }
 
   _setBikeFrontImage(value) {
     setState(() {
-      _imageBikeFront = value;
+      imageBikeFront = value;
     });
   }
 
   _setBikeBackImage(value) {
     setState(() {
-      _imageBikeBack = value;
+      imageBikeBack = value;
     });
   }
 
   _removeCarFrontImage() {
     setState(() {
-      _imageCarFront = null;
+      imageCarFront = null;
     });
   }
 
   _removeCarBackImage() {
     setState(() {
-      _imageCarBack = null;
+      imageCarBack = null;
     });
   }
 
   _removeCarLeftImage() {
     setState(() {
-      _imageCarLeft = null;
+      imageCarLeft = null;
     });
   }
 
   _removeCarRightImage() {
     setState(() {
-      _imageCarRight = null;
+      imageCarRight = null;
     });
   }
 
   _removeCarHoodImage() {
     setState(() {
-      _imageCarHood = null;
+      imageCarHood = null;
     });
   }
 
   _removeCarBootImage() {
     setState(() {
-      _imageCarBoot = null;
+      imageCarBoot = null;
     });
   }
 
   _removeBikeFrontImage() {
     setState(() {
-      _imageBikeFront = null;
+      imageBikeFront = null;
     });
   }
 
   _removeBikeBackImage() {
     setState(() {
-      _imageBikeBack = null;
+      imageBikeBack = null;
     });
   }
 
   _removeBikeLeftImage() {
     setState(() {
-      _imageBikeLeft = null;
+      imageBikeLeft = null;
     });
   }
 
   _removeBikeRightImage() {
     setState(() {
-      _imageBikeRight = null;
+      imageBikeRight = null;
     });
   }
 
@@ -575,4 +569,6 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
       }
     });
   }
+  
+
 }

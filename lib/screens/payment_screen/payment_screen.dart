@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:coverlo/components/custom_button.dart';
 import 'package:coverlo/components/navigate_button.dart';
 import 'package:coverlo/components/web_view.dart';
@@ -29,13 +30,89 @@ class _PaymentScreenState extends State<PaymentScreen> {
   bool showPaymentWebView = false;
   bool showHBLPaymentWebView = false;
 
-
   bool loaded = false;
   String? contribution;
   String paymentData = '';
+  List vehicleImages = [];
+
+  Future<String> XfileToBase64(XFile? imageFile) async {
+    if (imageFile != null) {
+      final bytes = await imageFile.readAsBytes();
+      return base64Encode(bytes);
+    }
+    return "";
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (productValue != null) {
+        bool isCar = productValue!.toLowerCase().contains('car');
+        if (isCar) {
+          vehicleImages = [
+            if (imageCarFront != null)
+              {
+                "IMAGE_NAME": "car-front.jpg",
+                "IMAGE_STRING": await XfileToBase64(imageCarFront)
+              },
+            if (imageCarBack != null)
+              {
+                "IMAGE_NAME": "car-back.jpg",
+                "IMAGE_STRING": await XfileToBase64(imageCarBack)
+              },
+            if (imageCarLeft != null)
+              {
+                "IMAGE_NAME": "car-left.jpg",
+                "IMAGE_STRING": await XfileToBase64(imageCarLeft)
+              },
+            if (imageCarRight != null)
+              {
+                "IMAGE_NAME": "car-right.jpg",
+                "IMAGE_STRING": await XfileToBase64(imageCarRight)
+              },
+            if (imageCarHood != null)
+              {
+                "IMAGE_NAME": "car-hood.jpg",
+                "IMAGE_STRING": await XfileToBase64(imageCarHood)
+              },
+            if (imageCarBoot != null)
+              {
+                "IMAGE_NAME": "car-boot.jpg",
+                "IMAGE_STRING": await XfileToBase64(imageCarBoot)
+              },
+          ];
+        } else {
+          vehicleImages = [
+            if (imageBikeFront != null)
+              {
+                "IMAGE_NAME": "bike-front.jpg",
+                "IMAGE_STRING": await XfileToBase64(imageBikeFront)
+              },
+            if (imageBikeBack != null)
+              {
+                "IMAGE_NAME": "bike-back.jpg",
+                "IMAGE_STRING": await XfileToBase64(imageBikeBack)
+              },
+            if (imageBikeLeft != null)
+              {
+                "IMAGE_NAME": "bike-left.jpg",
+                "IMAGE_STRING": await XfileToBase64(imageBikeLeft)
+              },
+            if (imageBikeRight != null)
+              {
+                "IMAGE_NAME": "bike-right.jpg",
+                "IMAGE_STRING": await XfileToBase64(imageBikeRight)
+              },
+          ];
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (vehicleImages.isNotEmpty) {}
     if (!loaded) {
       setState(() {
         contribution = contributionController.text;
@@ -147,23 +224,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         "COMMENCEMENT_DATE": formattedIssuedDate,
                         "EXPIRY_DATE": formattedExpiryDate,
                         "CURRENCY_CODE": "001",
-                        "SUM_INSURED": insuredEstimatedValueController.text,
+                        "SUM_INSURED":
+                            insuredEstimatedValueController.text.toString(),
                         "GROSS_PREMIUM": "",
                         "POLICY_CHARGES": "0",
-                        "NET_PREMIUM": contributionController.text,
-                        "INDIVIDUAL_CLIENT": nameController.text,
+                        "NET_PREMIUM": contributionController.text.toString(),
+                        "INDIVIDUAL_CLIENT": nameController.text.toString(),
                         "CLIENT_CODE": "",
-                        "PPS_CNIC_NO": cnicController.text,
-                        "FOLIO_CNIC": cnicController.text,
+                        "PPS_CNIC_NO": cnicController.text.toString(),
+                        "FOLIO_CNIC": cnicController.text.toString(),
                         "FOLIO_CODE": "",
                         "COUNTRY_CODE": "001",
                         "AGENT_CODE": "210001000001",
                         "PARTY_CODE": "",
                         "PRODUCT_CODE": "V0201",
                         "REVERSE_TAG": "Y",
-                        "IA_ADDRESS1":  addressController.text,
-                        "IA_CITY": cityController.text,
-                        "IA_EMAIL": emailController.text,
+                        "IA_ADDRESS1": addressController.text.toString(),
+                        "IA_CITY": cityController.text.toString(),
+                        "IA_EMAIL": emailController.text.toString(),
                         "IA_PHONE1": mobileNoController.text,
                         "ONLINE_PAYMENT_NATURE": "CC",
                         "GATEWAY": "JAZZ",
@@ -240,10 +318,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             "CONTRIBUTION": ""
                           }
                         ],
-                        "Images": [
-                          {"IMAGE_NAME": "file1", "IMAGE_STRING": ""}
-                        ]
+                        "Images": vehicleImages
                       };
+
+                      jsonData = json.encode(jsonData);
 
                       // String dataUrl =
                       //     base64Encode(utf8.encode(jsonEncode(jsonData)));
@@ -256,8 +334,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       File file = File('$saveDir/$filename');
                       await file.writeAsString(jsonData.toString());
 
-                      await OpenFile.open(file.path);
+                      
 
+                      await OpenFile.open(file.path);
                     },
                     buttonText: 'Open File containing form data',
                     buttonColor: kSecondaryColor,

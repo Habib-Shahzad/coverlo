@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 // STEP 01 data
@@ -64,3 +65,16 @@ String? vehicleVariantValue;
 
 TextEditingController trackingCompanyController = TextEditingController();
 String? trackingCompanyValue;
+
+// STEP 03: data
+XFile? imageCarFront;
+XFile? imageCarBack;
+XFile? imageCarLeft;
+XFile? imageCarRight;
+XFile? imageCarHood;
+XFile? imageCarBoot;
+
+XFile? imageBikeFront;
+XFile? imageBikeBack;
+XFile? imageBikeLeft;
+XFile? imageBikeRight;

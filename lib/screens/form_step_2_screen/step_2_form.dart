@@ -306,40 +306,6 @@ class _Step2FormState extends State<Step2Form> {
           productDataSet = true;
         }
       }
-    } else {
-      if (!colorsInitialized) {
-        if (_colorCarLoaded) {
-          _colorList = _colorCarList;
-          _colorListMap = _colorCarListMap;
-          colorsInitialized = true;
-        } else if (_colorBikeLoaded) {
-          _colorList = _colorBikeList;
-          _colorListMap = _colorBikeListMap;
-          colorsInitialized = true;
-        }
-      }
-
-      if (!makeInitialized) {
-        if (_makeCarLoaded) {
-          _makeList = _makeCarList;
-          _makeListMap = _makeCarListMap;
-          makeInitialized = true;
-        } else if (_makeBikeLoaded) {
-          _makeList = _makeBikeList;
-          _makeListMap = _makeBikeListMap;
-          makeInitialized = true;
-        }
-      }
-
-      if (!modelInitialized) {
-        if (_modelCarLoaded) {
-          _variants = _variantsCar;
-          modelInitialized = true;
-        } else if (_modelBikeLoaded) {
-          _variants = _variantsBike;
-          modelInitialized = true;
-        }
-      }
     }
 
     if (vehicleMakeController.text.isNotEmpty &&
@@ -353,11 +319,11 @@ class _Step2FormState extends State<Step2Form> {
       makeDataSet = true;
     }
 
-    if (!productDataSet && productNameController.text.isNotEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
+    // if (!makeDataSet && productNameController.text.isNotEmpty) {
+    //   return const Center(
+    //     child: CircularProgressIndicator(),
+    //   );
+    // }
 
     return Form(
       key: _formKey,
