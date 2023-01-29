@@ -19,6 +19,8 @@ class MakeRepository {
       vehicleString = "Motorcycle";
     }
 
+    
+
     // String encryptedVehicleType =
     //     Des.encryptMap(Env.serverKey, {'vtype': vehicleString})['vtype'] ?? "";
 

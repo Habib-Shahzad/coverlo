@@ -187,7 +187,7 @@ class _Step1FormState extends State<Step1Form> {
               value: i, child: Text(cityModel.cityList[i].cityName)),
         );
         cities.add({
-          'cityName': cityModel.cityList[i].cityName,
+          'cityCode': cityModel.cityList[i].cityCode, 
           'cityID': i.toString()
         });
       }
@@ -218,6 +218,7 @@ class _Step1FormState extends State<Step1Form> {
               value: i, child: Text(countryModel.countryList[i].countryName)),
         );
         countries.add({
+          'countryCode': countryModel.countryList[i].countryCode, // 'PK
           'countryName': countryModel.countryList[i].countryName,
           'countryID': i.toString()
         });
@@ -277,11 +278,11 @@ class _Step1FormState extends State<Step1Form> {
       cityController.text = dataIndex;
     }
 
-    String cityName =
-        _cityListMap[int.parse(dataIndex ?? '0')]['cityName'] ?? '';
+    String cityCode =
+        _cityListMap[int.parse(dataIndex ?? '0')]['cityCode'] ?? '';
 
     setState(() {
-      cityValue = cityName;
+      cityValue = cityCode;
     });
   }
 
@@ -295,8 +296,13 @@ class _Step1FormState extends State<Step1Form> {
     String countryName =
         _countryListMap[int.parse(dataIndex ?? '0')]['countryName'] ?? '';
 
+    String countryCode =
+        _countryListMap[int.parse(dataIndex ?? '0')]['countryCode'] ?? '';
+
+
     setState(() {
       countryValue = countryName;
+      countryCodeValue = countryCode;
     });
   }
 

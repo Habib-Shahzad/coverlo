@@ -29,9 +29,11 @@ class CountryModel {
 
 class CountryResponse {
   String countryName;
+  String countryCode;
 
   CountryResponse({
     required this.countryName,
+    required this.countryCode,
   });
 
   factory CountryResponse.fromJson(Map<String, dynamic> json) {
@@ -42,10 +44,12 @@ class CountryResponse {
 
     return CountryResponse(
       countryName: decryptedData['countryName'] ?? '',
+      countryCode: json['countryCode'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() => {
         'countryName': countryName,
+        'countryCode': countryCode,
       };
 }

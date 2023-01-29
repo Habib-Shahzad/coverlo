@@ -10,6 +10,7 @@ class CityRepository {
       String uniqueID, String deviceUniqueIdentifier) async {
     final response = await _provider.post(GET_CITIES_API,
         _bodyInterpolateFetch(uniqueID, deviceUniqueIdentifier));
+
     return CityModel.fromJson(response);
   }
 

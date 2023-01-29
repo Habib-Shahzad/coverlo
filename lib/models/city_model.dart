@@ -31,11 +31,13 @@ class CityResponse {
   String cityID;
   String cityName;
   String countryName;
+  String cityCode;
 
   CityResponse({
     required this.cityID,
     required this.cityName,
     required this.countryName,
+    required this.cityCode,
   });
 
   factory CityResponse.fromJson(Map<String, dynamic> json) {
@@ -45,12 +47,14 @@ class CityResponse {
       'cityID': json['cityID'],
       'cityName': json['cityName'],
       'countryName': json['countryName'],
+      'cityCode': json['cityCode'],
     });
 
     return CityResponse(
       cityID: decryptedData['cityID'] ?? '',
       cityName: decryptedData['cityName'] ?? '',
       countryName: decryptedData['countryName'] ?? '',
+      cityCode: decryptedData['cityCode'] ?? '',
     );
   }
 
@@ -58,5 +62,6 @@ class CityResponse {
         'cityID': cityID,
         'cityName': cityName,
         'countryName': countryName,
+        'cityCode': cityCode,
       };
 }

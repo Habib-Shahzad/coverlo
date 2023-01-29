@@ -11,6 +11,7 @@ import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/screens/payment_screen/hbl_payment.dart';
 import 'package:flutter/material.dart';
 import 'package:coverlo/screens/payment_screen/jazz_cash.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file_plus/open_file_plus.dart';
@@ -35,10 +36,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
   String paymentData = '';
   List vehicleImages = [];
 
+  // ignore: non_constant_identifier_names
   Future<String> XfileToBase64(XFile? imageFile) async {
     if (imageFile != null) {
       final bytes = await imageFile.readAsBytes();
       return base64Encode(bytes);
+    }
+    return "";
+  }
+
+
+  // ignore: non_constant_identifier_names
+  Future<String> XfileToMultipart(XFile? imageFile, String filename) async {
+    if (imageFile != null) {
+      final bytes = await imageFile.readAsBytes();
+      MultipartFile myFile =
+          MultipartFile.fromBytes('files.myimage', bytes, filename: filename);
+                
+      print(myFile);
     }
     return "";
   }
@@ -210,6 +225,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       // String formattedDob =
                       //     DateFormat('dd-MM-yyyy').format(dateOfBirthValue!);
 
+                      String cnicText = cnicController.text.toString();
+
+                      if (countryValue?.toLowerCase() == 'pakistan') {
+                        cnicText =
+                            '${cnicText.substring(0, 5)}-${cnicText.substring(5, 12)}-${cnicText.substring(12, 13)}';
+                      }
+
                       Object jsonData = {
                         "ORGANIZATION_CODE": "001001",
                         "LOCATION_CODE": "10101",
@@ -231,16 +253,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         "NET_PREMIUM": contributionController.text.toString(),
                         "INDIVIDUAL_CLIENT": nameController.text.toString(),
                         "CLIENT_CODE": "",
-                        "PPS_CNIC_NO": cnicController.text.toString(),
-                        "FOLIO_CNIC": cnicController.text.toString(),
+                        "PPS_CNIC_NO": cnicText,
+                        "FOLIO_CNIC": cnicText,
                         "FOLIO_CODE": "",
-                        "COUNTRY_CODE": "001",
+                        "COUNTRY_CODE": countryCodeValue,
                         "AGENT_CODE": "210001000001",
                         "PARTY_CODE": "",
                         "PRODUCT_CODE": "V0201",
                         "REVERSE_TAG": "Y",
                         "IA_ADDRESS1": addressController.text.toString(),
-                        "IA_CITY": cityController.text.toString(),
+                        "IA_CITY": cityValue,
                         "IA_EMAIL": emailController.text.toString(),
                         "IA_PHONE1": mobileNoController.text,
                         "ONLINE_PAYMENT_NATURE": "CC",
@@ -248,7 +270,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         "Items": [
                           {
                             "ITEM_NO": "1",
-                            "SUM_INSURED": "180000",
+                            "SUM_INSURED":
+                                insuredEstimatedValueController.text.toString(),
                             "GROSS_PREMIUM": "",
                             "Perils": [
                               {
@@ -262,7 +285,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             "Item_Detail": [
                               {
                                 "columnName": "GID_BENEFICIARY_NAME",
-                                "columnValue": "N"
+                                "columnValue": nameController.text.toString()
                               },
                               {
                                 "columnName": "GID_REGISTRATION",
@@ -270,11 +293,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               },
                               {
                                 "columnName": "GID_ENGINENO",
-                                "columnValue": "ABC12345617777"
+                                "columnValue":
+                                    engineNoController.text.toString()
                               },
                               {
                                 "columnName": "GID_CHASISNO",
-                                "columnValue": "ABC12345171777"
+                                "columnValue":
+                                    chasisNoController.text.toString()
                               },
                               {
                                 "columnName": "PMK_MAKE_CODE",
@@ -282,15 +307,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               },
                               {
                                 "columnName": "GID_POWER",
-                                "columnValue": "1700"
+                                "columnValue":
+                                    cubicCapacityController.text.toString()
                               },
                               {
                                 "columnName": "GID_YEAROFMFG",
-                                "columnValue": "2018"
+                                "columnValue": vehicleModelValue
                               },
                               {
                                 "columnName": "GID_PASSENGER",
-                                "columnValue": "10"
+                                "columnValue": seatingCapacityController.text.toString()
                               },
                               {
                                 "columnName": "PIT_BODYTYPE",
@@ -298,7 +324,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               },
                               {
                                 "columnName": "GID_ACCESSORIES",
-                                "columnValue": "No"
+                                "columnValue": additionalAccessories
                               },
                               {"columnName": "PTV_CODE", "columnValue": "011"},
                               {"columnName": "PLR_CODE", "columnValue": "00009"}
@@ -333,8 +359,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
                       File file = File('$saveDir/$filename');
                       await file.writeAsString(jsonData.toString());
-
-                      
 
                       await OpenFile.open(file.path);
                     },
