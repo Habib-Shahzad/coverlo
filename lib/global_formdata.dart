@@ -38,6 +38,7 @@ String trackerInstalled = 'yes';
 String additionalAccessories = 'no';
 String personalAccidentValue = 'yes';
 
+TextEditingController registrationNoController = TextEditingController();
 TextEditingController engineNoController = TextEditingController();
 TextEditingController chasisNoController = TextEditingController();
 TextEditingController insuredEstimatedValueController = TextEditingController();

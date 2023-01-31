@@ -367,6 +367,17 @@ class _Step2FormState extends State<Step2Form> {
               ),
             ],
           ),
+          if (appliedForRegistartion != 'yes')
+            const SizedBox(height: kMinSpacing),
+          if (appliedForRegistartion != 'yes')
+            textFormFieldMethod(
+              context,
+              'Registration No',
+              registrationNoController,
+              false,
+              false,
+              TextInputType.text,
+            ),
           const SizedBox(height: kMinSpacing),
           textFormFieldMethod(
             context,

@@ -45,15 +45,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return "";
   }
 
-
   // ignore: non_constant_identifier_names
   Future<String> XfileToMultipart(XFile? imageFile, String filename) async {
     if (imageFile != null) {
       final bytes = await imageFile.readAsBytes();
       MultipartFile myFile =
           MultipartFile.fromBytes('files.myimage', bytes, filename: filename);
-                
-      print(myFile);
     }
     return "";
   }
@@ -289,7 +286,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               },
                               {
                                 "columnName": "GID_REGISTRATION",
-                                "columnValue": "1569567777"
+                                "columnValue": appliedForRegistartion == 'yes'
+                                    ? registrationNoController.text.toString()
+                                    : ''
                               },
                               {
                                 "columnName": "GID_ENGINENO",
@@ -316,7 +315,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               },
                               {
                                 "columnName": "GID_PASSENGER",
-                                "columnValue": seatingCapacityController.text.toString()
+                                "columnValue":
+                                    seatingCapacityController.text.toString()
                               },
                               {
                                 "columnName": "PIT_BODYTYPE",
