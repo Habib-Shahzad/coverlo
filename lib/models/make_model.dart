@@ -29,23 +29,28 @@ class MakeModel {
 
 class MakeResponse {
   String makeName;
+  String makeCode;
 
   MakeResponse({
     required this.makeName,
+    required this.makeCode,
   });
 
   factory MakeResponse.fromJson(Map<String, dynamic> json) {
     Map<String, String> decryptedData =
         Des.decryptMap(Env.appKey, {
       'makeName': json['makeName'],
+      'makeCode': json['makeCode'],
     });
 
     return MakeResponse(
       makeName: decryptedData['makeName'] ?? '',
+      makeCode: decryptedData['makeCode'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() => {
         'makeName': makeName,
+        'makeCode': makeCode,
       };
 }

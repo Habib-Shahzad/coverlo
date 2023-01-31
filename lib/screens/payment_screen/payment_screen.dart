@@ -229,6 +229,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             '${cnicText.substring(0, 5)}-${cnicText.substring(5, 12)}-${cnicText.substring(12, 13)}';
                       }
 
+ 
                       Object jsonData = {
                         "ORGANIZATION_CODE": "001001",
                         "LOCATION_CODE": "10101",
@@ -286,7 +287,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               },
                               {
                                 "columnName": "GID_REGISTRATION",
-                                "columnValue": appliedForRegistartion == 'yes'
+                                "columnValue": appliedForRegistartion != 'yes'
                                     ? registrationNoController.text.toString()
                                     : ''
                               },
@@ -302,7 +303,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               },
                               {
                                 "columnName": "PMK_MAKE_CODE",
-                                "columnValue": "1000103"
+                                "columnValue": vehcileMakeCodeValue
                               },
                               {
                                 "columnName": "GID_POWER",

@@ -40,11 +40,12 @@ class CountryResponse {
     Map<String, String> decryptedData =
         Des.decryptMap(Env.appKey, {
       'countryName': json['countryName'],
+      'countryCode': json['countryCode'],
     });
 
     return CountryResponse(
       countryName: decryptedData['countryName'] ?? '',
-      countryCode: json['countryCode'] ?? '',
+      countryCode: decryptedData['countryCode'] ?? '',
     );
   }
 

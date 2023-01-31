@@ -935,9 +935,11 @@ class _Step2FormState extends State<Step2Form> {
         );
         makes.add({
           'makeName': makeModel.makeList[i].makeName,
+          'makeCode': makeModel.makeList[i].makeCode,
           'makeID': i.toString()
         });
       }
+
       setState(() {
         _makeCarList = items;
         _makeCarListMap = makes;
@@ -972,6 +974,7 @@ class _Step2FormState extends State<Step2Form> {
         );
         makes.add({
           'makeName': makeModel.makeList[i].makeName,
+          'makeCode': makeModel.makeList[i].makeCode,
           'makeID': i.toString()
         });
       }
@@ -1265,6 +1268,10 @@ class _Step2FormState extends State<Step2Form> {
     String makeName = _makeListMap.firstWhere(
         (element) => element['makeID'] == value.toString())['makeName']!;
 
+    String? makeCode = _makeListMap.firstWhere(
+        (element) => element['makeID'] == value.toString())['makeCode'];
+
+
     List<DropdownMenuItem<Object>> items = [];
     List<Map<String, String>> models = [];
 
@@ -1299,6 +1306,7 @@ class _Step2FormState extends State<Step2Form> {
 
     setState(() {
       vehicleMakeValue = makeName;
+      vehcileMakeCodeValue = makeCode;
 
       _variantReadOnly = false;
       _variantList = items;

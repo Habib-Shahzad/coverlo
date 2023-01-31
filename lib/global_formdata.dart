@@ -52,6 +52,7 @@ String? productValue;
 
 TextEditingController vehicleMakeController = TextEditingController();
 String? vehicleMakeValue;
+String? vehcileMakeCodeValue;
 
 TextEditingController vehicleModelController = TextEditingController();
 String? vehicleModelValue;
