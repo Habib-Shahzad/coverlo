@@ -28,28 +28,36 @@ class ModelModel {
 }
 
 class ModelResponse {
+  String modelCode;
   String modelName;
   String makeName;
 
   ModelResponse({
+    required this.modelCode,
     required this.modelName,
     required this.makeName,
   });
 
   factory ModelResponse.fromJson(Map<String, dynamic> json) {
-    Map<String, String> decryptedData =
-        Des.decryptMap(Env.appKey, {
+    dynamic modelCode = json['modelCode'];
+
+    modelCode ??= Des.encrypt(Env.appKey, '');
+
+    Map<String, String> decryptedData = Des.decryptMap(Env.appKey, {
+      'modelCode': modelCode,
       'modelName': json['modelName'],
       'makeName': json['makeName'],
     });
 
     return ModelResponse(
+      modelCode: decryptedData['modelCode'] ?? '',
       modelName: decryptedData['modelName'] ?? '',
       makeName: decryptedData['makeName'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() => {
+        'modelCode': modelCode,
         'modelName': modelName,
         'makeName': makeName,
       };

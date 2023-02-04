@@ -19,12 +19,11 @@ class MakeRepository {
       vehicleString = "Motorcycle";
     }
 
-    
-
     // String encryptedVehicleType =
     //     Des.encryptMap(Env.serverKey, {'vtype': vehicleString})['vtype'] ?? "";
 
     String encryptedVehicleType = Des.encrypt(Env.serverKey, vehicleString);
+
 
     final response = await _provider.post(
         GET_MAKE_API,

@@ -229,7 +229,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             '${cnicText.substring(0, 5)}-${cnicText.substring(5, 12)}-${cnicText.substring(12, 13)}';
                       }
 
- 
                       Object jsonData = {
                         "ORGANIZATION_CODE": "001001",
                         "LOCATION_CODE": "10101",
@@ -274,7 +273,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             "Perils": [
                               {
                                 "CODE": "001",
-                                "BASE_VALUE": "180000",
+                                "BASE_VALUE": insuredEstimatedValueController
+                                    .text
+                                    .toString(),
                                 "RATE": "0",
                                 "FLAT_AMOUNT": "",
                                 "AMOUNT": ""
@@ -316,8 +317,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               },
                               {
                                 "columnName": "GID_PASSENGER",
-                                "columnValue":
-                                    seatingCapacityController.text.toString()
+                                "columnValue": seatingCapacity.toInt().toString()
                               },
                               {
                                 "columnName": "PIT_BODYTYPE",

@@ -83,3 +83,7 @@ enum VehicleType {
   Car,
   Motorcycle,
 }
+
+String privateCar = 'PRIVATE CAR (COMPREHENSIVE COVER)';
+String thirdParty = 'THIRD PARTY';
+String motorCycle = 'MOTOR CYCLE (COMPREHENSIVE COVER)';

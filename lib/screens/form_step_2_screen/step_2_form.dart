@@ -520,20 +520,20 @@ class _Step2FormState extends State<Step2Form> {
             _maxSeatingCapacity,
           ),
 
-          productValue == 'Private Motor Car - Third Party Liability (TPL)'
+          productValue == thirdParty
               ? const SizedBox()
               : const FormSubHeading(text: 'Tracker Installed'),
 
-          productValue == 'Private Motor Car - Third Party Liability (TPL)'
+          productValue == thirdParty
               ? const SizedBox()
               : const CustomText(
                   text: '(For Motor Cars Only)', color: kFormSubHeadingColor),
 
-          productValue == 'Private Motor Car - Third Party Liability (TPL)'
+          productValue == thirdParty
               ? const SizedBox()
               : const SizedBox(height: kMinSpacing),
 
-          productValue == 'Private Motor Car - Third Party Liability (TPL)'
+          productValue == thirdParty
               ? const SizedBox()
               : Row(
                   children: [
@@ -557,7 +557,7 @@ class _Step2FormState extends State<Step2Form> {
 
           const SizedBox(height: kMinSpacing),
 
-          productValue == 'Private Motor Car - Third Party Liability (TPL)'
+          productValue == thirdParty
               ? const SizedBox()
               : showTrackers
                   ? dropDownFormFieldMethod(
@@ -577,28 +577,28 @@ class _Step2FormState extends State<Step2Form> {
                     )
                   : const SizedBox(),
 
-          productValue == 'Private Motor Car - Third Party Liability (TPL)'
+          productValue == thirdParty
               ? const SizedBox()
               : const SizedBox(height: kMinSpacing),
 
-          productValue == 'Private Motor Car - Third Party Liability (TPL)'
+          productValue == thirdParty
               ? const SizedBox()
               : const CustomText(
                   text: '(For Motor Cars Only)', color: kFormSubHeadingColor),
 
-          productValue == 'Private Motor Car - Third Party Liability (TPL)'
+          productValue == thirdParty
               ? const SizedBox()
               : const SizedBox(height: kMinSpacing),
 
-          productValue == 'Private Motor Car - Third Party Liability (TPL)'
+          productValue == thirdParty
               ? const SizedBox()
               : const FormSubHeading(text: 'Additional Accessories'),
 
-          productValue == 'Private Motor Car - Third Party Liability (TPL)'
+          productValue == thirdParty
               ? const SizedBox()
               : const SizedBox(height: kMinSpacing),
 
-          productValue == 'Private Motor Car - Third Party Liability (TPL)'
+          productValue == thirdParty
               ? const SizedBox()
               : Row(
                   children: [
@@ -720,7 +720,7 @@ class _Step2FormState extends State<Step2Form> {
                     personalAccident == 'yes' ? 1200 : 0;
                 int yearsOld = currentYear - int.parse(year);
 
-                if (productName == 'Private Motor Car - Comprehensive') {
+                if (productName == privateCar) {
                   if (yearsOld <= 5) {
                     if (hasTracker == 'yes') {
                       estimatedValue = carEstimatedValue * (1.75 / 100);
@@ -748,8 +748,7 @@ class _Step2FormState extends State<Step2Form> {
                       },
                     );
                   }
-                } else if (productName ==
-                    'Private Motor Car - Third Party Liability (TPL)') {
+                } else if (productName == thirdParty) {
                   if (yearsOld <= 10) {
                     String cubicCapacity = cubicCapacityController.text;
                     cubicCapacity = cubicCapacity.replaceAll(RegExp(r'\D'), '');
@@ -795,8 +794,7 @@ class _Step2FormState extends State<Step2Form> {
                       },
                     );
                   }
-                } else if (productName ==
-                    'Private Motor Cycle - TPL+Total Loss+Theft') {
+                } else if (productName == motorCycle) {
                   if (yearsOld <= 5) {
                     if (vehcileMake.toLowerCase().contains('honda')) {
                       estimatedValue = carEstimatedValue * (10 / 100);
@@ -1268,9 +1266,8 @@ class _Step2FormState extends State<Step2Form> {
     String makeName = _makeListMap.firstWhere(
         (element) => element['makeID'] == value.toString())['makeName']!;
 
-    String? makeCode = _makeListMap.firstWhere(
-        (element) => element['makeID'] == value.toString())['makeCode'];
-
+    // String? makeCode = _makeListMap.firstWhere(
+    //     (element) => element['makeID'] == value.toString())['makeCode'];
 
     List<DropdownMenuItem<Object>> items = [];
     List<Map<String, String>> models = [];
@@ -1282,6 +1279,7 @@ class _Step2FormState extends State<Step2Form> {
               value: i, child: Text(_variants.modelList[i].modelName)),
         );
         models.add({
+          'variantCode': _variants.modelList[i].modelCode,
           'variantName': _variants.modelList[i].modelName,
           'makeName': _variants.modelList[i].makeName,
           'variantID': i.toString()
@@ -1306,7 +1304,7 @@ class _Step2FormState extends State<Step2Form> {
 
     setState(() {
       vehicleMakeValue = makeName;
-      vehcileMakeCodeValue = makeCode;
+      // vehcileMakeCodeValue = makeCode;
 
       _variantReadOnly = false;
       _variantList = items;
@@ -1327,6 +1325,9 @@ class _Step2FormState extends State<Step2Form> {
 
     String variantName = _variantListMap.firstWhere(
         (element) => element['variantID'] == value.toString())['variantName']!;
+
+    String variantCode = _variantListMap.firstWhere(
+        (element) => element['variantID'] == value.toString())['variantCode']!;
 
     List<DropdownMenuItem<Object>> bodyTypeItems = [];
     List<Map<String, String>> bodyTypes = [];
@@ -1352,6 +1353,7 @@ class _Step2FormState extends State<Step2Form> {
     _vehicleModelKey.currentState?.reset();
     _bodyTypeKey.currentState?.reset();
     setState(() {
+      vehcileMakeCodeValue = variantCode;
       vehicleVariantValue = variantName;
 
       vehicleModelValue = null;
