@@ -31,23 +31,28 @@ class TrackingCompanyModel {
 
 class TrackingCompanyResponse {
   String trackingCompanyName;
+  String trackingCompanyCode;
 
   TrackingCompanyResponse({
     required this.trackingCompanyName,
+    required this.trackingCompanyCode,
   });
 
   factory TrackingCompanyResponse.fromJson(Map<String, dynamic> json) {
     Map<String, String> decryptedData =
         Des.decryptMap(Env.appKey, {
       'trackingCompanyName': json['TCName'],
+      'trackingCompanyCode': json['TCCode'],
     });
 
     return TrackingCompanyResponse(
       trackingCompanyName: decryptedData['trackingCompanyName'] ?? '',
+      trackingCompanyCode: decryptedData['trackingCompanyCode'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() => {
         'trackingCompanyName': trackingCompanyName,
+        'trackingCompanyCode': trackingCompanyCode,
       };
 }

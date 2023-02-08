@@ -29,22 +29,27 @@ class ColorModel {
 
 class ColorResponse {
   String colorName;
+  String colorCode;
 
   ColorResponse({
     required this.colorName,
+    required this.colorCode,
   });
 
   factory ColorResponse.fromJson(Map<String, dynamic> json) {
     Map<String, String> decryptedData = Des.decryptMap(Env.appKey, {
       'colorName': json['colorName'],
+      'colorCode': json['colorCode'],
     });
 
     return ColorResponse(
       colorName: decryptedData['colorName'] ?? '',
+      colorCode: decryptedData['colorCode'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() => {
         'colorName': colorName,
+        'colorCode': colorCode,
       };
 }

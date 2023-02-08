@@ -49,6 +49,7 @@ TextEditingController contributionController = TextEditingController();
 // dropdowns
 TextEditingController productNameController = TextEditingController();
 String? productValue;
+String? productCodeValue;
 
 TextEditingController vehicleMakeController = TextEditingController();
 String? vehicleMakeValue;

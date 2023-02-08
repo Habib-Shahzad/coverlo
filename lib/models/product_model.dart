@@ -28,22 +28,27 @@ class ProductModel {
 
 class ProductResponse {
   String productName;
+  String productCode;
 
   ProductResponse({
     required this.productName,
+    required this.productCode,
   });
 
   factory ProductResponse.fromJson(Map<String, dynamic> json) {
     Map<String, String> decryptedData = Des.decryptMap(Env.appKey, {
       'productName': json['productName'],
+      'productCode': json['productCode'],
     });
 
     return ProductResponse(
       productName: decryptedData['productName'] ?? '',
+      productCode: decryptedData['productCode'] ?? '',
     );
   }
 
   Map<String, dynamic> toJson() => {
         'productName': productName,
+        'productCode': productCode,
       };
 }

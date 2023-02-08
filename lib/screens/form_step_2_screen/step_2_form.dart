@@ -897,6 +897,7 @@ class _Step2FormState extends State<Step2Form> {
               )),
         );
         products.add({
+          'productCode': productModel.productList[i].productCode,
           'productName': productModel.productList[i].productName,
           'productID': i.toString()
         });
@@ -1066,6 +1067,8 @@ class _Step2FormState extends State<Step2Form> {
                   .trackingCompanyList[i].trackingCompanyName)),
         );
         trackingCompanies.add({
+          'trackingCompanyCode':
+              trackingCompanyModel.trackingCompanyList[i].trackingCompanyCode,
           'trackingCompanyName':
               trackingCompanyModel.trackingCompanyList[i].trackingCompanyName,
           'trackingCompanyID': i.toString()
@@ -1098,6 +1101,7 @@ class _Step2FormState extends State<Step2Form> {
               value: i, child: Text(colorModel.colorList[i].colorName)),
         );
         colors.add({
+          'colorCode': colorModel.colorList[i].colorCode,
           'colorName': colorModel.colorList[i].colorName,
           'colorID': i.toString()
         });
@@ -1195,8 +1199,10 @@ class _Step2FormState extends State<Step2Form> {
       });
     }
 
-    String productName = _productListMap.firstWhere(
-        (element) => element['productID'] == value.toString())['productName']!;
+    var product = _productListMap
+        .firstWhere((element) => element['productID'] == value.toString());
+    String productName = product['productName']!;
+    String productCode = product['productCode']!;
 
     int maxCap = 0;
 
@@ -1243,6 +1249,7 @@ class _Step2FormState extends State<Step2Form> {
 
     setState(() {
       productValue = productName;
+      productCodeValue = productCode;
       _maxSeatingCapacity = maxCap;
       _modelList = newModelList;
       _modelListMap = newModelListMap;
@@ -1265,9 +1272,6 @@ class _Step2FormState extends State<Step2Form> {
 
     String makeName = _makeListMap.firstWhere(
         (element) => element['makeID'] == value.toString())['makeName']!;
-
-    // String? makeCode = _makeListMap.firstWhere(
-    //     (element) => element['makeID'] == value.toString())['makeCode'];
 
     List<DropdownMenuItem<Object>> items = [];
     List<Map<String, String>> models = [];
@@ -1304,7 +1308,6 @@ class _Step2FormState extends State<Step2Form> {
 
     setState(() {
       vehicleMakeValue = makeName;
-      // vehcileMakeCodeValue = makeCode;
 
       _variantReadOnly = false;
       _variantList = items;
@@ -1323,11 +1326,11 @@ class _Step2FormState extends State<Step2Form> {
       vehicleVariantController.text = dataIndex;
     }
 
-    String variantName = _variantListMap.firstWhere(
-        (element) => element['variantID'] == value.toString())['variantName']!;
+    var variant = _variantListMap
+        .firstWhere((element) => element['variantID'] == value.toString());
 
-    String variantCode = _variantListMap.firstWhere(
-        (element) => element['variantID'] == value.toString())['variantCode']!;
+    String variantName = variant['variantName']!;
+    String variantCode = variant['variantCode']!;
 
     List<DropdownMenuItem<Object>> bodyTypeItems = [];
     List<Map<String, String>> bodyTypes = [];
@@ -1385,12 +1388,12 @@ class _Step2FormState extends State<Step2Form> {
       trackingCompanyController.text = dataIndex;
     }
 
-    String trackingCompanyName = _trackingCompanyListMap.firstWhere((element) =>
+    String trackingCompanyCode = _trackingCompanyListMap.firstWhere((element) =>
         element['trackingCompanyID'] ==
-        value.toString())['trackingCompanyName']!;
+        value.toString())['trackingCompanyCode']!;
 
     setState(() {
-      trackingCompanyValue = trackingCompanyName;
+      trackingCompanyValue = trackingCompanyCode;
     });
   }
 
@@ -1400,11 +1403,11 @@ class _Step2FormState extends State<Step2Form> {
       colorController.text = dataIndex;
     }
 
-    String colorName = _colorCarListMap.firstWhere(
-        (element) => element['colorID'] == value.toString())['colorName']!;
+    String colorCode = _colorCarListMap.firstWhere(
+        (element) => element['colorID'] == value.toString())['colorCode']!;
 
     setState(() {
-      colorValue = colorName;
+      colorValue = colorCode;
     });
   }
 

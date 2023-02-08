@@ -233,7 +233,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         "ORGANIZATION_CODE": "001001",
                         "LOCATION_CODE": "10101",
                         "DEPARTMENT_CODE": "13",
-                        "BUSINESS_CLASS_CODE": "V0201",
+                        "BUSINESS_CLASS_CODE": productCodeValue,
                         "INSURANCE_TYPE": "D",
                         "DOCUMENT_TYPE": "P",
                         "DOCUMENT_NO": "",
@@ -256,7 +256,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         "COUNTRY_CODE": countryCodeValue,
                         "AGENT_CODE": "210001000001",
                         "PARTY_CODE": "",
-                        "PRODUCT_CODE": "V0201",
+                        "PRODUCT_CODE": productCodeValue,
                         "REVERSE_TAG": "Y",
                         "IA_ADDRESS1": addressController.text.toString(),
                         "IA_CITY": cityValue,
@@ -284,7 +284,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             "Item_Detail": [
                               {
                                 "columnName": "GID_BENEFICIARY_NAME",
-                                "columnValue": nameController.text.toString()
+                                "columnValue": appliedForRegistartion != 'yes'
+                                    ? 'N'
+                                    : 'Y'
                               },
                               {
                                 "columnName": "GID_REGISTRATION",
@@ -327,8 +329,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 "columnName": "GID_ACCESSORIES",
                                 "columnValue": additionalAccessories
                               },
-                              {"columnName": "PTV_CODE", "columnValue": "011"},
-                              {"columnName": "PLR_CODE", "columnValue": "00009"}
+                              {"columnName": "PTV_CODE", "columnValue": trackingCompanyValue},
+                              {"columnName": "PLR_CODE", "columnValue": colorValue}
                             ]
                           }
                         ],
