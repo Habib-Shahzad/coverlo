@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // STEP 01 data
@@ -72,13 +73,31 @@ String? trackingCompanyValue;
 
 // STEP 03: data
 XFile? imageCarFront;
+List<int>? bytesCarFront;
+
 XFile? imageCarBack;
+List<int>? bytesCarBack;
+
 XFile? imageCarLeft;
+List<int>? bytesCarLeft;
+
 XFile? imageCarRight;
+List<int>? bytesCarRight;
+
 XFile? imageCarHood;
+List<int>? bytesCarHood;
+
 XFile? imageCarBoot;
+List<int>? bytesCarBoot;
 
 XFile? imageBikeFront;
+List<int>? bytesBikeFront;
+
 XFile? imageBikeBack;
+List<int>? bytesBikeBack;
+
 XFile? imageBikeLeft;
+List<int>? bytesBikeLeft;
+
 XFile? imageBikeRight;
+List<int>? bytesBikeRight;

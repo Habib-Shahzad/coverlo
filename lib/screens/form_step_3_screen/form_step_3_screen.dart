@@ -2,6 +2,7 @@ import 'package:coverlo/components/main_heading.dart';
 import 'package:coverlo/components/navigate_button.dart';
 import 'package:coverlo/components/sub_heading.dart';
 import 'package:coverlo/constants.dart';
+
 import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/screens/payment_screen/payment_screen.dart';
@@ -26,9 +27,6 @@ class VehicleImageComponent extends StatelessWidget {
     required this.removeImage,
     required this.imageAssetPath,
   }) : super(key: key);
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -120,8 +118,6 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
   String? contribution;
   String? productName;
   bool isCar = true;
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -390,7 +386,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
     );
   }
 
-  _setCarFrontImage(value) async {
+// SET CAR IMAGES
+  _setCarFrontImage(value) {
     setState(() {
       imageCarFront = value;
     });
@@ -426,15 +423,41 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
     });
   }
 
-  _setBikeFrontImage(value) {
+  // SET CAR BYTES
+
+  _setCarFrontBytes(value) {
     setState(() {
-      imageBikeFront = value;
+      bytesCarFront = value;
     });
   }
 
-  _setBikeBackImage(value) {
+  _setCarBackBytes(value) {
     setState(() {
-      imageBikeBack = value;
+      bytesCarBack = value;
+    });
+  }
+
+  _setCarLeftBytes(value) {
+    setState(() {
+      bytesCarLeft = value;
+    });
+  }
+
+  _setCarRightBytes(value) {
+    setState(() {
+      bytesCarRight = value;
+    });
+  }
+
+  _setCarHoodBytes(value) {
+    setState(() {
+      bytesCarHood = value;
+    });
+  }
+
+  _setCarBootBytes(value) {
+    setState(() {
+      bytesCarBoot = value;
     });
   }
 
@@ -474,71 +497,126 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
     });
   }
 
+  // ADD BIKE FUNCTIONS
+  _setBikeFrontImage(value) {
+    setState(() {
+      imageBikeFront = value;
+    });
+  }
+
+  _setBikeBackImage(value) {
+    setState(() {
+      imageBikeBack = value;
+    });
+  }
+
+  _setBikeLeftImage(value) {
+    setState(() {
+      imageBikeLeft = value;
+    });
+  }
+
+  _setBikeRightImage(value) {
+    setState(() {
+      imageBikeRight = value;
+    });
+  }
+
+  _setBikeFrontBytes(value) {
+    setState(() {
+      bytesBikeFront = value;
+    });
+  }
+
+  _setBikeBackBytes(value) {
+    setState(() {
+      bytesBikeBack = value;
+    });
+  }
+
+  _setBikeLeftBytes(value) {
+    setState(() {
+      bytesBikeLeft = value;
+    });
+  }
+
+  _setBikeRightBytes(value) {
+    setState(() {
+      bytesBikeRight = value;
+    });
+  }
+
+  // REMOVE BIKE FUNCTIONS
+
   _removeBikeFrontImage() {
     setState(() {
       imageBikeFront = null;
+      bytesBikeFront = null;
     });
   }
 
   _removeBikeBackImage() {
     setState(() {
       imageBikeBack = null;
+      bytesBikeBack = null;
     });
   }
 
   _removeBikeLeftImage() {
     setState(() {
       imageBikeLeft = null;
+      bytesBikeLeft = null;
     });
   }
 
   _removeBikeRightImage() {
     setState(() {
       imageBikeRight = null;
+      bytesBikeRight = null;
     });
   }
 
-  _pickCarFrontImage() {
-    _pickImage(_setCarFrontImage);
+  _pickCarFrontImage() async {
+    _pickImage(_setCarFrontImage, _setCarFrontBytes);
   }
 
   _pickCarBackImage() {
-    _pickImage(_setCarBackImage);
+    _pickImage(_setCarBackImage, _setCarBackBytes);
   }
 
   _pickCarLeftImage() {
-    _pickImage(_setCarLeftImage);
+    _pickImage(_setCarLeftImage, _setCarLeftBytes);
   }
 
   _pickCarRightImage() {
-    _pickImage(_setCarRightImage);
+    _pickImage(_setCarRightImage, _setCarRightBytes);
   }
 
   _pickCarHoodImage() {
-    _pickImage(_setCarHoodImage);
+    _pickImage(_setCarHoodImage, _setCarHoodBytes);
   }
 
   _pickCarBootImage() {
-    _pickImage(_setCarBootImage);
+    _pickImage(_setCarBootImage, _setCarBootBytes);
   }
 
   _pickBikeFrontImage() {
-    _pickImage(_setBikeFrontImage);
+    _pickImage(_setBikeFrontImage, _setBikeFrontBytes);
   }
 
   _pickBikeBackImage() {
-    _pickImage(_setBikeBackImage);
+    _pickImage(_setBikeBackImage, _setBikeBackBytes);
   }
 
   _pickBikeLeftImage() {
-    _pickImage(_setBikeBackImage);
+    _pickImage(_setBikeLeftImage, _setBikeLeftBytes);
   }
 
   _pickBikeRightImage() {
-    _pickImage(_setBikeBackImage);
+    _pickImage(_setBikeRightImage, _setBikeRightBytes);
   }
 
-  _pickImage(Function setImageFunction) {
+  _pickImage(Function setImageFunction, Function setBytesFunction) async {
     showDialog<ImageSource>(
       context: context,
       builder: (context) => AlertDialog(
@@ -565,10 +643,10 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
     ).then((source) async {
       if (source != null) {
         final pickedFile = await ImagePicker().getImage(source: source);
-        setImageFunction(XFile(pickedFile!.path));
+        final bytes = await pickedFile!.readAsBytes();
+        setBytesFunction(bytes);
+        setImageFunction(XFile(pickedFile.path));
       }
     });
   }
-  
-
 }

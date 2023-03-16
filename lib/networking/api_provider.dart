@@ -11,6 +11,7 @@ import 'package:xml/xml.dart';
 class ApiProvider extends BaseAPI {
   @override
   Future<dynamic> post(String url, String body) async {
+    print(baseUrl + url);
     var responseJson;
     try {
       final response = await http
@@ -20,13 +21,15 @@ class ApiProvider extends BaseAPI {
               },
               body: body)
           .timeout(const Duration(seconds: 10), onTimeout: () {
-        throw TimeoutException('Connection timed out. Slow internet connection.');
+        throw TimeoutException(
+            'Connection timed out. Slow internet connection.');
       });
       responseJson = _response(response);
     } on SocketException {
       throw FetchDataException('No Internet connection');
     } on TimeoutException {
-      throw FetchDataException('Connection timed out. Slow internet connection');
+      throw FetchDataException(
+          'Connection timed out. Slow internet connection');
     } on Error {
       throw FetchDataException('Something went wrong');
     }
@@ -54,6 +57,10 @@ class ApiProvider extends BaseAPI {
       case 403:
         throw UnauthorisedException(response.body.toString());
       case 500:
+        final document = XmlDocument.parse(response.body);
+       
+        return document.toString();
+
         throw FetchDataException(
             'Internal Server Error : ${response.statusCode}');
       default:

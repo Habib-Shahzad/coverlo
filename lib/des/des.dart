@@ -15,6 +15,18 @@ class Des {
     return value;
   }
 
+  static String encryptImage(String key, List<int> data) {
+    var md5 = MD5Digest();
+    var keyBytes = md5.process(utf8.encode(key) as Uint8List);
+    DES3 desECB = DES3(
+        key: keyBytes, mode: DESMode.ECB, paddingType: DESPaddingType.PKCS7);
+
+    List<int> encryptedChyper = desECB.encrypt(data);
+    String value = base64Encode(encryptedChyper);
+
+    return value;
+  }
+
   static String decrypt(String key, String data) {
     var md5 = MD5Digest();
     var keyBytes = md5.process(utf8.encode(key) as Uint8List);
@@ -23,6 +35,17 @@ class Des {
     List<int> bytes = base64Decode(data);
     List<int> decryptedChyper = desECB.decrypt(bytes);
     String value = utf8.decode(decryptedChyper);
+    return value;
+  }
+
+  static String decryptImage(String key, String data) {
+    var md5 = MD5Digest();
+    var keyBytes = md5.process(utf8.encode(key) as Uint8List);
+    DES3 desECB = DES3(
+        key: keyBytes, mode: DESMode.ECB, paddingType: DESPaddingType.PKCS7);
+    List<int> bytes = base64Decode(data);
+    List<int> decryptedChyper = desECB.decrypt(bytes);
+    String value = base64Encode(decryptedChyper);
     return value;
   }
 
