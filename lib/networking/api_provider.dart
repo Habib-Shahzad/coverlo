@@ -11,7 +11,6 @@ import 'package:xml/xml.dart';
 class ApiProvider extends BaseAPI {
   @override
   Future<dynamic> post(String url, String body) async {
-    print(baseUrl + url);
     var responseJson;
     try {
       final response = await http

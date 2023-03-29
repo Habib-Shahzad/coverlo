@@ -125,7 +125,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
       final args =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-      if (args['productName'].toLowerCase().contains('car')) {
+      if (args['productName'] == privateCar || args['productName'] == thirdParty) {
         setState(() {
           isCar = true;
         });

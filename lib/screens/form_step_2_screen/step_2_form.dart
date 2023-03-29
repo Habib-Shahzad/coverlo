@@ -16,6 +16,7 @@ import 'package:coverlo/form_fields/slider_method.dart';
 import 'package:coverlo/form_fields/text_form_field.dart';
 import 'package:coverlo/globals.dart';
 import 'package:coverlo/global_formdata.dart';
+import 'package:coverlo/global_apidata.dart';
 import 'package:coverlo/helpers/dialogs/message_dialog.dart';
 import 'package:coverlo/helpers/get_body_type_api.dart';
 import 'package:coverlo/helpers/get_make_api.dart';
@@ -87,46 +88,8 @@ class _Step2FormState extends State<Step2Form> {
   late Bloc _colorCarBloc;
   late Bloc _colorBikeBloc;
 
-  List<DropdownMenuItem<Object>> _colorList = [];
-  List<Map<String, String>> _colorListMap = [];
-
-  List<DropdownMenuItem<Object>> _colorCarList = [];
-  List<Map<String, String>> _colorCarListMap = [];
-
-  List<DropdownMenuItem<Object>> _colorBikeList = [];
-  List<Map<String, String>> _colorBikeListMap = [];
-
-  List<DropdownMenuItem<Object>> _productList = [];
-  List<Map<String, String>> _productListMap = [];
-
-  List<DropdownMenuItem<Object>> _makeList = [];
-  List<Map<String, String>> _makeListMap = [];
-
-  List<DropdownMenuItem<Object>> _makeCarList = [];
-  List<Map<String, String>> _makeCarListMap = [];
-
-  List<DropdownMenuItem<Object>> _makeBikeList = [];
-  List<Map<String, String>> _makeBikeListMap = [];
-
-  ModelModel _variants = ModelModel(modelList: []);
-
-  ModelModel _variantsCar = ModelModel(modelList: []);
-  ModelModel _variantsBike = ModelModel(modelList: []);
-
-  List<DropdownMenuItem<Object>> _variantList = [];
-  List<Map<String, String>> _variantListMap = [];
-
-  List<DropdownMenuItem<Object>> _modelList = [];
-  List<Map<String, String>> _modelListMap = [];
-
-  BodyTypeModel _bodyTypes = BodyTypeModel(bodyTypeList: []);
-  List<Map<String, String>> _bodyTypeListMap = [];
-
-  List<DropdownMenuItem<Object>> _trackingCompanyList = [];
-  List<Map<String, String>> _trackingCompanyListMap = [];
-
-  bool _variantReadOnly = true;
-  bool _modelReadOnly = true;
+  bool _variantReadOnly = false;
+  bool _modelReadOnly = false;
 
   @override
   void initState() {
@@ -166,19 +129,6 @@ class _Step2FormState extends State<Step2Form> {
     _trackingCompanyBloc.dispose();
     super.dispose();
   }
-
-  bool _trackingCompanyLoaded = false;
-
-  bool _productLoaded = false;
-
-  bool _modelCarLoaded = false;
-  bool _modelBikeLoaded = false;
-
-  bool _makeCarLoaded = false;
-  bool _makeBikeLoaded = false;
-
-  bool _colorCarLoaded = false;
-  bool _colorBikeLoaded = false;
 
   getData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -231,100 +181,8 @@ class _Step2FormState extends State<Step2Form> {
     }
   }
 
-  bool initialStateBuild = false;
-  bool dataSet = false;
-  bool otherDataSet = false;
-
-  bool productDataSet = false;
-  bool makeDataSet = false;
-
-  bool colorsInitialized = false;
-  bool makeInitialized = false;
-  bool modelInitialized = false;
-
   @override
   Widget build(BuildContext context) {
-    if (_productLoaded && productNameController.text.isNotEmpty) {
-      if (productIsCar(productNameController.text)) {
-        if (!colorsInitialized) {
-          if (_colorCarLoaded) {
-            _colorList = _colorCarList;
-            _colorListMap = _colorCarListMap;
-            colorsInitialized = true;
-          }
-        }
-        if (!makeInitialized) {
-          if (_makeCarLoaded) {
-            _makeList = _makeCarList;
-            _makeListMap = _makeCarListMap;
-            makeInitialized = true;
-          }
-        }
-        if (!modelInitialized) {
-          if (_modelCarLoaded) {
-            _variants = _variantsCar;
-            modelInitialized = true;
-          }
-        }
-
-        if (!productDataSet &&
-            colorsInitialized &&
-            makeInitialized &&
-            _modelCarLoaded) {
-          setProductData(int.parse(productNameController.text),
-              settingData: true);
-          productDataSet = true;
-        }
-      } else {
-        if (!colorsInitialized) {
-          if (_colorBikeLoaded) {
-            _colorList = _colorBikeList;
-            _colorListMap = _colorBikeListMap;
-            colorsInitialized = true;
-          }
-        }
-        if (!makeInitialized) {
-          if (_makeBikeLoaded) {
-            _makeList = _makeBikeList;
-            _makeListMap = _makeBikeListMap;
-            makeInitialized = true;
-          }
-        }
-        if (!modelInitialized) {
-          if (_modelBikeLoaded) {
-            _variants = _variantsBike;
-            modelInitialized = true;
-          }
-        }
-
-        if (!productDataSet &&
-            colorsInitialized &&
-            makeInitialized &&
-            _modelBikeLoaded) {
-          setProductData(int.parse(productNameController.text),
-              settingData: true);
-          productDataSet = true;
-        }
-      }
-    }
-
-    if (vehicleMakeController.text.isNotEmpty &&
-        makeInitialized &&
-        productDataSet &&
-        !makeDataSet) {
-      setMakeData(
-        int.parse(vehicleMakeController.text),
-        settingData: true,
-      );
-      makeDataSet = true;
-    }
-
-    // if (!makeDataSet && productNameController.text.isNotEmpty) {
-    //   return const Center(
-    //     child: CircularProgressIndicator(),
-    //   );
-    // }
-
     return Form(
       key: _formKey,
       child: Column(
@@ -335,8 +193,8 @@ class _Step2FormState extends State<Step2Form> {
             _productKey,
             'Product',
             productValue,
-            _productList,
-            _productListMap,
+            productList,
+            productListMap,
             'productName',
             false,
             setProductData,
@@ -402,8 +260,8 @@ class _Step2FormState extends State<Step2Form> {
             _vehicleMakeKey,
             'Vehicle Make',
             vehicleMakeValue,
-            _makeList,
-            _makeListMap,
+            makeList,
+            makeListMap,
             'makeName',
             false,
             setMakeData,
@@ -418,8 +276,8 @@ class _Step2FormState extends State<Step2Form> {
             _vehicleVariantKey,
             'Vehicle Variant',
             vehicleVariantValue,
-            _variantList,
-            _variantListMap,
+            variantList,
+            variantListMap,
             'variantName',
             _variantReadOnly,
             setVariantData,
@@ -434,8 +292,8 @@ class _Step2FormState extends State<Step2Form> {
             _vehicleModelKey,
             'Vehicle Model',
             vehicleModelValue,
-            _modelList,
-            _modelListMap,
+            modelList,
+            modelListMap,
             'modelName',
             _modelReadOnly,
             setModelData,
@@ -450,32 +308,16 @@ class _Step2FormState extends State<Step2Form> {
             _colorKey,
             'Color',
             colorValue,
-            _colorList,
-            _colorListMap,
+            colorList,
+            colorListMap,
             'colorName',
-            !_colorCarLoaded,
+            false,
             setColorData,
             controlled: true,
             dropDownValue: colorController.text != ""
                 ? int.parse(colorController.text)
                 : null,
           ),
-          // const SizedBox(height: kMinSpacing),
-          // dropDownFormFieldMethod(
-          //   context,
-          //   _bodyTypeKey,
-          //   'Body Type',
-          //   bodyTypeValue,
-          //   _bodyTypeList,
-          //   _bodyTypeListMap,
-          //   'bodyTypeName',
-          //   _bodyTypeReadOnly,
-          //   setBodyTypeData,
-          //   controlled: true,
-          //   dropDownValue: bodyTypeController.text != ""
-          //       ? int.parse(bodyTypeController.text)
-          //       : null,
-          // ),
           const SizedBox(height: kMinSpacing),
           textFormFieldMethod(
             context,
@@ -519,20 +361,16 @@ class _Step2FormState extends State<Step2Form> {
             _minSeatingCapacity,
             _maxSeatingCapacity,
           ),
-
           productValue == thirdParty
               ? const SizedBox()
               : const FormSubHeading(text: 'Tracker Installed'),
-
           productValue == thirdParty
               ? const SizedBox()
               : const CustomText(
                   text: '(For Motor Cars Only)', color: kFormSubHeadingColor),
-
           productValue == thirdParty
               ? const SizedBox()
               : const SizedBox(height: kMinSpacing),
-
           productValue == thirdParty
               ? const SizedBox()
               : Row(
@@ -554,9 +392,7 @@ class _Step2FormState extends State<Step2Form> {
                     ),
                   ],
                 ),
-
           const SizedBox(height: kMinSpacing),
-
           productValue == thirdParty
               ? const SizedBox()
               : showTrackers
@@ -565,8 +401,8 @@ class _Step2FormState extends State<Step2Form> {
                       _trackingCompanyKey,
                       'Tracking Company',
                       trackingCompanyValue,
-                      _trackingCompanyList,
-                      _trackingCompanyListMap,
+                      trackingCompanyList,
+                      trackingCompanyListMap,
                       'trackingCompanyName',
                       false,
                       setTrackingCompanyData,
@@ -576,28 +412,22 @@ class _Step2FormState extends State<Step2Form> {
                           : null,
                     )
                   : const SizedBox(),
-
           productValue == thirdParty
               ? const SizedBox()
               : const SizedBox(height: kMinSpacing),
-
           productValue == thirdParty
               ? const SizedBox()
               : const CustomText(
                   text: '(For Motor Cars Only)', color: kFormSubHeadingColor),
-
           productValue == thirdParty
               ? const SizedBox()
               : const SizedBox(height: kMinSpacing),
-
           productValue == thirdParty
               ? const SizedBox()
               : const FormSubHeading(text: 'Additional Accessories'),
-
           productValue == thirdParty
               ? const SizedBox()
               : const SizedBox(height: kMinSpacing),
-
           productValue == thirdParty
               ? const SizedBox()
               : Row(
@@ -904,9 +734,8 @@ class _Step2FormState extends State<Step2Form> {
       }
 
       setState(() {
-        _productList = items;
-        _productListMap = products;
-        _productLoaded = true;
+        productList = items;
+        productListMap = products;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -940,9 +769,8 @@ class _Step2FormState extends State<Step2Form> {
       }
 
       setState(() {
-        _makeCarList = items;
-        _makeCarListMap = makes;
-        _makeCarLoaded = true;
+        makeCarList = items;
+        makeCarListMap = makes;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -978,9 +806,8 @@ class _Step2FormState extends State<Step2Form> {
         });
       }
       setState(() {
-        _makeBikeList = items;
-        _makeBikeListMap = makes;
-        _makeBikeLoaded = true;
+        makeBikeList = items;
+        makeBikeListMap = makes;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -998,8 +825,7 @@ class _Step2FormState extends State<Step2Form> {
       ModelModel modelModel = response.data as ModelModel;
 
       setState(() {
-        _variantsCar = modelModel;
-        _modelCarLoaded = true;
+        variantsCar = modelModel;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -1020,8 +846,7 @@ class _Step2FormState extends State<Step2Form> {
       // modelModel.modelList.removeRange(0, 3);
 
       setState(() {
-        _variantsBike = modelModel;
-        _modelBikeLoaded = true;
+        variantsBike = modelModel;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -1038,7 +863,7 @@ class _Step2FormState extends State<Step2Form> {
     if (response.status == Status.COMPLETED) {
       BodyTypeModel bodyTypeModel = response.data as BodyTypeModel;
       setState(() {
-        _bodyTypes = bodyTypeModel;
+        bodyTypesM = bodyTypeModel;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -1075,9 +900,8 @@ class _Step2FormState extends State<Step2Form> {
         });
       }
       setState(() {
-        _trackingCompanyList = items;
-        _trackingCompanyListMap = trackingCompanies;
-        _trackingCompanyLoaded = true;
+        trackingCompanyList = items;
+        trackingCompanyListMap = trackingCompanies;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -1108,9 +932,8 @@ class _Step2FormState extends State<Step2Form> {
       }
 
       setState(() {
-        _colorCarList = items;
-        _colorCarListMap = colors;
-        _colorCarLoaded = true;
+        colorCarList = items;
+        colorCarListMap = colors;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -1131,9 +954,6 @@ class _Step2FormState extends State<Step2Form> {
 
       List<ColorResponse> colorList = colorModel.colorList;
 
-      // (**DEBUG**) REMOVE THIS LINE TO SHOW ALL COLORS
-      // colorList.removeRange(0, 3);
-
       for (var i = 0; i < colorList.length; i++) {
         items.add(
           DropdownMenuItem(
@@ -1145,9 +965,8 @@ class _Step2FormState extends State<Step2Form> {
         });
       }
       setState(() {
-        _colorBikeList = items;
-        _colorBikeListMap = colors;
-        _colorBikeLoaded = true;
+        colorBikeList = items;
+        colorBikeListMap = colors;
       });
     } else if (response.status == Status.ERROR) {
       AlertDialog alert = messageDialog(context, 'Error', response.message);
@@ -1160,12 +979,6 @@ class _Step2FormState extends State<Step2Form> {
     }
   }
 
-  bool productIsCar(Object? value) {
-    String productName = _productListMap.firstWhere(
-        (element) => element['productID'] == value.toString())['productName']!;
-
-    return productName.toLowerCase().contains('car');
-  }
 
   setProductData(Object? value, {bool settingData = false}) async {
     String? dataIndex = _productKey.currentState?.value.toString();
@@ -1174,85 +987,77 @@ class _Step2FormState extends State<Step2Form> {
       productNameController.text = dataIndex;
     }
 
-    if (!settingData) {
-      contributionController.text = "";
+    contributionController.text = "";
 
-      _vehicleMakeKey.currentState?.reset();
-      _vehicleVariantKey.currentState?.reset();
-      _vehicleModelKey.currentState?.reset();
-      _colorKey.currentState?.reset();
+    _vehicleMakeKey.currentState?.reset();
+    _vehicleVariantKey.currentState?.reset();
+    _vehicleModelKey.currentState?.reset();
+    _colorKey.currentState?.reset();
 
-      colorController.text = "";
-      colorValue = null;
+    colorController.text = "";
+    colorValue = null;
 
-      vehicleMakeController.text = "";
-      vehicleMakeValue = null;
+    vehicleMakeController.text = "";
+    vehicleMakeValue = null;
 
-      vehicleModelController.text = "";
-      vehicleModelValue = null;
+    vehicleModelController.text = "";
+    vehicleModelValue = null;
 
-      vehicleVariantController.text = "";
-      vehicleVariantValue = null;
+    vehicleVariantController.text = "";
+    vehicleVariantValue = null;
 
-      setState(() {
-        seatingCapacity = 1;
-      });
-    }
+    setState(() {
+      seatingCapacity = 1;
+    });
 
-    var product = _productListMap
+    var product = productListMap
         .firstWhere((element) => element['productID'] == value.toString());
     String productName = product['productName']!;
     String productCode = product['productCode']!;
 
     int maxCap = 0;
 
-    int numYears = 0;
+    List<DropdownMenuItem<Object>> newModelList = [];
+    List<Map<String, String>> newModelListMap = [];
 
-    if (productName.toLowerCase().contains('car')) {
+    if (productName == privateCar || productName == thirdParty) {
       maxCap = 4;
 
-      numYears = 10;
+      newModelList = carModelsList;
+      newModelListMap = carModelsListMap;
 
-      _variants = _variantsCar;
+      variants = variantsCar;
 
-      _makeList = _makeCarList;
-      _makeListMap = _makeCarListMap;
+      makeList = makeCarList;
+      makeListMap = makeCarListMap;
 
-      _colorList = _colorCarList;
-      _colorListMap = _colorCarListMap;
+      colorList = colorCarList;
+      colorListMap = colorCarListMap;
 
       _personalAccidentText = "Personal Accident For Drive +4 Passengers";
     } else {
       maxCap = 2;
 
-      numYears = 5;
+      newModelList = bikeModelsList;
+      newModelListMap = bikeModelsListMap;
 
-      _variants = _variantsBike;
+      variants = variantsBike;
 
-      _makeList = _makeBikeList;
-      _makeListMap = _makeBikeListMap;
+      makeList = makeBikeList;
+      makeListMap = makeBikeListMap;
 
-      _colorList = _colorBikeList;
-      _colorListMap = _colorBikeListMap;
+      colorList = colorBikeList;
+      colorListMap = colorBikeListMap;
 
       _personalAccidentText = "Personal Accident For Driver + 1 Passenger";
-    }
-
-    final List<DropdownMenuItem<Object>> newModelList = [];
-    final List<Map<String, String>> newModelListMap = [];
-
-    for (int i = 0; i < numYears; i++) {
-      String dateYear = (DateTime.now().year - i).toString();
-      newModelList.add(DropdownMenuItem(value: i, child: Text(dateYear)));
-      newModelListMap.add({'value': i.toString(), 'label': dateYear});
     }
 
     setState(() {
       productValue = productName;
       productCodeValue = productCode;
       _maxSeatingCapacity = maxCap;
-      _modelList = newModelList;
-      _modelListMap = newModelListMap;
+      modelList = newModelList;
+      modelListMap = newModelListMap;
       _modelReadOnly = false;
     });
   }
@@ -1270,22 +1075,22 @@ class _Step2FormState extends State<Step2Form> {
       vehicleMakeController.text = dataIndex;
     }
 
-    String makeName = _makeListMap.firstWhere(
+    String makeName = makeListMap.firstWhere(
         (element) => element['makeID'] == value.toString())['makeName']!;
 
     List<DropdownMenuItem<Object>> items = [];
     List<Map<String, String>> models = [];
 
-    for (var i = 0; i < _variants.modelList.length; i++) {
-      if (makeName == _variants.modelList[i].makeName) {
+    for (var i = 0; i < variants.modelList.length; i++) {
+      if (makeName == variants.modelList[i].makeName) {
         items.add(
           DropdownMenuItem(
-              value: i, child: Text(_variants.modelList[i].modelName)),
+              value: i, child: Text(variants.modelList[i].modelName)),
         );
         models.add({
-          'variantCode': _variants.modelList[i].modelCode,
-          'variantName': _variants.modelList[i].modelName,
-          'makeName': _variants.modelList[i].makeName,
+          'variantCode': variants.modelList[i].modelCode,
+          'variantName': variants.modelList[i].modelName,
+          'makeName': variants.modelList[i].makeName,
           'variantID': i.toString()
         });
       }
@@ -1310,10 +1115,10 @@ class _Step2FormState extends State<Step2Form> {
       vehicleMakeValue = makeName;
 
       _variantReadOnly = false;
-      _variantList = items;
-      _variantListMap = models;
+      variantList = items;
+      variantListMap = models;
 
-      _bodyTypeListMap = [];
+      bodyTypeListMap = [];
       bodyTypeValue = null;
     });
   }
@@ -1326,7 +1131,7 @@ class _Step2FormState extends State<Step2Form> {
       vehicleVariantController.text = dataIndex;
     }
 
-    var variant = _variantListMap
+    var variant = variantListMap
         .firstWhere((element) => element['variantID'] == value.toString());
 
     String variantName = variant['variantName']!;
@@ -1334,15 +1139,15 @@ class _Step2FormState extends State<Step2Form> {
 
     List<DropdownMenuItem<Object>> bodyTypeItems = [];
     List<Map<String, String>> bodyTypes = [];
-    for (var i = 0; i < _bodyTypes.bodyTypeList.length; i++) {
-      if (variantName == _bodyTypes.bodyTypeList[i].modelName) {
+    for (var i = 0; i < bodyTypesM.bodyTypeList.length; i++) {
+      if (variantName == bodyTypesM.bodyTypeList[i].modelName) {
         bodyTypeItems.add(
           DropdownMenuItem(
-              value: i, child: Text(_bodyTypes.bodyTypeList[i].bodyType)),
+              value: i, child: Text(bodyTypesM.bodyTypeList[i].bodyType)),
         );
         bodyTypes.add({
-          'bodyType': _bodyTypes.bodyTypeList[i].bodyType,
-          'modelName': _bodyTypes.bodyTypeList[i].modelName,
+          'bodyType': bodyTypesM.bodyTypeList[i].bodyType,
+          'modelName': bodyTypesM.bodyTypeList[i].modelName,
           'bodyTypeID': i.toString()
         });
       }
@@ -1361,7 +1166,7 @@ class _Step2FormState extends State<Step2Form> {
 
       vehicleModelValue = null;
 
-      _bodyTypeListMap = bodyTypes;
+      bodyTypeListMap = bodyTypes;
       bodyTypeValue = null;
     });
   }
@@ -1373,7 +1178,7 @@ class _Step2FormState extends State<Step2Form> {
       bodyTypeController.text = dataIndex;
     }
 
-    String bodyTypeName = _bodyTypeListMap.firstWhere(
+    String bodyTypeName = bodyTypeListMap.firstWhere(
         (element) => element['bodyTypeID'] == value.toString())['bodyType']!;
 
     setState(() {
@@ -1388,7 +1193,7 @@ class _Step2FormState extends State<Step2Form> {
       trackingCompanyController.text = dataIndex;
     }
 
-    String trackingCompanyCode = _trackingCompanyListMap.firstWhere((element) =>
+    String trackingCompanyCode = trackingCompanyListMap.firstWhere((element) =>
         element['trackingCompanyID'] ==
         value.toString())['trackingCompanyCode']!;
 
@@ -1403,7 +1208,7 @@ class _Step2FormState extends State<Step2Form> {
       colorController.text = dataIndex;
     }
 
-    String colorCode = _colorCarListMap.firstWhere(
+    String colorCode = colorCarListMap.firstWhere(
         (element) => element['colorID'] == value.toString())['colorCode']!;
 
     setState(() {
@@ -1418,7 +1223,7 @@ class _Step2FormState extends State<Step2Form> {
       vehicleModelController.text = dataIndex;
     }
 
-    String modelName = (_modelListMap.firstWhere(
+    String modelName = (modelListMap.firstWhere(
         (element) => element['value'] == value.toString())['label']) as String;
 
     setState(() {

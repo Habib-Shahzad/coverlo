@@ -72,7 +72,6 @@ class WebView extends State<MyWebView> {
       webViewController!.goBack();
       return Future.value(false);
     } else {
-
       Navigator.popAndPushNamed(context, PaymentScreen.routeName);
 
       return Future.value(true);
@@ -107,6 +106,7 @@ class WebView extends State<MyWebView> {
                         webViewController = controller;
                       },
                       onLoadStart: (controller, url) {
+                        // print(widget.webUrl);
                         setState(() {
                           this.url = url.toString();
                           urlController.text = this.url;

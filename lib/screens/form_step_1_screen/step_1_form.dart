@@ -10,6 +10,7 @@ import 'package:coverlo/form_fields/drop_down_form_field.dart';
 import 'package:coverlo/form_fields/text_form_field.dart';
 import 'package:coverlo/globals.dart';
 import 'package:coverlo/global_formdata.dart';
+import 'package:coverlo/global_apidata.dart';
 import 'package:coverlo/helpers/dialogs/message_dialog.dart';
 import 'package:coverlo/helpers/get_city_api.dart';
 import 'package:coverlo/helpers/get_country_api.dart';
@@ -63,25 +64,12 @@ class _Step1FormState extends State<Step1Form> {
   bool countryLoaded = false;
   bool professionLoaded = false;
 
-  List<DropdownMenuItem<Object>> _cityList = [];
-  List<Map<String, String>> _cityListMap = [];
-
-  List<DropdownMenuItem<Object>> _countryList = [];
-  List<Map<String, String>> _countryListMap = [];
-
-  List<DropdownMenuItem<Object>> _genderList = [];
-  List<Map<String, String>> _genderListMap = [];
-
-  List<DropdownMenuItem<Object>> _professionList = [];
-  List<Map<String, String>> _professionListMap = [];
-
   late FocusNode cnicFocusNode;
-  
+
   bool cnicHasInputError = false;
   bool mobileHasInputError = false;
 
   late FocusNode mobileFocusNode;
-  
 
   bool cnicValidated() {
     String regexToCheck =
@@ -105,6 +93,7 @@ class _Step1FormState extends State<Step1Form> {
     StaticGlobal.blocs.addListener(checkBlocsQueue);
     setHardcodedData();
     getData();
+
 
     cnicFocusNode = FocusNode();
     cnicFocusNode.addListener(() {
@@ -146,8 +135,8 @@ class _Step1FormState extends State<Step1Form> {
       {'genderName': 'Transgender', 'genderID': '2'},
     ];
     setState(() {
-      _genderList = items;
-      _genderListMap = genders;
+      genderList = items;
+      genderListMap = genders;
     });
   }
 
@@ -187,13 +176,13 @@ class _Step1FormState extends State<Step1Form> {
               value: i, child: Text(cityModel.cityList[i].cityName)),
         );
         cities.add({
-          'cityCode': cityModel.cityList[i].cityCode, 
+          'cityCode': cityModel.cityList[i].cityCode,
           'cityID': i.toString()
         });
       }
       setState(() {
-        _cityList = items;
-        _cityListMap = cities;
+        cityList = items;
+        cityListMap = cities;
         cityLoaded = true;
       });
     } else if (response.status == Status.ERROR) {
@@ -224,8 +213,8 @@ class _Step1FormState extends State<Step1Form> {
         });
       }
       setState(() {
-        _countryList = items;
-        _countryListMap = countries;
+        countryList = items;
+        countryListMap = countries;
         countryLoaded = true;
       });
     } else if (response.status == Status.ERROR) {
@@ -256,8 +245,8 @@ class _Step1FormState extends State<Step1Form> {
         });
       }
       setState(() {
-        _professionList = items;
-        _professionListMap = professions;
+        professionList = items;
+        professionListMap = professions;
         professionLoaded = true;
       });
     } else if (response.status == Status.ERROR) {
@@ -279,7 +268,7 @@ class _Step1FormState extends State<Step1Form> {
     }
 
     String cityCode =
-        _cityListMap[int.parse(dataIndex ?? '0')]['cityCode'] ?? '';
+        cityListMap[int.parse(dataIndex ?? '0')]['cityCode'] ?? '';
 
     setState(() {
       cityValue = cityCode;
@@ -294,11 +283,10 @@ class _Step1FormState extends State<Step1Form> {
     }
 
     String countryName =
-        _countryListMap[int.parse(dataIndex ?? '0')]['countryName'] ?? '';
+        countryListMap[int.parse(dataIndex ?? '0')]['countryName'] ?? '';
 
     String countryCode =
-        _countryListMap[int.parse(dataIndex ?? '0')]['countryCode'] ?? '';
-
+        countryListMap[int.parse(dataIndex ?? '0')]['countryCode'] ?? '';
 
     setState(() {
       countryValue = countryName;
@@ -314,7 +302,7 @@ class _Step1FormState extends State<Step1Form> {
     }
 
     String genderName =
-        _genderListMap[int.parse(dataIndex ?? '0')]['genderName'] ?? '';
+        genderListMap[int.parse(dataIndex ?? '0')]['genderName'] ?? '';
 
     setState(() {
       genderValue = genderName;
@@ -329,7 +317,7 @@ class _Step1FormState extends State<Step1Form> {
     }
 
     String professionName =
-        _professionListMap[int.parse(dataIndex ?? '0')]['professionName'] ?? '';
+        professionListMap[int.parse(dataIndex ?? '0')]['professionName'] ?? '';
 
     setState(() {
       professionValue = professionName;
@@ -400,8 +388,8 @@ class _Step1FormState extends State<Step1Form> {
             _cityKey,
             'City',
             _cityValue,
-            _cityList,
-            _cityListMap,
+            cityList,
+            cityListMap,
             'cityName',
             false,
             setCityData,
@@ -417,8 +405,8 @@ class _Step1FormState extends State<Step1Form> {
             _nationalityKey,
             'Nationality',
             _nationalityValue,
-            _countryList,
-            _countryListMap,
+            countryList,
+            countryListMap,
             'countryName',
             false,
             setCountryData,
@@ -472,8 +460,8 @@ class _Step1FormState extends State<Step1Form> {
             _genderKey,
             'Gender',
             _genderValue,
-            _genderList,
-            _genderListMap,
+            genderList,
+            genderListMap,
             'genderName',
             false,
             setGenderData,
@@ -489,8 +477,8 @@ class _Step1FormState extends State<Step1Form> {
               _professionKey,
               'Profession',
               _professionValue,
-              _professionList,
-              _professionListMap,
+              professionList,
+              professionListMap,
               'professionName',
               false,
               setProfessionData,

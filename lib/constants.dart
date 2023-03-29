@@ -79,6 +79,9 @@ const GET_TRACKING_COMPANIES_API = 'CoverLo_GetTrackingCompanies';
 const GET_YEAR_API = 'CoverLo_GetYears';
 const GET_COLOR_API = 'CoverLo_GetColors';
 
+const GENERATE_INSURANCE_API = 'CoverLo_GenrateInsurance';
+const UPLOAD_PICS_API = 'CoverLo_UploadPics';
+
 enum VehicleType {
   Car,
   Motorcycle,
@@ -88,29 +91,3 @@ String privateCar = 'PRIVATE CAR (COMPREHENSIVE COVER)';
 String thirdParty = 'THIRD PARTY';
 String motorCycle = 'MOTOR CYCLE (COMPREHENSIVE COVER)';
 
-
-
-
-  // String bytesToBase64(List<int>? imageBytes) {
-  //   if (imageBytes != null) {
-  //     var image = img.decodeImage(imageBytes);
-
-  //     if (image != null) {
-  //       if (image.height < 300 && image.width < 300) {
-  //         return Des.encryptImage(Env.serverKey, imageBytes);
-  //       }
-  //       var scalingFactor = 0.05;
-
-  //       var resizedImage = img.copyResize(
-  //         image,
-  //         width: (scalingFactor * image.width).toInt(),
-  //         height: (scalingFactor * image.height).toInt(),
-  //       );
-  //       var resizedBytes = img.encodeJpg(resizedImage);
-  //       var base64Img = base64Encode(resizedBytes);
-
-  //       return Des.encrypt(Env.serverKey, base64Img);
-  //     }
-  //   }
-  //   return "";
-  // }

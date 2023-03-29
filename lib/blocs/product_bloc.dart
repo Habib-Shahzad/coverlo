@@ -47,6 +47,7 @@ class ProductBloc extends Bloc with ChangeNotifier {
   _fetchData(String uniqueID, String deviceUniqueIdentifier) async {
     try {
       getSink.add(Response.loading('Loading data...'));
+
       ProductModel data =
           await _productRepository.fetchData(uniqueID, deviceUniqueIdentifier);
       getSink.add(Response.completed(data));

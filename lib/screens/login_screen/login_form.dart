@@ -2,6 +2,7 @@ import 'package:coverlo/blocs/bloc.dart';
 import 'package:coverlo/blocs/user_bloc.dart';
 import 'package:coverlo/components/custom_button.dart';
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/env/env.dart';
 import 'package:coverlo/globals.dart';
 import 'package:coverlo/helpers/dialogs/message_dialog.dart';
 import 'package:coverlo/networking/response.dart';
