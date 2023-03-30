@@ -1,58 +1,25 @@
-import 'package:coverlo/des/des.dart';
-import 'package:coverlo/env/env.dart';
+import 'package:xml/xml.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 
-
-class TrackingCompanyModel {
-  List<TrackingCompanyResponse> trackingCompanyList = [];
-
-  TrackingCompanyModel({
-    required this.trackingCompanyList,
-  });
-
-  factory TrackingCompanyModel.fromJson(Map<String, dynamic> json) {
-    if (json['responseCode'] == 200) {
-      return TrackingCompanyModel(
-        trackingCompanyList: (json['_TrackingCompany'] as List)
-            .map((trackingCompany) =>
-                TrackingCompanyResponse.fromJson(trackingCompany))
-            .toList(),
-      );
-    }
-    return TrackingCompanyModel(
-      trackingCompanyList: [],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'trackingCompanyList':
-            List<dynamic>.from(trackingCompanyList.map((x) => x.toJson())),
-      };
-}
-
-class TrackingCompanyResponse {
+class TrackingCompany {
   String trackingCompanyName;
   String trackingCompanyCode;
 
-  TrackingCompanyResponse({
-    required this.trackingCompanyName,
-    required this.trackingCompanyCode,
-  });
+  TrackingCompany(
+      {required this.trackingCompanyName, required this.trackingCompanyCode});
 
-  factory TrackingCompanyResponse.fromJson(Map<String, dynamic> json) {
-    Map<String, String> decryptedData =
-        Des.decryptMap(Env.appKey, {
-      'trackingCompanyName': json['TCName'],
-      'trackingCompanyCode': json['TCCode'],
-    });
-
-    return TrackingCompanyResponse(
-      trackingCompanyName: decryptedData['trackingCompanyName'] ?? '',
-      trackingCompanyCode: decryptedData['trackingCompanyCode'] ?? '',
-    );
+  factory TrackingCompany.fromJson(Map<String, dynamic> json) {
+    return TrackingCompany(
+        trackingCompanyName: decryptItem(json['TCName']),
+        trackingCompanyCode: decryptItem(json['TCCode']));
   }
 
-  Map<String, dynamic> toJson() => {
-        'trackingCompanyName': trackingCompanyName,
-        'trackingCompanyCode': trackingCompanyCode,
-      };
+  factory TrackingCompany.fromXml(XmlElement xml) {
+    final trackingCompanyName = xml.findElements('TCName').single.text;
+    final trackingCompanyCode = xml.findElements('TCCode').single.text;
+
+    return TrackingCompany(
+        trackingCompanyName: decryptItem(trackingCompanyName),
+        trackingCompanyCode: decryptItem(trackingCompanyCode));
+  }
 }

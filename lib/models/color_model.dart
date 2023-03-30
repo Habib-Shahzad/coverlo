@@ -1,55 +1,26 @@
-import 'package:coverlo/des/des.dart';
-import 'package:coverlo/env/env.dart';
+import 'package:xml/xml.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 
-class ColorModel {
-  List<ColorResponse> colorList = [];
+class Color {
+  final String colorName;
+  final String colorCode;
 
-  ColorModel({
-    required this.colorList,
-  });
+  Color({required this.colorName, required this.colorCode});
 
-  factory ColorModel.fromJson(Map<String, dynamic> json) {
+  factory Color.fromJson(Map<String, dynamic> json) {
 
-    if (json['responseCode'] == 200) {
-      return ColorModel(
-        colorList: (json['_ColorsN'] as List)
-            .map((country) => ColorResponse.fromJson(country))
-            .toList(),
-      );
-    }
-    return ColorModel(
-      colorList: [],
-    );
+    
+    return Color(
+        colorName: decryptItem(json['colorName']),
+        colorCode: decryptItem(json['colorCode']));
   }
 
-  Map<String, dynamic> toJson() => {
-        'colorList': List<dynamic>.from(colorList.map((x) => x.toJson())),
-      };
-}
+  factory Color.fromXml(XmlElement xml) {
+    final colorName = xml.findElements('colorName').single.text;
+    final colorCode = xml.findElements('colorCode').single.text;
 
-class ColorResponse {
-  String colorName;
-  String colorCode;
-
-  ColorResponse({
-    required this.colorName,
-    required this.colorCode,
-  });
-
-  factory ColorResponse.fromJson(Map<String, dynamic> json) {
-    Map<String, String> decryptedData = Des.decryptMap(Env.appKey, {
-      'colorName': json['colorName'],
-      'colorCode': json['colorCode'],
-    });
-
-    return ColorResponse(
-      colorName: decryptedData['colorName'] ?? '',
-      colorCode: decryptedData['colorCode'] ?? '',
-    );
+    return Color(
+        colorName: decryptItem(colorName),
+        colorCode: decryptItem(colorCode));
   }
-
-  Map<String, dynamic> toJson() => {
-        'colorName': colorName,
-        'colorCode': colorCode,
-      };
 }

@@ -1,21 +1,35 @@
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:coverlo/models/product_model.dart';
 import 'package:coverlo/networking/api_provider.dart';
 import 'package:coverlo/networking/base_api.dart';
+import 'package:flutter/material.dart';
 
 class ProductRepository {
   final BaseAPI _provider = ApiProvider();
 
-  Future<ProductModel> fetchData(
-      String uniqueID, String deviceUniqueIdentifier) async {
-    final response = await _provider.post(GET_PRODUCT_API,
-        _bodyInterpolateFetch(uniqueID, deviceUniqueIdentifier));
-    return ProductModel.fromJson(response);
+  Future<List<Product>> getProducts() async {
+    final requestBody = await getXML(GET_PRODUCT_API);
+    final responseJson = await _provider.post(GET_PRODUCT_API, requestBody);
+
+    final products = (responseJson['_Product'] as List)
+        .map((product) => Product.fromJson(product))
+        .toList();
+
+    return products;
   }
 
-  String _bodyInterpolateFetch(String uniqueID, String deviceUniqueIdentifier) {
-    String body =
-        '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><CoverLo_GetProducts xmlns="http://tempuri.org/"><uniqueID>$uniqueID</uniqueID><device_unique_identifier>$deviceUniqueIdentifier</device_unique_identifier></CoverLo_GetProducts></soap:Body></soap:Envelope>';
-    return body;
+  toDropdown(List<Product> products) {
+    List<DropdownMenuItem<Object>> items = [];
+
+    for (var i = 0; i < products.length; i++) {
+      Product product = products[i];
+
+      items.add(
+        DropdownMenuItem(value: i, child: Text(product.productName)),
+      );
+    }
+
+    return items;
   }
 }

@@ -1,57 +1,24 @@
-import 'package:coverlo/des/des.dart';
-import 'package:coverlo/env/env.dart';
+import 'package:xml/xml.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 
-
-class MakeModel {
-  List<MakeResponse> makeList = [];
-
-  MakeModel({
-    required this.makeList,
-  });
-
-  factory MakeModel.fromJson(Map<String, dynamic> json) {
-    if (json['responseCode'] == 200) {
-      return MakeModel(
-        makeList: (json['_Make'] as List)
-            .map((make) => MakeResponse.fromJson(make))
-            .toList(),
-      );
-      
-    }
-    return MakeModel(
-      makeList: [],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'makeList': List<dynamic>.from(makeList.map((x) => x.toJson())),
-      };
-}
-
-class MakeResponse {
+class Make {
   String makeName;
   String makeCode;
 
-  MakeResponse({
-    required this.makeName,
-    required this.makeCode,
-  });
+  Make({required this.makeName, required this.makeCode});
 
-  factory MakeResponse.fromJson(Map<String, dynamic> json) {
-    Map<String, String> decryptedData =
-        Des.decryptMap(Env.appKey, {
-      'makeName': json['makeName'],
-      'makeCode': json['makeCode'],
-    });
-
-    return MakeResponse(
-      makeName: decryptedData['makeName'] ?? '',
-      makeCode: decryptedData['makeCode'] ?? '',
-    );
+  factory Make.fromJson(Map<String, dynamic> json) {
+    return Make(
+        makeName: decryptItem(json['makeName']),
+        makeCode: decryptItem(json['makeCode']));
   }
 
-  Map<String, dynamic> toJson() => {
-        'makeName': makeName,
-        'makeCode': makeCode,
-      };
+  factory Make.fromXml(XmlElement xml) {
+    final makeName = xml.findElements('makeName').single.text;
+    final makeCode = xml.findElements('makeCode').single.text;
+
+    return Make(
+        makeName: decryptItem(makeName),
+        makeCode: decryptItem(makeCode));
+  }
 }

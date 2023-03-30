@@ -18,12 +18,14 @@ class ApiProvider extends BaseAPI {
               headers: {
                 'Content-Type': 'text/xml',
               },
-              body: body)
-          .timeout(const Duration(seconds: 10), onTimeout: () {
-        throw TimeoutException(
-            'Connection timed out. Slow internet connection.');
-      });
+              body: body);
+      //     .timeout(const Duration(seconds: 10), onTimeout: () {
+      //   throw TimeoutException(
+      //       'Connection timed out. Slow internet connection.');
+      // });
+
       responseJson = _response(response);
+      
     } on SocketException {
       throw FetchDataException('No Internet connection');
     } on TimeoutException {
@@ -32,6 +34,8 @@ class ApiProvider extends BaseAPI {
     } on Error {
       throw FetchDataException('Something went wrong');
     }
+
+    
     return responseJson;
   }
 
@@ -39,6 +43,7 @@ class ApiProvider extends BaseAPI {
     switch (response.statusCode) {
       case 200:
         final document = XmlDocument.parse(response.body);
+
         var responseJson = json.decode(document
             .getElement('soap:Envelope')
             ?.firstElementChild
@@ -57,11 +62,7 @@ class ApiProvider extends BaseAPI {
         throw UnauthorisedException(response.body.toString());
       case 500:
         final document = XmlDocument.parse(response.body);
-       
         return document.toString();
-
-        throw FetchDataException(
-            'Internal Server Error : ${response.statusCode}');
       default:
         throw FetchDataException(
             'Error occured while Communication with Server with StatusCode : ${response.statusCode}');

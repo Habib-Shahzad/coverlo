@@ -8,10 +8,9 @@ dropDownFormFieldMethod(
   String hintText,
   Object? val,
   List<DropdownMenuItem<Object>> items,
-  List<Map<String, String>> itemMap,
-  String name,
+  List<Object>? itemMap,
   bool isReadOnly,
-  Function(Object?)? callBack, {
+  Function(Object?, List<dynamic>?)? callBack, {
   bool nullValidation = false,
   bool controlled = false,
   int? dropDownValue,
@@ -34,7 +33,7 @@ dropDownFormFieldMethod(
         ? null
         : (value) {
             if (callBack != null) {
-              callBack(value);
+              callBack(value, itemMap);
             }
           },
     iconSize: 5,

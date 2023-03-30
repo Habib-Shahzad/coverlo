@@ -50,21 +50,6 @@ const onBoardingImage = 'assets/images/onboarding_image.png';
 const loginImage = 'assets/images/login_image.png';
 const logoImage = 'assets/logos/logo.png';
 
-const USER_BLOC = 'user';
-const CITY_BLOC = 'city';
-const COUNTRY_BLOC = 'country';
-const COLOR_BLOC = 'color';
-const MAKE_BLOC = 'make';
-const MODEL_BLOC = 'model';
-const BODY_TYPE_BLOC = 'body_type';
-const PRODUCT_BLOC = 'product';
-const PROFESSION_BLOC = 'profession';
-const TRACKING_COMPANY_BLOC = 'tracking_company';
-const YEAR_BLOC = 'year';
-
-const WAITING = 'Waiting';
-const RUNNING = 'Running';
-const COMPLETED = 'Completed';
 
 const DEVICE_REGISTER_API = 'Device_Registration';
 const LOGIN_API = 'CoverLo_Login';
@@ -72,7 +57,6 @@ const GET_CITIES_API = 'CoverLo_GetCities';
 const GET_COUNTRIES_API = 'CoverLo_GetCountries';
 const GET_MAKE_API = 'CoverLo_GetMakeLists';
 const GET_MODEL_API = 'CoverLo_GetModelLists';
-const GET_BODY_TYPE_API = 'CoverLo_GetModelLists';
 const GET_PRODUCT_API = 'CoverLo_GetProducts';
 const GET_PROFESSIONS_API = 'CoverLo_GetProfessions';
 const GET_TRACKING_COMPANIES_API = 'CoverLo_GetTrackingCompanies';
@@ -90,4 +74,3 @@ enum VehicleType {
 String privateCar = 'PRIVATE CAR (COMPREHENSIVE COVER)';
 String thirdParty = 'THIRD PARTY';
 String motorCycle = 'MOTOR CYCLE (COMPREHENSIVE COVER)';
-

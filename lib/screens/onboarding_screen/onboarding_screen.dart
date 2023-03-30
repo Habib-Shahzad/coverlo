@@ -1,18 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:coverlo/blocs/bloc.dart';
-import 'package:coverlo/blocs/user_bloc.dart';
+import 'package:coverlo/cubits/country_cubit.dart';
+import 'package:coverlo/cubits/profession_cubit.dart';
+import 'package:coverlo/respository/user_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/cubits/city_cubit.dart';
 import 'package:coverlo/globals.dart';
-import 'package:coverlo/helpers/dialogs/message_dialog.dart';
 import 'package:coverlo/models/user_model.dart';
-import 'package:coverlo/networking/response.dart';
-import 'package:coverlo/pairbloc.dart';
 import 'package:coverlo/screens/onboarding_screen/body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 
 class OnboardingScreen extends StatefulWidget {
   static const String routeName = '/onboarding_screen';
@@ -23,7 +23,7 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  late Bloc _userBloc;
+  final UserRepository userRepository = UserRepository();
 
   bool loggedIn = false;
   bool loading = true;
@@ -31,69 +31,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   void initState() {
     super.initState();
-    _userBloc = UserBloc();
-    StaticGlobal.blocs.addListener(checkBlocsQueue);
-    _userBloc.getStream.listen(deviceRegisterListener);
     initPlatformState();
-    if (StaticGlobal.blocs.value.isNotEmpty) {
-      PairBloc pairBloc = StaticGlobal.blocs.value.first;
-      if (pairBloc.status == WAITING) {
-        pairBloc.status = RUNNING;
-        StaticGlobal.blocs.value.removeAt(0);
-        StaticGlobal.blocs.value.insert(0, pairBloc);
-        pairBloc.func();
-      }
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await context.read<CitiesCubit>().getData();
+      await context.read<ProfessionsCubit>().getData();
+      await context.read<CountriesCubit>().getData();
+    });
   }
 
   @override
   void dispose() {
-    _userBloc.dispose();
-    StaticGlobal.blocs.removeListener(checkBlocsQueue);
     super.dispose();
-  }
-
-  checkBlocsQueue() {
-    if (StaticGlobal.blocs.value.isNotEmpty) {
-      PairBloc pairBloc = StaticGlobal.blocs.value.first;
-      if (pairBloc.status == WAITING) {
-        pairBloc.status = RUNNING;
-        StaticGlobal.blocs.value.removeAt(0);
-        StaticGlobal.blocs.value.insert(0, pairBloc);
-        pairBloc.func();
-      } else if (pairBloc.status == COMPLETED) {
-        StaticGlobal.blocs.value.removeAt(0);
-      }
-    }
-  }
-
-  deviceRegisterListener(Response response) async {
-    if (response.status == Status.COMPLETED) {
-      UserMessageResponse userMessageResponse =
-          response.data as UserMessageResponse;
-      if (userMessageResponse.code == '200') {
-        setState(() {
-          loading = false;
-        });
-      } else {
-        AlertDialog alert =
-            messageDialog(context, 'Error', userMessageResponse.message);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return alert;
-          },
-        );
-      }
-    } else if (response.status == Status.ERROR) {
-      AlertDialog alert = messageDialog(context, 'Error', response.message);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
   }
 
   Future<void> initPlatformState() async {
@@ -102,21 +50,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       String? deviceUniqueIdentifier =
           prefs.getString('deviceUniqueIdentifier');
       String? uniqueID = prefs.getString('uniqueID');
+
       if (deviceUniqueIdentifier == null && uniqueID == null) {
         if (Platform.isIOS) {
-          _userBloc.connect({
-            'deviceUniqueIdentifier': generateUUID(),
-          }, UserBloc.DEVICE_REGISTER);
+          userRepository.registerDevice(generateUUID());
         } else if (Platform.isAndroid) {
-          _userBloc.connect({
-            'deviceUniqueIdentifier': generateUUID(),
-          }, UserBloc.DEVICE_REGISTER);
+          userRepository.registerDevice(generateUUID());
         }
       } else {
         final jsonString = prefs.getString('user');
         if (jsonString != null) {
           StaticGlobal.user =
               UserResponse.fromJsonCache(jsonDecode(jsonString));
+
           setState(() {
             loggedIn = true;
             loading = false;
@@ -128,38 +74,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         }
       }
     } on PlatformException {
-      _userBloc.connect({
-        'deviceUniqueIdentifier': generateUUID(),
-      }, UserBloc.DEVICE_REGISTER);
+      userRepository.registerDevice(generateUUID());
     }
     if (!mounted) return;
-  }
-
-  String generateUUID() {
-    var now = DateTime.now();
-    String year = now.year.toString();
-    String month = now.month.toString();
-    if (month.length == 1) {
-      month = '0$month';
-    }
-    String day = now.day.toString();
-    if (day.length == 1) {
-      day = '0$day';
-    }
-    String hour = now.hour.toString();
-    if (hour.length == 1) {
-      hour = '0$hour';
-    }
-    String minute = now.minute.toString();
-    if (minute.length == 1) {
-      minute = '0$minute';
-    }
-    String second = now.second.toString();
-    if (second.length == 1) {
-      second = '0$second';
-    }
-    String uuidN = "$year$month${day}0$hour$minute$second";
-    return uuidN;
   }
 
   @override

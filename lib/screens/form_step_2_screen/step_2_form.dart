@@ -1,41 +1,29 @@
-import 'package:coverlo/blocs/bloc.dart';
-import 'package:coverlo/blocs/bloc_queue.dart';
-import 'package:coverlo/blocs/body_type_bloc.dart';
-import 'package:coverlo/blocs/make_bloc.dart';
-import 'package:coverlo/blocs/model_bloc.dart';
-import 'package:coverlo/blocs/product_bloc.dart';
-import 'package:coverlo/blocs/tracking_company_bloc.dart';
 import 'package:coverlo/components/custom_button.dart';
 import 'package:coverlo/components/custom_text.dart';
 import 'package:coverlo/components/form_sub_heading.dart';
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/cubits/colors_cubit.dart';
+import 'package:coverlo/cubits/make_cubit.dart';
+import 'package:coverlo/cubits/model_cubit.dart';
+import 'package:coverlo/cubits/product_cubit.dart';
+import 'package:coverlo/cubits/tracking_company_cubit.dart';
 import 'package:coverlo/form_fields/date_time_form_field.dart';
 import 'package:coverlo/form_fields/drop_down_form_field.dart';
 import 'package:coverlo/form_fields/radio_method.dart';
 import 'package:coverlo/form_fields/slider_method.dart';
 import 'package:coverlo/form_fields/text_form_field.dart';
-import 'package:coverlo/globals.dart';
 import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/global_apidata.dart';
 import 'package:coverlo/helpers/dialogs/message_dialog.dart';
-import 'package:coverlo/helpers/get_body_type_api.dart';
-import 'package:coverlo/helpers/get_make_api.dart';
-import 'package:coverlo/helpers/get_model_api.dart';
-import 'package:coverlo/helpers/get_product_api.dart';
-import 'package:coverlo/helpers/get_tracking_company_api.dart';
-import 'package:coverlo/models/body_type_model.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:coverlo/models/make_model.dart';
 import 'package:coverlo/models/model_model.dart';
 import 'package:coverlo/models/product_model.dart';
 import 'package:coverlo/models/tracking_company_model.dart';
-import 'package:coverlo/networking/response.dart';
-import 'package:coverlo/pairbloc.dart';
 import 'package:coverlo/screens/form_step_3_screen/form_step_3_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:coverlo/blocs/color_bloc.dart';
-import 'package:coverlo/helpers/get_color_api.dart';
 import 'package:coverlo/models/color_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart' as flutter_bloc;
 
 class Step2Form extends StatefulWidget {
   const Step2Form({
@@ -73,112 +61,17 @@ class _Step2FormState extends State<Step2Form> {
   final GlobalKey<FormFieldState> _trackingCompanyKey =
       GlobalKey<FormFieldState>();
 
-  late Bloc _productBloc;
-
-  late Bloc _makeCarBloc;
-  late Bloc _makeBikeBloc;
-
-  // model is variant
-  late Bloc _modelCarBloc;
-  late Bloc _modelBikeBloc;
-
-  // year is model
-  late Bloc _bodyTypeBloc;
-  late Bloc _trackingCompanyBloc;
-  late Bloc _colorCarBloc;
-  late Bloc _colorBikeBloc;
-
   bool _variantReadOnly = false;
   bool _modelReadOnly = false;
 
   @override
   void initState() {
     super.initState();
-
-    _productBloc = ProductBloc();
-
-    _makeCarBloc = MakeBloc();
-    _makeBikeBloc = MakeBloc();
-
-    _modelCarBloc = ModelBloc();
-    _modelBikeBloc = ModelBloc();
-
-    _bodyTypeBloc = BodyTypeBloc();
-
-    _colorCarBloc = ColorBloc();
-    _colorBikeBloc = ColorBloc();
-
-    _trackingCompanyBloc = TrackingCompanyBloc();
-    StaticGlobal.blocs.addListener(checkBlocsQueue);
-    getData();
   }
 
   @override
   void dispose() {
-    StaticGlobal.blocs.removeListener(checkBlocsQueue);
-    _productBloc.dispose();
-
-    _makeCarBloc.dispose();
-    _makeBikeBloc.dispose();
-
-    _modelCarBloc.dispose();
-    _modelBikeBloc.dispose();
-
-    _colorCarBloc.dispose();
-    _colorBikeBloc.dispose();
-    _trackingCompanyBloc.dispose();
     super.dispose();
-  }
-
-  getData() async {
-    final prefs = await SharedPreferences.getInstance();
-    String deviceUniqueIdentifier =
-        prefs.getString('deviceUniqueIdentifier') ?? '';
-    String uniqueID = prefs.getString('uniqueID') ?? '';
-
-    _productBloc.getStream.listen(productListener);
-
-    _makeCarBloc.getStream.listen(makeCarListener);
-    _makeBikeBloc.getStream.listen(makeBikeListener);
-
-    _modelCarBloc.getStream.listen(modelCarListener);
-    _modelBikeBloc.getStream.listen(modelBikeListener);
-
-    _bodyTypeBloc.getStream.listen(bodyTypeListener);
-    _trackingCompanyBloc.getStream.listen(trackingCompanyListener);
-
-    _colorCarBloc.getStream.listen(colorCarListener);
-    _colorBikeBloc.getStream.listen(colorBikeListener);
-
-    getProductApi(_productBloc, uniqueID, deviceUniqueIdentifier);
-
-    getColorApi(
-        _colorCarBloc, uniqueID, deviceUniqueIdentifier, VehicleType.Car);
-    getColorApi(_colorBikeBloc, uniqueID, deviceUniqueIdentifier,
-        VehicleType.Motorcycle);
-
-    getMakeApi(_makeCarBloc, uniqueID, deviceUniqueIdentifier, VehicleType.Car);
-    getMakeApi(_makeBikeBloc, uniqueID, deviceUniqueIdentifier,
-        VehicleType.Motorcycle);
-
-    getModelApi(
-        _modelCarBloc, uniqueID, deviceUniqueIdentifier, VehicleType.Car);
-    getModelApi(_modelBikeBloc, uniqueID, deviceUniqueIdentifier,
-        VehicleType.Motorcycle);
-
-    getBodyTypeApi(_bodyTypeBloc, uniqueID, deviceUniqueIdentifier);
-    getTrackingCompanyApi(
-        _trackingCompanyBloc, uniqueID, deviceUniqueIdentifier);
-
-    if (StaticGlobal.blocs.value.isNotEmpty) {
-      PairBloc pairBloc = StaticGlobal.blocs.value.first;
-      if (pairBloc.status == WAITING) {
-        pairBloc.status = RUNNING;
-        StaticGlobal.blocs.value.removeAt(0);
-        StaticGlobal.blocs.value.insert(0, pairBloc);
-        pairBloc.func();
-      }
-    }
   }
 
   @override
@@ -188,20 +81,23 @@ class _Step2FormState extends State<Step2Form> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          dropDownFormFieldMethod(
-            context,
-            _productKey,
-            'Product',
-            productValue,
-            productList,
-            productListMap,
-            'productName',
-            false,
-            setProductData,
-            controlled: true,
-            dropDownValue: productNameController.text != ""
-                ? int.parse(productNameController.text)
-                : null,
+          flutter_bloc.BlocBuilder<ProductsCubit, ProductsState>(
+            builder: (context, state) {
+              return dropDownFormFieldMethod(
+                context,
+                _productKey,
+                'Product',
+                productValue,
+                state is ProductsLoaded ? state.dropdownItems : [],
+                state is ProductsLoaded ? state.products : [],
+                false,
+                setProductData,
+                controlled: true,
+                dropDownValue: productNameController.text != ""
+                    ? int.parse(productNameController.text)
+                    : null,
+              );
+            },
           ),
           const SizedBox(height: kMinSpacing),
           const FormSubHeading(text: 'Applied For Registration'),
@@ -255,36 +151,60 @@ class _Step2FormState extends State<Step2Form> {
             TextInputType.text,
           ),
           const SizedBox(height: kMinSpacing),
-          dropDownFormFieldMethod(
-            context,
-            _vehicleMakeKey,
-            'Vehicle Make',
-            vehicleMakeValue,
-            makeList,
-            makeListMap,
-            'makeName',
-            false,
-            setMakeData,
-            controlled: true,
-            dropDownValue: vehicleMakeController.text != ""
-                ? int.parse(vehicleMakeController.text)
-                : null,
+          flutter_bloc.BlocBuilder<MakesCubit, MakesState>(
+            builder: (context, state) {
+              return dropDownFormFieldMethod(
+                context,
+                _vehicleMakeKey,
+                'Vehicle Make',
+                vehicleMakeValue,
+                state is MakesLoaded ? state.dropdownItems : [],
+                state is MakesLoaded ? state.makes : [],
+                false,
+                setMakeData,
+                controlled: true,
+                dropDownValue: vehicleMakeController.text != ""
+                    ? int.parse(vehicleMakeController.text)
+                    : null,
+              );
+            },
           ),
           const SizedBox(height: kMinSpacing),
-          dropDownFormFieldMethod(
-            context,
-            _vehicleVariantKey,
-            'Vehicle Variant',
-            vehicleVariantValue,
-            variantList,
-            variantListMap,
-            'variantName',
-            _variantReadOnly,
-            setVariantData,
-            controlled: true,
-            dropDownValue: vehicleVariantController.text != ""
-                ? int.parse(vehicleVariantController.text)
-                : null,
+          flutter_bloc.BlocBuilder<ModelsCubit, ModelsState>(
+            builder: (context, state) {
+              List<DropdownMenuItem<Object>> dropdownItems = [];
+              List<Model> items = [];
+
+              if (state is ModelsLoaded) {
+                int index = 0;
+                for (Model model in state.models) {
+                  if (model.makeName == vehicleMakeValue) {
+                    items.add(model);
+                    dropdownItems.add(
+                      DropdownMenuItem(
+                        value: index,
+                        child: Text(model.modelName),
+                      ),
+                    );
+                    index++;
+                  }
+                }
+              }
+              return dropDownFormFieldMethod(
+                context,
+                _vehicleVariantKey,
+                'Vehicle Variant',
+                vehicleVariantValue,
+                dropdownItems,
+                items,
+                _variantReadOnly,
+                setVariantData,
+                controlled: true,
+                dropDownValue: vehicleVariantController.text != ""
+                    ? int.parse(vehicleVariantController.text)
+                    : null,
+              );
+            },
           ),
           const SizedBox(height: kMinSpacing),
           dropDownFormFieldMethod(
@@ -294,7 +214,6 @@ class _Step2FormState extends State<Step2Form> {
             vehicleModelValue,
             modelList,
             modelListMap,
-            'modelName',
             _modelReadOnly,
             setModelData,
             controlled: true,
@@ -303,20 +222,23 @@ class _Step2FormState extends State<Step2Form> {
                 : null,
           ),
           const SizedBox(height: kMinSpacing),
-          dropDownFormFieldMethod(
-            context,
-            _colorKey,
-            'Color',
-            colorValue,
-            colorList,
-            colorListMap,
-            'colorName',
-            false,
-            setColorData,
-            controlled: true,
-            dropDownValue: colorController.text != ""
-                ? int.parse(colorController.text)
-                : null,
+          flutter_bloc.BlocBuilder<ColorsCubit, ColorsState>(
+            builder: (context, state) {
+              return dropDownFormFieldMethod(
+                context,
+                _colorKey,
+                'Color',
+                colorValue,
+                state is ColorsLoaded ? state.dropdownItems : [],
+                state is ColorsLoaded ? state.colors : [],
+                false,
+                setColorData,
+                controlled: true,
+                dropDownValue: colorController.text != ""
+                    ? int.parse(colorController.text)
+                    : null,
+              );
+            },
           ),
           const SizedBox(height: kMinSpacing),
           textFormFieldMethod(
@@ -396,20 +318,28 @@ class _Step2FormState extends State<Step2Form> {
           productValue == thirdParty
               ? const SizedBox()
               : showTrackers
-                  ? dropDownFormFieldMethod(
-                      context,
-                      _trackingCompanyKey,
-                      'Tracking Company',
-                      trackingCompanyValue,
-                      trackingCompanyList,
-                      trackingCompanyListMap,
-                      'trackingCompanyName',
-                      false,
-                      setTrackingCompanyData,
-                      controlled: true,
-                      dropDownValue: trackingCompanyController.text != ""
-                          ? int.parse(trackingCompanyController.text)
-                          : null,
+                  ? flutter_bloc.BlocBuilder<TrackingCompaniesCubit,
+                      TrackingCompaniesState>(
+                      builder: (context, state) {
+                        return dropDownFormFieldMethod(
+                          context,
+                          _trackingCompanyKey,
+                          'Tracking Company',
+                          trackingCompanyValue,
+                          state is TrackingCompaniesLoaded
+                              ? state.dropdownItems
+                              : [],
+                          state is TrackingCompaniesLoaded
+                              ? state.companies
+                              : [],
+                          false,
+                          setTrackingCompanyData,
+                          controlled: true,
+                          dropDownValue: trackingCompanyController.text != ""
+                              ? int.parse(trackingCompanyController.text)
+                              : null,
+                        );
+                      },
                     )
                   : const SizedBox(),
           productValue == thirdParty
@@ -712,287 +642,22 @@ class _Step2FormState extends State<Step2Form> {
     );
   }
 
-  productListener(Response response) {
-    if (response.status == Status.COMPLETED) {
-      List<DropdownMenuItem<Object>> items = [];
-      List<Map<String, String>> products = [];
-      ProductModel productModel = response.data as ProductModel;
-      for (var i = 0; i < productModel.productList.length; i++) {
-        items.add(
-          DropdownMenuItem(
-              value: i,
-              child: Text(
-                productModel.productList[i].productName,
-                overflow: TextOverflow.ellipsis,
-              )),
-        );
-        products.add({
-          'productCode': productModel.productList[i].productCode,
-          'productName': productModel.productList[i].productName,
-          'productID': i.toString()
-        });
-      }
 
-      setState(() {
-        productList = items;
-        productListMap = products;
-      });
-    } else if (response.status == Status.ERROR) {
-      AlertDialog alert = messageDialog(context, 'Error', response.message);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-  }
-
-  makeCarListener(Response response) {
-    if (response.status == Status.COMPLETED) {
-      List<DropdownMenuItem<Object>> items = [];
-      List<Map<String, String>> makes = [];
-      MakeModel makeModel = response.data as MakeModel;
-
-      List<MakeResponse> makeList = makeModel.makeList;
-
-      for (var i = 0; i < makeList.length; i++) {
-        items.add(
-          DropdownMenuItem(
-              value: i, child: Text(makeModel.makeList[i].makeName)),
-        );
-        makes.add({
-          'makeName': makeModel.makeList[i].makeName,
-          'makeCode': makeModel.makeList[i].makeCode,
-          'makeID': i.toString()
-        });
-      }
-
-      setState(() {
-        makeCarList = items;
-        makeCarListMap = makes;
-      });
-    } else if (response.status == Status.ERROR) {
-      AlertDialog alert = messageDialog(context, 'Error', response.message);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-  }
-
-  makeBikeListener(Response response) {
-    if (response.status == Status.COMPLETED) {
-      List<DropdownMenuItem<Object>> items = [];
-      List<Map<String, String>> makes = [];
-      MakeModel makeModel = response.data as MakeModel;
-
-      List<MakeResponse> makeList = makeModel.makeList;
-
-      // (**DEBUG**) REMOVE THIS LINE TO SHOW ALL COLORS
-      // makeList.removeRange(0, 3);
-
-      for (var i = 0; i < makeList.length; i++) {
-        items.add(
-          DropdownMenuItem(
-              value: i, child: Text(makeModel.makeList[i].makeName)),
-        );
-        makes.add({
-          'makeName': makeModel.makeList[i].makeName,
-          'makeCode': makeModel.makeList[i].makeCode,
-          'makeID': i.toString()
-        });
-      }
-      setState(() {
-        makeBikeList = items;
-        makeBikeListMap = makes;
-      });
-    } else if (response.status == Status.ERROR) {
-      AlertDialog alert = messageDialog(context, 'Error', response.message);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-  }
-
-  modelCarListener(Response response) {
-    if (response.status == Status.COMPLETED) {
-      ModelModel modelModel = response.data as ModelModel;
-
-      setState(() {
-        variantsCar = modelModel;
-      });
-    } else if (response.status == Status.ERROR) {
-      AlertDialog alert = messageDialog(context, 'Error', response.message);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-  }
-
-  modelBikeListener(Response response) {
-    if (response.status == Status.COMPLETED) {
-      ModelModel modelModel = response.data as ModelModel;
-
-      // (**DEBUG**) REMOVE THIS LINE TO SHOW ALL COLORS
-      // modelModel.modelList.removeRange(0, 3);
-
-      setState(() {
-        variantsBike = modelModel;
-      });
-    } else if (response.status == Status.ERROR) {
-      AlertDialog alert = messageDialog(context, 'Error', response.message);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-  }
-
-  bodyTypeListener(Response response) {
-    if (response.status == Status.COMPLETED) {
-      BodyTypeModel bodyTypeModel = response.data as BodyTypeModel;
-      setState(() {
-        bodyTypesM = bodyTypeModel;
-      });
-    } else if (response.status == Status.ERROR) {
-      AlertDialog alert = messageDialog(context, 'Error', response.message);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-  }
-
-  trackingCompanyListener(Response response) {
-    if (response.status == Status.COMPLETED) {
-      List<DropdownMenuItem<Object>> items = [];
-      List<Map<String, String>> trackingCompanies = [];
-      TrackingCompanyModel trackingCompanyModel =
-          response.data as TrackingCompanyModel;
-      for (var i = 0;
-          i < trackingCompanyModel.trackingCompanyList.length;
-          i++) {
-        items.add(
-          DropdownMenuItem(
-              value: i,
-              child: Text(trackingCompanyModel
-                  .trackingCompanyList[i].trackingCompanyName)),
-        );
-        trackingCompanies.add({
-          'trackingCompanyCode':
-              trackingCompanyModel.trackingCompanyList[i].trackingCompanyCode,
-          'trackingCompanyName':
-              trackingCompanyModel.trackingCompanyList[i].trackingCompanyName,
-          'trackingCompanyID': i.toString()
-        });
-      }
-      setState(() {
-        trackingCompanyList = items;
-        trackingCompanyListMap = trackingCompanies;
-      });
-    } else if (response.status == Status.ERROR) {
-      AlertDialog alert = messageDialog(context, 'Error', response.message);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-  }
-
-  colorCarListener(Response response) {
-    if (response.status == Status.COMPLETED) {
-      List<DropdownMenuItem<Object>> items = [];
-      List<Map<String, String>> colors = [];
-      ColorModel colorModel = response.data as ColorModel;
-      for (var i = 0; i < colorModel.colorList.length; i++) {
-        items.add(
-          DropdownMenuItem(
-              value: i, child: Text(colorModel.colorList[i].colorName)),
-        );
-        colors.add({
-          'colorCode': colorModel.colorList[i].colorCode,
-          'colorName': colorModel.colorList[i].colorName,
-          'colorID': i.toString()
-        });
-      }
-
-      setState(() {
-        colorCarList = items;
-        colorCarListMap = colors;
-      });
-    } else if (response.status == Status.ERROR) {
-      AlertDialog alert = messageDialog(context, 'Error', response.message);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-  }
-
-  colorBikeListener(Response response) {
-    if (response.status == Status.COMPLETED) {
-      List<DropdownMenuItem<Object>> items = [];
-      List<Map<String, String>> colors = [];
-      ColorModel colorModel = response.data as ColorModel;
-
-      List<ColorResponse> colorList = colorModel.colorList;
-
-      for (var i = 0; i < colorList.length; i++) {
-        items.add(
-          DropdownMenuItem(
-              value: i, child: Text(colorModel.colorList[i].colorName)),
-        );
-        colors.add({
-          'colorName': colorModel.colorList[i].colorName,
-          'colorID': i.toString()
-        });
-      }
-      setState(() {
-        colorBikeList = items;
-        colorBikeListMap = colors;
-      });
-    } else if (response.status == Status.ERROR) {
-      AlertDialog alert = messageDialog(context, 'Error', response.message);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
-    }
-  }
-
-
-  setProductData(Object? value, {bool settingData = false}) async {
+  setProductData(Object? value, List? productList) async {
     String? dataIndex = _productKey.currentState?.value.toString();
 
-    if (dataIndex != null) {
-      productNameController.text = dataIndex;
-    }
+    if (dataIndex == null) return;
 
-    contributionController.text = "";
+    setState(() {
+      productNameController.text = dataIndex;
+      seatingCapacity = 1;
+    });
 
     _vehicleMakeKey.currentState?.reset();
     _vehicleVariantKey.currentState?.reset();
     _vehicleModelKey.currentState?.reset();
     _colorKey.currentState?.reset();
+    contributionController.text = "";
 
     colorController.text = "";
     colorValue = null;
@@ -1006,49 +671,24 @@ class _Step2FormState extends State<Step2Form> {
     vehicleVariantController.text = "";
     vehicleVariantValue = null;
 
-    setState(() {
-      seatingCapacity = 1;
-    });
+    var product = productList![int.parse(dataIndex)] as Product;
 
-    var product = productListMap
-        .firstWhere((element) => element['productID'] == value.toString());
-    String productName = product['productName']!;
-    String productCode = product['productCode']!;
+    String productName = product.productName;
+    String productCode = product.productCode;
 
     int maxCap = 0;
+    List<DropdownMenuItem<Object>> newModelList;
+    List<Map<String, String>> newModelListMap;
 
-    List<DropdownMenuItem<Object>> newModelList = [];
-    List<Map<String, String>> newModelListMap = [];
-
-    if (productName == privateCar || productName == thirdParty) {
+    if (selectedProductIsCar(productName)) {
       maxCap = 4;
-
       newModelList = carModelsList;
       newModelListMap = carModelsListMap;
-
-      variants = variantsCar;
-
-      makeList = makeCarList;
-      makeListMap = makeCarListMap;
-
-      colorList = colorCarList;
-      colorListMap = colorCarListMap;
-
       _personalAccidentText = "Personal Accident For Drive +4 Passengers";
     } else {
       maxCap = 2;
-
       newModelList = bikeModelsList;
       newModelListMap = bikeModelsListMap;
-
-      variants = variantsBike;
-
-      makeList = makeBikeList;
-      makeListMap = makeBikeListMap;
-
-      colorList = colorBikeList;
-      colorListMap = colorBikeListMap;
-
       _personalAccidentText = "Personal Accident For Driver + 1 Passenger";
     }
 
@@ -1068,44 +708,26 @@ class _Step2FormState extends State<Step2Form> {
     });
   }
 
-  setMakeData(Object? value, {settingData = false}) {
+  setMakeData(Object? value, List? makesList) {
     String? dataIndex = _vehicleMakeKey.currentState?.value.toString();
 
-    if (dataIndex != null) {
-      vehicleMakeController.text = dataIndex;
-    }
+    if (dataIndex == null) return;
 
-    String makeName = makeListMap.firstWhere(
-        (element) => element['makeID'] == value.toString())['makeName']!;
+    vehicleMakeController.text = dataIndex;
 
-    List<DropdownMenuItem<Object>> items = [];
-    List<Map<String, String>> models = [];
+    Make make = makesList![int.parse(dataIndex)] as Make;
 
-    for (var i = 0; i < variants.modelList.length; i++) {
-      if (makeName == variants.modelList[i].makeName) {
-        items.add(
-          DropdownMenuItem(
-              value: i, child: Text(variants.modelList[i].modelName)),
-        );
-        models.add({
-          'variantCode': variants.modelList[i].modelCode,
-          'variantName': variants.modelList[i].modelName,
-          'makeName': variants.modelList[i].makeName,
-          'variantID': i.toString()
-        });
-      }
-    }
+    String makeName = make.makeName;
+    String makeCode = make.makeCode;
 
-    if (!settingData) {
-      vehicleVariantController.text = "";
-      vehicleVariantValue = null;
+    vehicleVariantController.text = "";
+    vehicleVariantValue = null;
 
-      vehicleModelController.text = "";
-      vehicleModelValue = null;
+    vehicleModelController.text = "";
+    vehicleModelValue = null;
 
-      bodyTypeController.text = "";
-      bodyTypeValue = null;
-    }
+    bodyTypeController.text = "";
+    bodyTypeValue = null;
 
     _vehicleVariantKey.currentState?.reset();
     _vehicleModelKey.currentState?.reset();
@@ -1113,121 +735,80 @@ class _Step2FormState extends State<Step2Form> {
 
     setState(() {
       vehicleMakeValue = makeName;
+      vehcileMakeCodeValue = makeCode;
 
       _variantReadOnly = false;
-      variantList = items;
-      variantListMap = models;
 
-      bodyTypeListMap = [];
       bodyTypeValue = null;
     });
   }
 
   // model is variant
-  setVariantData(Object? value, {settingData = false}) {
+  setVariantData(Object? value, List? variantsList) {
     String? dataIndex = _vehicleVariantKey.currentState?.value.toString();
 
-    if (dataIndex != null) {
-      vehicleVariantController.text = dataIndex;
-    }
+    if (dataIndex == null) return;
 
-    var variant = variantListMap
-        .firstWhere((element) => element['variantID'] == value.toString());
+    vehicleVariantController.text = dataIndex;
 
-    String variantName = variant['variantName']!;
-    String variantCode = variant['variantCode']!;
+    var variant = variantsList![int.parse(dataIndex)] as Model;
 
-    List<DropdownMenuItem<Object>> bodyTypeItems = [];
-    List<Map<String, String>> bodyTypes = [];
-    for (var i = 0; i < bodyTypesM.bodyTypeList.length; i++) {
-      if (variantName == bodyTypesM.bodyTypeList[i].modelName) {
-        bodyTypeItems.add(
-          DropdownMenuItem(
-              value: i, child: Text(bodyTypesM.bodyTypeList[i].bodyType)),
-        );
-        bodyTypes.add({
-          'bodyType': bodyTypesM.bodyTypeList[i].bodyType,
-          'modelName': bodyTypesM.bodyTypeList[i].modelName,
-          'bodyTypeID': i.toString()
-        });
-      }
-    }
+    String variantName = variant.modelName;
+    String variantCode = variant.modelCode;
 
-    if (!settingData) {
-      vehicleModelController.text = "";
-      bodyTypeController.text = "";
-    }
+    vehicleModelController.text = "";
+    bodyTypeController.text = "";
 
     _vehicleModelKey.currentState?.reset();
     _bodyTypeKey.currentState?.reset();
     setState(() {
       vehcileMakeCodeValue = variantCode;
       vehicleVariantValue = variantName;
-
       vehicleModelValue = null;
-
-      bodyTypeListMap = bodyTypes;
       bodyTypeValue = null;
     });
   }
 
-  setBodyTypeData(Object? value) {
-    String? dataIndex = _bodyTypeKey.currentState?.value.toString();
 
-    if (dataIndex != null) {
-      bodyTypeController.text = dataIndex;
-    }
-
-    String bodyTypeName = bodyTypeListMap.firstWhere(
-        (element) => element['bodyTypeID'] == value.toString())['bodyType']!;
-
-    setState(() {
-      bodyTypeValue = bodyTypeName;
-    });
-  }
-
-  setTrackingCompanyData(Object? value) {
+  setTrackingCompanyData(Object? value, List? trackingCompanyList) {
     String? dataIndex = _trackingCompanyKey.currentState?.value.toString();
 
-    if (dataIndex != null) {
-      trackingCompanyController.text = dataIndex;
-    }
+    if (dataIndex == null || trackingCompanyList == null) return;
 
-    String trackingCompanyCode = trackingCompanyListMap.firstWhere((element) =>
-        element['trackingCompanyID'] ==
-        value.toString())['trackingCompanyCode']!;
+    trackingCompanyController.text = dataIndex;
+
+    var company = trackingCompanyList[int.parse(dataIndex)] as TrackingCompany;
 
     setState(() {
-      trackingCompanyValue = trackingCompanyCode;
+      trackingCompanyValue = company.trackingCompanyCode;
     });
   }
 
-  setColorData(Object? value) {
+  setColorData(Object? value, List? colorList) {
     String? dataIndex = _colorKey.currentState?.value.toString();
-    if (dataIndex != null) {
-      colorController.text = dataIndex;
-    }
 
-    String colorCode = colorCarListMap.firstWhere(
-        (element) => element['colorID'] == value.toString())['colorCode']!;
+    if (dataIndex == null || colorList == null) return;
+
+    colorController.text = dataIndex;
+
+    var color = colorList[int.parse(dataIndex)] as Color;
 
     setState(() {
-      colorValue = colorCode;
+      colorValue = color.colorCode;
     });
   }
 
-  setModelData(Object? value) {
+  setModelData(Object? value, List? modelYears) {
     String? dataIndex = _vehicleModelKey.currentState?.value.toString();
 
-    if (dataIndex != null) {
-      vehicleModelController.text = dataIndex;
-    }
+    if (dataIndex == null || modelYears == null) return;
 
-    String modelName = (modelListMap.firstWhere(
-        (element) => element['value'] == value.toString())['label']) as String;
+    vehicleModelController.text = dataIndex;
+
+    var year = (modelYears[int.parse(dataIndex)])['label'];
 
     setState(() {
-      vehicleModelValue = modelName;
+      vehicleModelValue = year;
     });
   }
 

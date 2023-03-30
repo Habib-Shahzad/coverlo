@@ -20,6 +20,7 @@ class UserModel {
     }
 
     UserResponse user = UserResponse.fromJson(json);
+
     _setData(user);
     return UserModel(
       user: user,
@@ -40,33 +41,38 @@ class UserResponse {
   String userID;
   String userName;
   String userEmail;
+  String agentCode;
 
   UserResponse({
     required this.userID,
     required this.userName,
     required this.userEmail,
+    required this.agentCode,
   });
 
   static UserResponse fromJsonCache(Map<String, dynamic> json) {
+
     return UserResponse(
       userID: json['userID'],
       userName: json['userName'],
       userEmail: json['userEmail'],
+      agentCode: json['agentCode'],
     );
   }
 
   factory UserResponse.fromJson(Map<String, dynamic> json) {
-    Map<String, String> decryptedData =
-        Des.decryptMap(Env.appKey, {
+    Map<String, String> decryptedData = Des.decryptMap(Env.appKey, {
       'userID': json['userID'],
       'userName': json['userName'],
       'userEmail': json['userEmail'],
+      'agentCode': json['agentCode'],
     });
 
     return UserResponse(
       userID: decryptedData['userID'] ?? '',
       userName: decryptedData['userName'] ?? '',
       userEmail: decryptedData['userEmail'] ?? '',
+      agentCode: decryptedData['agentCode'] ?? '',
     );
   }
 
@@ -74,6 +80,7 @@ class UserResponse {
         'userID': userID,
         'userName': userName,
         'userEmail': userEmail,
+        'agentCode': agentCode,
       };
 }
 

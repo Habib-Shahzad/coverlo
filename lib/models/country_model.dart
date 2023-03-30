@@ -1,56 +1,24 @@
-import 'package:coverlo/des/des.dart';
-import 'package:coverlo/env/env.dart';
+import 'package:xml/xml.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 
-
-class CountryModel {
-  List<CountryResponse> countryList = [];
-
-  CountryModel({
-    required this.countryList,
-  });
-
-  factory CountryModel.fromJson(Map<String, dynamic> json) {
-    if (json['responseCode'] == 200) {
-      return CountryModel(
-        countryList: (json['_Country'] as List)
-            .map((country) => CountryResponse.fromJson(country))
-            .toList(),
-      );
-    }
-    return CountryModel(
-      countryList: [],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'countryList': List<dynamic>.from(countryList.map((x) => x.toJson())),
-      };
-}
-
-class CountryResponse {
+class Country {
   String countryName;
   String countryCode;
 
-  CountryResponse({
-    required this.countryName,
-    required this.countryCode,
-  });
+  Country({required this.countryName, required this.countryCode});
 
-  factory CountryResponse.fromJson(Map<String, dynamic> json) {
-    Map<String, String> decryptedData =
-        Des.decryptMap(Env.appKey, {
-      'countryName': json['countryName'],
-      'countryCode': json['countryCode'],
-    });
-
-    return CountryResponse(
-      countryName: decryptedData['countryName'] ?? '',
-      countryCode: decryptedData['countryCode'] ?? '',
-    );
+  factory Country.fromJson(Map<String, dynamic> json) {
+    return Country(
+        countryName: decryptItem(json['countryName']),
+        countryCode: decryptItem(json['countryCode']));
   }
 
-  Map<String, dynamic> toJson() => {
-        'countryName': countryName,
-        'countryCode': countryCode,
-      };
+  factory Country.fromXml(XmlElement xml) {
+    final countryName = xml.findElements('countryName').single.text;
+    final countryCode = xml.findElements('countryCode').single.text;
+
+    return Country(
+        countryName: decryptItem(countryName),
+        countryCode: decryptItem(countryCode));
+  }
 }

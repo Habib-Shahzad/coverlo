@@ -46,6 +46,7 @@ class OnboardingBody extends StatelessWidget {
             if (loading) {
               return;
             }
+            
             if (loggedIn) {
               Navigator.pushNamed(context, FormStep1Screen.routeName);
             } else {

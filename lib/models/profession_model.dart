@@ -1,51 +1,26 @@
-import 'package:coverlo/des/des.dart';
-import 'package:coverlo/env/env.dart';
+import 'package:xml/xml.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 
-
-class ProfessionModel {
-  List<ProfessionResponse> professionList = [];
-
-  ProfessionModel({
-    required this.professionList,
-  });
-
-  factory ProfessionModel.fromJson(Map<String, dynamic> json) {
-    if (json['responseCode'] == 200) {
-      return ProfessionModel(
-        professionList: (json['_Profession'] as List)
-            .map((profession) => ProfessionResponse.fromJson(profession))
-            .toList(),
-      );
-    }
-    return ProfessionModel(
-      professionList: [],
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'professionList': List<dynamic>.from(professionList.map((x) => x.toJson())),
-      };
-}
-
-class ProfessionResponse {
+class Profession {
   String professionName;
+  String professionCode;
 
-  ProfessionResponse({
-    required this.professionName,
-  });
+  Profession({required this.professionName, required this.professionCode});
 
-  factory ProfessionResponse.fromJson(Map<String, dynamic> json) {
-    Map<String, String> decryptedData =
-        Des.decryptMap(Env.appKey, {
-      'professionName': json['ProfessionName'],
-    });
-
-    return ProfessionResponse(
-      professionName: decryptedData['professionName'] ?? '',
+  factory Profession.fromJson(Map<String, dynamic> json) {
+    return Profession(
+      professionName: decryptItem(json['ProfessionName']),
+      professionCode: decryptItem(json['ProfessionCode'])
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'professionName': professionName,
-      };
+  factory Profession.fromXml(XmlElement xml) {
+    final professionName = xml.findElements('ProfessionName').single.text;
+    final professionCode = xml.findElements('ProfessionCode').single.text;
+
+    return Profession(
+        professionName: decryptItem(professionName),
+        professionCode: decryptItem(professionCode)
+    );
+  }
 }

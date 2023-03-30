@@ -1,67 +1,36 @@
-import 'package:coverlo/des/des.dart';
-import 'package:coverlo/env/env.dart';
+import 'package:xml/xml.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 
+class City {
+  final String cityID;
+  final String cityName;
+  final String countryName;
+  final String cityCode;
 
-class CityModel {
-  List<CityResponse> cityList = [];
+  City(
+      {required this.cityID,
+      required this.cityName,
+      required this.countryName,
+      required this.cityCode});
 
-  CityModel({
-    required this.cityList,
-  });
-
-  factory CityModel.fromJson(Map<String, dynamic> json) {
-    if (json['responseCode'] == 200) {
-      return CityModel(
-        cityList: (json['_City'] as List)
-            .map((city) => CityResponse.fromJson(city))
-            .toList(),
-      );
-    }
-    return CityModel(
-      cityList: [],
-    );
+  factory City.fromJson(Map<String, dynamic> json) {
+    return City(
+        cityID: decryptItem(json['cityID']),
+        cityName: decryptItem(json['cityName']),
+        countryName: decryptItem(json['countryName']),
+        cityCode: decryptItem(json['cityCode']));
   }
 
-  Map<String, dynamic> toJson() => {
-        'cityList': List<dynamic>.from(cityList.map((x) => x.toJson())),
-      };
-}
+  factory City.fromXml(XmlElement xml) {
+    final cityID = xml.findElements('cityID').single.text;
+    final cityName = xml.findElements('cityName').single.text;
+    final countryName = xml.findElements('countryName').single.text;
+    final cityCode = xml.findElements('cityCode').single.text;
 
-class CityResponse {
-  String cityID;
-  String cityName;
-  String countryName;
-  String cityCode;
-
-  CityResponse({
-    required this.cityID,
-    required this.cityName,
-    required this.countryName,
-    required this.cityCode,
-  });
-
-  factory CityResponse.fromJson(Map<String, dynamic> json) {
-
-    Map<String, String> decryptedData =
-        Des.decryptMap(Env.appKey, {
-      'cityID': json['cityID'],
-      'cityName': json['cityName'],
-      'countryName': json['countryName'],
-      'cityCode': json['cityCode'],
-    });
-
-    return CityResponse(
-      cityID: decryptedData['cityID'] ?? '',
-      cityName: decryptedData['cityName'] ?? '',
-      countryName: decryptedData['countryName'] ?? '',
-      cityCode: decryptedData['cityCode'] ?? '',
-    );
+    return City(
+        cityID: decryptItem(cityID),
+        cityName: decryptItem(cityName),
+        countryName: decryptItem(countryName),
+        cityCode: decryptItem(cityCode));
   }
-
-  Map<String, dynamic> toJson() => {
-        'cityID': cityID,
-        'cityName': cityName,
-        'countryName': countryName,
-        'cityCode': cityCode,
-      };
 }

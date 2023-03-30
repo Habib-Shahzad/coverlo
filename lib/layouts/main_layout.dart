@@ -89,11 +89,7 @@ class _MainLayoutState extends State<MainLayout> {
                   ),
                   onPressed: () async {
                     StaticGlobal.user = null;
-                    StaticGlobal.blocs.value.clear();
-                    for (Function func in StaticGlobal.disposeFunctions) {
-                      func();
-                    }
-                    StaticGlobal.disposeFunctions.clear();
+                
                     final prefs = await SharedPreferences.getInstance();
                     prefs.remove('user');
                     navigateToLoginScreen();

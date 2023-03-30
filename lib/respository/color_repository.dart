@@ -1,39 +1,47 @@
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:coverlo/models/color_model.dart';
 import 'package:coverlo/networking/api_provider.dart';
 import 'package:coverlo/networking/base_api.dart';
-
-import 'package:coverlo/des/des.dart';
-import 'package:coverlo/env/env.dart';
+import 'package:flutter/material.dart';
 
 class ColorRepository {
   final BaseAPI _provider = ApiProvider();
 
-  Future<ColorModel> fetchData(String uniqueID, String deviceUniqueIdentifier,
-      VehicleType vehicleType) async {
-    String vehicleString = "";
-
-    if (vehicleType == VehicleType.Car) {
-      vehicleString = "Vehicle";
-    } else if (vehicleType == VehicleType.Motorcycle) {
-      vehicleString = "Motorcycle";
-    }
-
-    String encryptedVehicleType =
-        Des.encryptMap(Env.serverKey, {'vtype': vehicleString})['vtype'] ?? "";
-
-    final response = await _provider.post(
-        GET_COLOR_API,
-        _bodyInterpolateFetch(
-            uniqueID, deviceUniqueIdentifier, encryptedVehicleType));
-
-    return ColorModel.fromJson(response);
+  Future<List<Color>> getColorsData(responseJson) async {
+    final colors = (responseJson['_ColorsN'] as List)
+        .map((color) => Color.fromJson(color))
+        .toList();
+    return colors;
   }
 
-  String _bodyInterpolateFetch(
-      String uniqueID, String deviceUniqueIdentifier, String vehicleType) {
-    String body =
-        '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><CoverLo_GetColors xmlns="http://tempuri.org/"><uniqueID>$uniqueID</uniqueID><device_unique_identifier>$deviceUniqueIdentifier</device_unique_identifier><vtype>$vehicleType</vtype>  </CoverLo_GetColors></soap:Body></soap:Envelope>';
-    return body;
+  Future<List<Color>> getCarColors() async {
+
+    final requestBody =
+        await getVehicleXML(GET_COLOR_API, encryptVehicleType(VehicleType.Car));
+    final responseJson = await _provider.post(GET_COLOR_API, requestBody);
+    
+    return getColorsData(responseJson);
+  }
+
+  Future<List<Color>> getBikeColors() async {
+    final requestBody = await getVehicleXML(
+        GET_COLOR_API, encryptVehicleType(VehicleType.Motorcycle));
+    final responseJson = await _provider.post(GET_COLOR_API, requestBody);
+    return getColorsData(responseJson);
+  }
+
+  toDropdown(List<Color> colors) {
+    List<DropdownMenuItem<Object>> items = [];
+
+    for (var i = 0; i < colors.length; i++) {
+      Color color = colors[i];
+
+      items.add(
+        DropdownMenuItem(value: i, child: Text(color.colorName)),
+      );
+    }
+
+    return items;
   }
 }

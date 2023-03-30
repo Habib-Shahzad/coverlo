@@ -7,6 +7,7 @@ import 'package:coverlo/constants.dart';
 import 'package:coverlo/des/des.dart';
 import 'package:coverlo/env/env.dart';
 import 'package:coverlo/global_formdata.dart';
+import 'package:coverlo/globals.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/networking/api_provider.dart';
 import 'package:coverlo/networking/base_api.dart';
@@ -15,12 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xml/xml.dart';
-
-String idGenerator() {
-  final now = DateTime.now();
-  return now.microsecondsSinceEpoch.toString();
-}
+import 'package:coverlo/helpers/helper_functions.dart';
 
 class PaymentScreen extends StatefulWidget {
   static const String routeName = '/payment_screen';
@@ -54,8 +50,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void getImages() {
     if (productValue != null) {
       bool isCar = productValue! == privateCar || productValue! == thirdParty;
-
-      // print(isCar);
 
       if (isCar) {
         vehicleImages = [
@@ -123,7 +117,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   @override
   void initState() {
     super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {});
   }
 
   @override
@@ -269,32 +262,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
-  convertJsonToXML(Map jsonData, coverloApiAction) {
-    var builder = XmlBuilder();
-
-    builder.processing('xml', 'version="1.0" encoding="utf-8"');
-    builder.element('soap:Envelope', nest: () {
-      builder.attribute(
-          'xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-      builder.attribute('xmlns:xsd', 'http://www.w3.org/2001/XMLSchema');
-      builder.attribute(
-          'xmlns:soap', 'http://schemas.xmlsoap.org/soap/envelope/');
-      builder.element('soap:Body', nest: () {
-        builder.element(coverloApiAction, nest: () {
-          builder.attribute('xmlns', 'http://tempuri.org/');
-          for (var key in jsonData.keys) {
-            builder.element(key, nest: jsonData[key]);
-          }
-        });
-      });
-    });
-
-    return (builder.buildDocument().toXmlString(pretty: true, indent: '  '));
-  }
-
   generateInsurance() async {
     setState(() {
-      generatingInsurance = false;
+      generatingInsurance = true;
     });
 
     String cnicText = cnicController.text.toString();
@@ -315,7 +285,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     String transationID = idGenerator();
 
     Map<String, String> apiJsonData = {
-      "ByAgentID": "210001000001",
+      "ByAgentID": StaticGlobal.user?.agentCode ?? '',
       "PName": nameController.text.toString(),
       "PAddress": addressController.text.toString(),
       "PCity": cityValue ?? '',

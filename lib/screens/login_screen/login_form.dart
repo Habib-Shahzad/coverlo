@@ -1,16 +1,10 @@
-import 'package:coverlo/blocs/bloc.dart';
-import 'package:coverlo/blocs/user_bloc.dart';
 import 'package:coverlo/components/custom_button.dart';
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/env/env.dart';
-import 'package:coverlo/globals.dart';
-import 'package:coverlo/helpers/dialogs/message_dialog.dart';
-import 'package:coverlo/networking/response.dart';
-import 'package:coverlo/pairbloc.dart';
+import 'package:coverlo/models/user_model.dart';
+import 'package:coverlo/respository/user_repository.dart';
 import 'package:coverlo/screens/form_step_1_screen/form_step_1_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -24,8 +18,6 @@ class _LoginFormState extends State<LoginForm> {
   String buttonText = 'Login';
   bool loading = false;
 
-  late Bloc _userBloc;
-
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -35,61 +27,35 @@ class _LoginFormState extends State<LoginForm> {
   @override
   void initState() {
     super.initState();
-    _userBloc = UserBloc();
-    StaticGlobal.blocs.addListener(checkBlocsQueue);
-    _userBloc.getStream.listen(loginListener);
   }
 
   @override
   void dispose() {
-    _userBloc.dispose();
-    StaticGlobal.blocs.removeListener(checkBlocsQueue);
-    _usernameController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
-  checkBlocsQueue() {
-    if (StaticGlobal.blocs.value.isNotEmpty) {
-      PairBloc pairBloc = StaticGlobal.blocs.value.first;
-      if (pairBloc.status == WAITING) {
-        pairBloc.status = RUNNING;
-        StaticGlobal.blocs.value.removeAt(0);
-        StaticGlobal.blocs.value.insert(0, pairBloc);
-        pairBloc.func();
-      } else if (pairBloc.status == COMPLETED) {
-        StaticGlobal.blocs.value.removeAt(0);
-      }
-    }
-  }
+  _loginUser(String userName, String password) async {
+    try {
+      UserRepository userRepository = UserRepository();
+      UserModel user = await userRepository.loginUser(userName, password);
+      setState(() {
+        loading = false;
+      });
+      
 
-  loginListener(Response response) async {
-    if (response.status == Status.COMPLETED) {
-      if (response.data?.user != null) {
-        StaticGlobal.user = response.data?.user;
-        Navigator.pushNamed(context, FormStep1Screen.routeName);
-      } else {
+      if (user.user == null) {
         setState(() {
           loading = false;
           buttonText = 'Login';
           errorUserName = "Username is incorrect";
           errorPassword = "Password is incorrect";
         });
+      } else {
+        // print(user.user?.agentCode);
+        Navigator.pushNamed(context, FormStep1Screen.routeName);
       }
-    } else if (response.status == Status.ERROR) {
-      setState(() {
-        loading = false;
-        buttonText = 'Login';
-        errorUserName = "Username is incorrect";
-        errorPassword = "Password is incorrect";
-      });
-      AlertDialog alert = messageDialog(context, 'Error', response.message);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return alert;
-        },
-      );
+      return user;
+    } catch (e) {
       setState(() {
         loading = false;
         buttonText = 'Login';
@@ -122,18 +88,10 @@ class _LoginFormState extends State<LoginForm> {
                   errorUserName = null;
                   errorPassword = null;
                 });
-                final prefs = await SharedPreferences.getInstance();
-                String? deviceUniqueIdentifier =
-                    prefs.getString('deviceUniqueIdentifier');
-                String? uniqueID = prefs.getString('uniqueID');
+
                 String userName = _usernameController.text;
                 String password = _passwordController.text;
-                _userBloc.connect({
-                  'uniqueID': uniqueID ?? '',
-                  'deviceUniqueIdentifier': deviceUniqueIdentifier ?? '',
-                  'userName': userName,
-                  'password': password,
-                }, UserBloc.LOGIN);
+                await _loginUser(userName, password);
               }
             },
             buttonColor: kSecondaryColor,
