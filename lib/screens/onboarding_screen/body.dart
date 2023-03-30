@@ -5,6 +5,7 @@ import 'package:coverlo/screens/form_step_1_screen/form_step_1_screen.dart';
 import 'package:coverlo/screens/login_screen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingBody extends StatelessWidget {
   const OnboardingBody(
@@ -42,12 +43,15 @@ class OnboardingBody extends StatelessWidget {
         const SizedBox(height: kMinSpacing),
         CustomButton(
           buttonText: loading ? 'Please wait...' : 'Get Started',
-          onPressed: () {
+          onPressed: () async {
             if (loading) {
               return;
             }
-            
-            if (loggedIn) {
+
+            final prefs = await SharedPreferences.getInstance();
+            final jsonString = prefs.getString('user');
+
+            if (jsonString != null) {
               Navigator.pushNamed(context, FormStep1Screen.routeName);
             } else {
               Navigator.pushNamed(context, LoginScreen.routeName);

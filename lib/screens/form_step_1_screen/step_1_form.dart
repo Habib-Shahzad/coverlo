@@ -1,13 +1,11 @@
 import 'package:coverlo/components/custom_button.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/cubits/city_cubit.dart';
-import 'package:coverlo/cubits/colors_cubit.dart';
 import 'package:coverlo/cubits/country_cubit.dart';
 import 'package:coverlo/cubits/make_cubit.dart';
 import 'package:coverlo/cubits/model_cubit.dart';
 import 'package:coverlo/cubits/product_cubit.dart';
 import 'package:coverlo/cubits/profession_cubit.dart';
-import 'package:coverlo/cubits/tracking_company_cubit.dart';
 import 'package:coverlo/form_fields/date_time_form_field.dart';
 import 'package:coverlo/form_fields/drop_down_form_field.dart';
 import 'package:coverlo/form_fields/text_form_field.dart';
@@ -47,10 +45,6 @@ class _Step1FormState extends State<Step1Form> {
 
   final CitiesCubit citiesCubit = CitiesCubit();
 
-  bool cityLoaded = false;
-  bool countryLoaded = false;
-  bool professionLoaded = false;
-
   late FocusNode cnicFocusNode;
 
   bool cnicHasInputError = false;
@@ -76,11 +70,16 @@ class _Step1FormState extends State<Step1Form> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await context.read<ProductsCubit>().getData();
-      await context.read<MakesCubit>().getData();
-      await context.read<ModelsCubit>().getData();
-      await context.read<ColorsCubit>().getData();
-      await context.read<TrackingCompaniesCubit>().getData();
+      if (context.read<ProductsCubit>().state is ProductsInitial) {
+        await context.read<ProductsCubit>().getData();
+      }
+      if (context.read<MakesCubit>().state is MakesInitial) {
+        await context.read<MakesCubit>().getData();
+      }
+
+      if (context.read<ModelsCubit>().state is ModelsInitial) {
+        await context.read<ModelsCubit>().getData();
+      }
     });
 
     setHardcodedData();

@@ -18,6 +18,8 @@ import 'package:open_file_plus/open_file_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
 
+import 'package:image/image.dart' as img;
+
 class PaymentScreen extends StatefulWidget {
   static const String routeName = '/payment_screen';
 
@@ -44,7 +46,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
   List vehicleImages = [];
 
   String bytesToBase64(List<int>? imageBytes) {
-    return base64Encode(imageBytes!);
+    if (imageBytes == null) {
+      return '';
+    }
+    return base64Encode(imageBytes);
   }
 
   void getImages() {
@@ -203,6 +208,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       children: [
                         CustomButton(
                           onPressed: () async {
+                            if (generatingInsurance) return;
                             await generateInsurance();
                             if (transactionNumber != null) {
                               setState(() {
@@ -212,12 +218,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           },
                           buttonText: 'Pay with JazzCash',
                           buttonColor: kSecondaryColor,
+                          disabled: generatingInsurance,
                         ),
                         const SizedBox(
                           height: 20,
                         ),
                         CustomButton(
                           onPressed: () async {
+                            if (generatingInsurance) return;
                             await generateInsurance();
                             if (transactionNumber != null) {
                               setState(() {
@@ -227,6 +235,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           },
                           buttonText: 'Pay with Debit / Credit Card',
                           buttonColor: kSecondaryColor,
+                          disabled: generatingInsurance,
                         ),
                         const SizedBox(height: kDefaultSpacing),
                         if (generatingInsurance)
@@ -306,7 +315,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "VCubicCapacity": cubicCapacityController.text.toString(),
       "VSeatingCapacity": seatingCapacity.toInt().toString(),
       "VTrackingCompany": trackingCompanyValue ?? '',
-      "VIEV": "",
+      "VIEV": insuredEstimatedValueController.text.toString(),
       "VContr": contributionController.text.toString(),
       "uniqueRef": transationID,
     };
@@ -368,6 +377,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         return;
       }
     }
+
     setState(() {
       generatingInsurance = false;
       transactionNumber = transationID;

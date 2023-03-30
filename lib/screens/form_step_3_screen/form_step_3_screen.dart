@@ -4,6 +4,7 @@ import 'package:coverlo/components/sub_heading.dart';
 import 'package:coverlo/constants.dart';
 
 import 'package:coverlo/global_formdata.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/screens/payment_screen/payment_screen.dart';
 import 'package:flutter/material.dart';
@@ -125,7 +126,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
       final args =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-      if (args['productName'] == privateCar || args['productName'] == thirdParty) {
+      if (args['productName'] == privateCar ||
+          args['productName'] == thirdParty) {
         setState(() {
           isCar = true;
         });
@@ -463,36 +465,42 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
 
   _removeCarFrontImage() {
     setState(() {
+      bytesCarFront = null;
       imageCarFront = null;
     });
   }
 
   _removeCarBackImage() {
     setState(() {
+      bytesCarBack = null;
       imageCarBack = null;
     });
   }
 
   _removeCarLeftImage() {
     setState(() {
+      bytesCarLeft = null;
       imageCarLeft = null;
     });
   }
 
   _removeCarRightImage() {
     setState(() {
+      bytesCarRight = null;
       imageCarRight = null;
     });
   }
 
   _removeCarHoodImage() {
     setState(() {
+      bytesCarHood = null;
       imageCarHood = null;
     });
   }
 
   _removeCarBootImage() {
     setState(() {
+      bytesCarBoot = null;
       imageCarBoot = null;
     });
   }
@@ -642,9 +650,12 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
       ),
     ).then((source) async {
       if (source != null) {
+        // ignore: deprecated_member_use
         final pickedFile = await ImagePicker().getImage(source: source);
         final bytes = await pickedFile!.readAsBytes();
-        setBytesFunction(bytes);
+        final resizedBytes = imageBytesResize(bytes);
+
+        setBytesFunction(resizedBytes);
         setImageFunction(XFile(pickedFile.path));
       }
     });

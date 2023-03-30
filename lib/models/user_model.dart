@@ -51,7 +51,6 @@ class UserResponse {
   });
 
   static UserResponse fromJsonCache(Map<String, dynamic> json) {
-
     return UserResponse(
       userID: json['userID'],
       userName: json['userName'],
@@ -99,8 +98,12 @@ class UserMessageResponse {
       String encryptedText = json['responseMsg'].split(': ')[1];
       String text = Des.decrypt(Env.appKey, encryptedText);
       encryptedText = Des.encrypt(Env.serverKey, text);
-      setUniqueIDs(deviceUniqueIdentifier, encryptedText);
-    } catch (e) {}
+      String encryptedIdentifier =
+          Des.encrypt(Env.serverKey, deviceUniqueIdentifier);
+      setUniqueIDs(encryptedIdentifier, encryptedText);
+    } catch (e) {
+      print(e.toString());
+    }
     return UserMessageResponse(
       code: json['responseCode'].toString(),
       message: json['responseMsg'],

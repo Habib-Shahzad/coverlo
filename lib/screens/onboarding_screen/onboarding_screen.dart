@@ -33,9 +33,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.initState();
     initPlatformState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await context.read<CitiesCubit>().getData();
-      await context.read<ProfessionsCubit>().getData();
-      await context.read<CountriesCubit>().getData();
+      if (context.read<CitiesCubit>().state is CitiesInitial) {
+        await context.read<CitiesCubit>().getData();
+      }
+
+      if (context.read<ProfessionsCubit>().state is ProfessionsInitial) {
+        await context.read<ProfessionsCubit>().getData();
+      }
+
+      if (context.read<CountriesCubit>().state is CountriesInitial) {
+        await context.read<CountriesCubit>().getData();
+      }
     });
   }
 
@@ -53,12 +61,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
       if (deviceUniqueIdentifier == null && uniqueID == null) {
         if (Platform.isIOS) {
-          userRepository.registerDevice(generateUUID());
+          await userRepository.registerDevice(generateUUID());
+          setState(() {
+            loading = false;
+          });
         } else if (Platform.isAndroid) {
-          userRepository.registerDevice(generateUUID());
+          await userRepository.registerDevice(generateUUID());
+          setState(() {
+            loading = false;
+          });
         }
       } else {
         final jsonString = prefs.getString('user');
+
         if (jsonString != null) {
           StaticGlobal.user =
               UserResponse.fromJsonCache(jsonDecode(jsonString));

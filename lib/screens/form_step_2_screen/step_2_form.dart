@@ -67,6 +67,17 @@ class _Step2FormState extends State<Step2Form> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (context.read<ColorsCubit>().state is ColorsInitial) {
+        await context.read<ColorsCubit>().getData();
+      }
+
+      if (context.read<TrackingCompaniesCubit>().state
+          is TrackingCompaniesInitial) {
+        await context.read<TrackingCompaniesCubit>().getData();
+      }
+    });
   }
 
   @override
@@ -642,7 +653,6 @@ class _Step2FormState extends State<Step2Form> {
     );
   }
 
-
   setProductData(Object? value, List? productList) async {
     String? dataIndex = _productKey.currentState?.value.toString();
 
@@ -768,7 +778,6 @@ class _Step2FormState extends State<Step2Form> {
       bodyTypeValue = null;
     });
   }
-
 
   setTrackingCompanyData(Object? value, List? trackingCompanyList) {
     String? dataIndex = _trackingCompanyKey.currentState?.value.toString();

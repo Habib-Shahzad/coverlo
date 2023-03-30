@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/env/env.dart';
 import 'package:coverlo/des/des.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart';
+import 'package:image/image.dart' as img;
 
 String idGenerator() {
   final now = DateTime.now();
@@ -40,6 +44,10 @@ getXML(String operation) async {
   String deviceUniqueIdentifier =
       prefs.getString('deviceUniqueIdentifier') ?? '';
   String uniqueID = prefs.getString('uniqueID') ?? '';
+
+  if (deviceUniqueIdentifier == '' || uniqueID == '') {
+    return null;
+  }
 
   return '''
 <?xml version="1.0" encoding="utf-8"?>
@@ -129,4 +137,26 @@ String generateUUID() {
   }
   String uuidN = "$year$month${day}0$hour$minute$second";
   return uuidN;
+}
+
+Uint8List? imageBytesResize(List<int>? imageBytes) {
+  if (imageBytes == null) return null;
+  Uint8List bytes = Uint8List.fromList(imageBytes);
+  img.Image? image = img.decodeImage(bytes);
+  if (image == null) return null;
+  int width = image.width;
+  int height = image.height;
+
+  if (width > 1000 || height > 1000) {
+    double scale = width > height ? 1000 / width : 1000 / height;
+    int newWidth = (width * scale).floor();
+    int newHeight = (height * scale).floor();
+    img.Image resizedImage =
+        img.copyResize(image, width: newWidth, height: newHeight);
+
+    print(newWidth);
+    print(newHeight);
+    bytes = Uint8List.fromList(img.encodePng(resizedImage));
+  }
+  return bytes;
 }

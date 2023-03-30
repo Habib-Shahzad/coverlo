@@ -10,6 +10,7 @@ class ProfessionRepository {
 
   Future<List<Profession>> getProfessions() async {
     final requestBody = await getXML(GET_PROFESSIONS_API);
+    if (requestBody == null) throw Exception('Error!');
     final responseJson = await _provider.post(GET_PROFESSIONS_API, requestBody);
 
     final professions = (responseJson['_Profession'] as List)

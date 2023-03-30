@@ -10,6 +10,7 @@ class CountryRepository {
 
   Future<List<Country>> getCountries() async {
     final requestBody = await getXML(GET_COUNTRIES_API);
+    if (requestBody == null) throw Exception('Error!');
     final responseJson = await _provider.post(GET_COUNTRIES_API, requestBody);
 
     final countries = (responseJson['_Country'] as List)

@@ -41,7 +41,6 @@ class _LoginFormState extends State<LoginForm> {
       setState(() {
         loading = false;
       });
-      
 
       if (user.user == null) {
         setState(() {
@@ -51,8 +50,7 @@ class _LoginFormState extends State<LoginForm> {
           errorPassword = "Password is incorrect";
         });
       } else {
-        // print(user.user?.agentCode);
-        Navigator.pushNamed(context, FormStep1Screen.routeName);
+        Navigator.pushReplacementNamed(context, FormStep1Screen.routeName);
       }
       return user;
     } catch (e) {

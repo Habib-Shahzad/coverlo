@@ -8,23 +8,25 @@ class CustomButton extends StatelessWidget {
     required this.buttonText,
     this.onPressed,
     required this.buttonColor,
+    this.disabled = false,
   }) : super(key: key);
 
   final String buttonText;
   final Function()? onPressed;
   final Color buttonColor;
+  final bool disabled;
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
       style: TextButton.styleFrom(
-        backgroundColor: buttonColor,
+        backgroundColor: disabled ? buttonColor.withOpacity(0.5) : buttonColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(kDefaultBorderRadius),
         ),
         minimumSize: const Size.fromHeight(55),
       ),
-      onPressed: onPressed,
+      onPressed: disabled ? null : onPressed,
       child: Text(
         buttonText,
         style: TextStyle(
