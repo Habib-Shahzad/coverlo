@@ -100,3 +100,59 @@ List<int>? bytesBikeLeft;
 
 XFile? imageBikeRight;
 List<int>? bytesBikeRight;
+
+void setDebuggingFormData() {
+  nameController.text = 'Muhammad Usman';
+  addressController.text = 'House # 123, Street # 123, Sector # 123';
+  emailController.text = 'ok@ok.com';
+  mobileNoController.text = '03001234567';
+  cnicController.text = '1234567890123';
+
+  cnicIssueDateValue = DateTime.now();
+  dateOfBirthValue = DateTime.now();
+
+  cityController.text = '0';
+  cityValue = 'Islamabad';
+
+  countryController.text = '0';
+  countryCodeValue = 'PK';
+  countryValue = 'PAKISTAN';
+
+  genderController.text = '0';
+  genderValue = 'Male';
+
+  professionController.text = '0';
+  professionValue = 'Accountant';
+
+  // productNameController.text = '0';
+  // productValue = 'Motor';
+  // productCodeValue = 'MOTOR';
+
+  // vehicleMakeController.text = '0';
+  // vehicleMakeValue = 'Honda';
+  // vehcileMakeCodeValue = 'HONDA';
+
+  // vehicleModelController.text = '0';
+  // vehicleModelValue = 'Civic';
+
+  // colorController.text = '0';
+  // colorValue = 'Black';
+
+  // bodyTypeController.text = '0';
+  // bodyTypeValue = 'Sedan';
+
+  // vehicleVariantController.text = '0';
+  // vehicleVariantValue = '1.8L';
+
+  // trackingCompanyController.text = '0';
+  // trackingCompanyValue = 'GSM';
+
+  // registrationNoController.text = 'ABC-123';
+
+  // cubicCapacityController.text = '1800';
+  // seatingCapacityController.text = '5';
+
+  // contributionController.text = '10000';
+
+  // insuredEstimatedValueController.text = '100000';
+}

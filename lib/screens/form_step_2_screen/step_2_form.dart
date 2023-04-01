@@ -20,6 +20,7 @@ import 'package:coverlo/models/make_model.dart';
 import 'package:coverlo/models/model_model.dart';
 import 'package:coverlo/models/product_model.dart';
 import 'package:coverlo/models/tracking_company_model.dart';
+import 'package:coverlo/networking/data_manager.dart';
 import 'package:coverlo/screens/form_step_3_screen/form_step_3_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:coverlo/models/color_model.dart';
@@ -64,20 +65,18 @@ class _Step2FormState extends State<Step2Form> {
   bool _variantReadOnly = false;
   bool _modelReadOnly = false;
 
+  Future<void> fetchData() async {
+    if (context.mounted) await DataManager.fetchProducts(context);
+    if (context.mounted) await DataManager.fetchColors(context);
+    if (context.mounted) await DataManager.fetchTrackingCompanies(context);
+  }
+
+  Future<void>? _future;
+
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (context.read<ColorsCubit>().state is ColorsInitial) {
-        await context.read<ColorsCubit>().getData();
-      }
-
-      if (context.read<TrackingCompaniesCubit>().state
-          is TrackingCompaniesInitial) {
-        await context.read<TrackingCompaniesCubit>().getData();
-      }
-    });
+    _future = fetchData();
   }
 
   @override
@@ -87,464 +86,534 @@ class _Step2FormState extends State<Step2Form> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          flutter_bloc.BlocBuilder<ProductsCubit, ProductsState>(
-            builder: (context, state) {
-              return dropDownFormFieldMethod(
-                context,
-                _productKey,
-                'Product',
-                productValue,
-                state is ProductsLoaded ? state.dropdownItems : [],
-                state is ProductsLoaded ? state.products : [],
-                false,
-                setProductData,
-                controlled: true,
-                dropDownValue: productNameController.text != ""
-                    ? int.parse(productNameController.text)
-                    : null,
-              );
-            },
-          ),
-          const SizedBox(height: kMinSpacing),
-          const FormSubHeading(text: 'Applied For Registration'),
-          const SizedBox(height: kMinSpacing),
-          Row(
-            children: [
-              radioMethod(
-                context,
-                'Yes',
-                'yes',
-                appliedForRegistartion,
-                setAppliedForRegistartion,
-              ),
-              const SizedBox(width: kMinSpacing),
-              radioMethod(
-                context,
-                'Already Registered',
-                'already registered',
-                appliedForRegistartion,
-                setAppliedForRegistartion,
-              ),
-            ],
-          ),
-          if (appliedForRegistartion != 'yes')
-            const SizedBox(height: kMinSpacing),
-          if (appliedForRegistartion != 'yes')
-            textFormFieldMethod(
-              context,
-              'Registration No',
-              registrationNoController,
-              false,
-              false,
-              TextInputType.text,
-            ),
-          const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(
-            context,
-            'Engine No',
-            engineNoController,
-            false,
-            false,
-            TextInputType.text,
-          ),
-          const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(
-            context,
-            'Chasis No',
-            chasisNoController,
-            false,
-            false,
-            TextInputType.text,
-          ),
-          const SizedBox(height: kMinSpacing),
-          flutter_bloc.BlocBuilder<MakesCubit, MakesState>(
-            builder: (context, state) {
-              return dropDownFormFieldMethod(
-                context,
-                _vehicleMakeKey,
-                'Vehicle Make',
-                vehicleMakeValue,
-                state is MakesLoaded ? state.dropdownItems : [],
-                state is MakesLoaded ? state.makes : [],
-                false,
-                setMakeData,
-                controlled: true,
-                dropDownValue: vehicleMakeController.text != ""
-                    ? int.parse(vehicleMakeController.text)
-                    : null,
-              );
-            },
-          ),
-          const SizedBox(height: kMinSpacing),
-          flutter_bloc.BlocBuilder<ModelsCubit, ModelsState>(
-            builder: (context, state) {
-              List<DropdownMenuItem<Object>> dropdownItems = [];
-              List<Model> items = [];
-
-              if (state is ModelsLoaded) {
-                int index = 0;
-                for (Model model in state.models) {
-                  if (model.makeName == vehicleMakeValue) {
-                    items.add(model);
-                    dropdownItems.add(
-                      DropdownMenuItem(
-                        value: index,
-                        child: Text(model.modelName),
-                      ),
-                    );
-                    index++;
-                  }
-                }
-              }
-              return dropDownFormFieldMethod(
-                context,
-                _vehicleVariantKey,
-                'Vehicle Variant',
-                vehicleVariantValue,
-                dropdownItems,
-                items,
-                _variantReadOnly,
-                setVariantData,
-                controlled: true,
-                dropDownValue: vehicleVariantController.text != ""
-                    ? int.parse(vehicleVariantController.text)
-                    : null,
-              );
-            },
-          ),
-          const SizedBox(height: kMinSpacing),
-          dropDownFormFieldMethod(
-            context,
-            _vehicleModelKey,
-            'Vehicle Model',
-            vehicleModelValue,
-            modelList,
-            modelListMap,
-            _modelReadOnly,
-            setModelData,
-            controlled: true,
-            dropDownValue: vehicleModelController.text != ""
-                ? int.parse(vehicleModelController.text)
-                : null,
-          ),
-          const SizedBox(height: kMinSpacing),
-          flutter_bloc.BlocBuilder<ColorsCubit, ColorsState>(
-            builder: (context, state) {
-              return dropDownFormFieldMethod(
-                context,
-                _colorKey,
-                'Color',
-                colorValue,
-                state is ColorsLoaded ? state.dropdownItems : [],
-                state is ColorsLoaded ? state.colors : [],
-                false,
-                setColorData,
-                controlled: true,
-                dropDownValue: colorController.text != ""
-                    ? int.parse(colorController.text)
-                    : null,
-              );
-            },
-          ),
-          const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(
-            context,
-            'Cubic Capacity/Bhp/Torque',
-            cubicCapacityController,
-            false,
-            false,
-            TextInputType.text,
-          ),
-          const SizedBox(height: kMinSpacing),
-          FormSubHeading(text: 'Seating Capacity: ${seatingCapacity.ceil()}'),
-          const SizedBox(height: kMinSpacing),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: kDefaultPadding),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return FutureBuilder<void>(
+      future: _future,
+      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _minSeatingCapacity.toString(),
-                  style: const TextStyle(
-                    color: kFormSubHeadingColor,
-                    fontWeight: FontWeight.w500,
-                    fontSize: kFormSubHeadingFontSize,
-                  ),
-                ),
-                Text(
-                  _maxSeatingCapacity.toString(),
-                  style: const TextStyle(
-                    color: kFormSubHeadingColor,
-                    fontWeight: FontWeight.w500,
-                    fontSize: kFormSubHeadingFontSize,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          sliderThemeMethod(
-            context,
-            seatingCapacity,
-            setSeatingCapacity,
-            _minSeatingCapacity,
-            _maxSeatingCapacity,
-          ),
-          productValue == thirdParty
-              ? const SizedBox()
-              : const FormSubHeading(text: 'Tracker Installed'),
-          productValue == thirdParty
-              ? const SizedBox()
-              : const CustomText(
-                  text: '(For Motor Cars Only)', color: kFormSubHeadingColor),
-          productValue == thirdParty
-              ? const SizedBox()
-              : const SizedBox(height: kMinSpacing),
-          productValue == thirdParty
-              ? const SizedBox()
-              : Row(
-                  children: [
-                    radioMethod(
+                flutter_bloc.BlocBuilder<ProductsCubit, ProductsState>(
+                  builder: (context, state) {
+                    return dropDownFormFieldMethod(
                       context,
-                      'Yes',
-                      'yes',
-                      trackerInstalled,
-                      setTrackerInstalled,
-                    ),
-                    const SizedBox(width: kMinSpacing),
-                    radioMethod(
-                      context,
-                      'No',
-                      'no',
-                      trackerInstalled,
-                      setTrackerInstalled,
-                    ),
-                  ],
-                ),
-          const SizedBox(height: kMinSpacing),
-          productValue == thirdParty
-              ? const SizedBox()
-              : showTrackers
-                  ? flutter_bloc.BlocBuilder<TrackingCompaniesCubit,
-                      TrackingCompaniesState>(
-                      builder: (context, state) {
-                        return dropDownFormFieldMethod(
-                          context,
-                          _trackingCompanyKey,
-                          'Tracking Company',
-                          trackingCompanyValue,
-                          state is TrackingCompaniesLoaded
-                              ? state.dropdownItems
-                              : [],
-                          state is TrackingCompaniesLoaded
-                              ? state.companies
-                              : [],
-                          false,
-                          setTrackingCompanyData,
-                          controlled: true,
-                          dropDownValue: trackingCompanyController.text != ""
-                              ? int.parse(trackingCompanyController.text)
-                              : null,
-                        );
-                      },
-                    )
-                  : const SizedBox(),
-          productValue == thirdParty
-              ? const SizedBox()
-              : const SizedBox(height: kMinSpacing),
-          productValue == thirdParty
-              ? const SizedBox()
-              : const CustomText(
-                  text: '(For Motor Cars Only)', color: kFormSubHeadingColor),
-          productValue == thirdParty
-              ? const SizedBox()
-              : const SizedBox(height: kMinSpacing),
-          productValue == thirdParty
-              ? const SizedBox()
-              : const FormSubHeading(text: 'Additional Accessories'),
-          productValue == thirdParty
-              ? const SizedBox()
-              : const SizedBox(height: kMinSpacing),
-          productValue == thirdParty
-              ? const SizedBox()
-              : Row(
-                  children: [
-                    radioMethod(
-                      context,
-                      'Yes',
-                      'yes',
-                      additionalAccessories,
-                      setAdditionalAccessories,
-                    ),
-                    const SizedBox(width: kMinSpacing),
-                    radioMethod(
-                      context,
-                      'No',
-                      'no',
-                      additionalAccessories,
-                      setAdditionalAccessories,
-                    ),
-                  ],
-                ),
-          const CustomText(
-              text: '(For Motor Cars Only)', color: kFormSubHeadingColor),
-          const SizedBox(height: kMinSpacing),
-          FormSubHeading(text: _personalAccidentText),
-          const SizedBox(height: kMinSpacing),
-          Row(
-            children: [
-              radioMethod(
-                context,
-                'Yes',
-                'yes',
-                personalAccidentValue,
-                setPersonalAccident,
-              ),
-              const SizedBox(width: kMinSpacing),
-              radioMethod(
-                context,
-                'No',
-                'no',
-                personalAccidentValue,
-                setPersonalAccident,
-              ),
-            ],
-          ),
-          const SizedBox(height: kMinSpacing),
-          const FormSubHeading(text: 'Period of Insurance'),
-          const SizedBox(height: kMinSpacing),
-          Row(
-            children: [
-              const Text(
-                'From',
-                style: TextStyle(
-                  color: kFormSubHeadingColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: kFormSubHeadingFontSize,
-                ),
-              ),
-              const SizedBox(width: kMinSpacing),
-              Expanded(
-                child: dateTimeFormFieldMethod(
-                  context,
-                  '17-09-2022',
-                  setFromInsuranceDate,
-                  disabledValue: insurancePeriodIssueDate,
-                  disabled: true,
-                ),
-              ),
-              const SizedBox(width: kMinSpacing),
-              const Text(
-                'To',
-                style: TextStyle(
-                  color: kFormSubHeadingColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: kFormSubHeadingFontSize,
-                ),
-              ),
-              const SizedBox(width: kMinSpacing),
-              Expanded(
-                child: dateTimeFormFieldMethod(
-                  context,
-                  '16-09-2023',
-                  setToInsuranceDate,
-                  disabled: true,
-                  disabledValue: insurancePeriodExpiryDate,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(
-              context,
-              'Insured Estimated Value',
-              insuredEstimatedValueController,
-              true,
-              false,
-              TextInputType.number),
-          const SizedBox(height: kMinSpacing),
-          CustomButton(
-            buttonText: calculateButtonText,
-            onPressed: () {
-              try {
-                String productName = productValue!;
-                String year = vehicleModelValue!;
-                String vehcileMake = vehicleMakeValue!;
-
-                String hasTracker = trackerInstalled;
-                String personalAccident = personalAccidentValue;
-                double carEstimatedValue = double.parse(
-                    insuredEstimatedValueController.text
-                        .replaceAll(',', '')
-                        .trim());
-
-                double estimatedValue = 0;
-
-                final DateTime now = DateTime.now();
-                final int currentYear = now.year;
-
-                int personalAccidentAmount =
-                    personalAccident == 'yes' ? 1200 : 0;
-                int yearsOld = currentYear - int.parse(year);
-
-                if (productName == privateCar) {
-                  if (yearsOld <= 5) {
-                    if (hasTracker == 'yes') {
-                      estimatedValue = carEstimatedValue * (1.75 / 100);
-                    } else {
-                      estimatedValue = carEstimatedValue * (1.5 / 100);
-                    }
-                    estimatedValue = estimatedValue + personalAccidentAmount;
-                    contributionController.text =
-                        estimatedValue.toStringAsFixed(2);
-                  } else if (yearsOld > 5 && yearsOld <= 15) {
-                    estimatedValue = carEstimatedValue * (1.5 / 100);
-                    estimatedValue = estimatedValue + personalAccidentAmount;
-                    contributionController.text =
-                        estimatedValue.toStringAsFixed(2);
-                  } else {
-                    AlertDialog alert = messageDialog(
-                        context,
-                        'Error',
-                        'The model of the vehicle is greater than 15 years. '
-                            'Please contact the administrator.');
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return alert;
-                      },
+                      _productKey,
+                      'Product',
+                      productValue,
+                      state is ProductsLoaded ? state.dropdownItems : [],
+                      state is ProductsLoaded ? state.products : [],
+                      false,
+                      setProductData,
+                      controlled: true,
+                      dropDownValue: productNameController.text != ""
+                          ? int.parse(productNameController.text)
+                          : null,
                     );
-                  }
-                } else if (productName == thirdParty) {
-                  if (yearsOld <= 10) {
-                    String cubicCapacity = cubicCapacityController.text;
-                    cubicCapacity = cubicCapacity.replaceAll(RegExp(r'\D'), '');
-                    int cubicCapacityInt = int.parse(cubicCapacity);
+                  },
+                ),
+                const SizedBox(height: kMinSpacing),
+                const FormSubHeading(text: 'Applied For Registration'),
+                const SizedBox(height: kMinSpacing),
+                Row(
+                  children: [
+                    radioMethod(
+                      context,
+                      'Yes',
+                      'yes',
+                      appliedForRegistartion,
+                      setAppliedForRegistartion,
+                    ),
+                    const SizedBox(width: kMinSpacing),
+                    radioMethod(
+                      context,
+                      'Already Registered',
+                      'already registered',
+                      appliedForRegistartion,
+                      setAppliedForRegistartion,
+                    ),
+                  ],
+                ),
+                if (appliedForRegistartion != 'yes')
+                  const SizedBox(height: kMinSpacing),
+                if (appliedForRegistartion != 'yes')
+                  textFormFieldMethod(
+                    context,
+                    'Registration No',
+                    registrationNoController,
+                    false,
+                    false,
+                    TextInputType.text,
+                  ),
+                const SizedBox(height: kMinSpacing),
+                textFormFieldMethod(
+                  context,
+                  'Engine No',
+                  engineNoController,
+                  false,
+                  false,
+                  TextInputType.text,
+                ),
+                const SizedBox(height: kMinSpacing),
+                textFormFieldMethod(
+                  context,
+                  'Chasis No',
+                  chasisNoController,
+                  false,
+                  false,
+                  TextInputType.text,
+                ),
+                const SizedBox(height: kMinSpacing),
+                flutter_bloc.BlocBuilder<MakesCubit, MakesState>(
+                  builder: (context, state) {
+                    return dropDownFormFieldMethod(
+                      context,
+                      _vehicleMakeKey,
+                      'Vehicle Make',
+                      vehicleMakeValue,
+                      state is MakesLoaded ? state.dropdownItems : [],
+                      state is MakesLoaded ? state.makes : [],
+                      false,
+                      setMakeData,
+                      controlled: true,
+                      dropDownValue: vehicleMakeController.text != ""
+                          ? int.parse(vehicleMakeController.text)
+                          : null,
+                    );
+                  },
+                ),
+                const SizedBox(height: kMinSpacing),
+                flutter_bloc.BlocBuilder<ModelsCubit, ModelsState>(
+                  builder: (context, state) {
+                    List<DropdownMenuItem<Object>> dropdownItems = [];
+                    List<Model> items = [];
 
-                    if (cubicCapacityInt < 1000) {
-                      estimatedValue = estimatedValue + 1500;
-                      contributionController.text =
-                          estimatedValue.toStringAsFixed(2);
-                    } else if (cubicCapacityInt >= 1000 &&
-                        cubicCapacityInt <= 2000) {
-                      estimatedValue = estimatedValue + 1500;
-                      contributionController.text =
-                          estimatedValue.toStringAsFixed(2);
-                    } else if (cubicCapacityInt > 2000 &&
-                        cubicCapacityInt <= 3500) {
-                      estimatedValue = estimatedValue + 2500;
-                      contributionController.text =
-                          estimatedValue.toStringAsFixed(2);
-                    } else {
+                    if (state is ModelsLoaded) {
+                      int index = 0;
+                      for (Model model in state.models) {
+                        if (model.makeName == vehicleMakeValue) {
+                          items.add(model);
+                          dropdownItems.add(
+                            DropdownMenuItem(
+                              value: index,
+                              child: Text(model.modelName),
+                            ),
+                          );
+                          index++;
+                        }
+                      }
+                    }
+                    return dropDownFormFieldMethod(
+                      context,
+                      _vehicleVariantKey,
+                      'Vehicle Variant',
+                      vehicleVariantValue,
+                      dropdownItems,
+                      items,
+                      _variantReadOnly,
+                      setVariantData,
+                      controlled: true,
+                      dropDownValue: vehicleVariantController.text != ""
+                          ? int.parse(vehicleVariantController.text)
+                          : null,
+                    );
+                  },
+                ),
+                const SizedBox(height: kMinSpacing),
+                dropDownFormFieldMethod(
+                  context,
+                  _vehicleModelKey,
+                  'Vehicle Model',
+                  vehicleModelValue,
+                  modelList,
+                  modelListMap,
+                  _modelReadOnly,
+                  setModelData,
+                  controlled: true,
+                  dropDownValue: vehicleModelController.text != ""
+                      ? int.parse(vehicleModelController.text)
+                      : null,
+                ),
+                const SizedBox(height: kMinSpacing),
+                flutter_bloc.BlocBuilder<ColorsCubit, ColorsState>(
+                  builder: (context, state) {
+                    return dropDownFormFieldMethod(
+                      context,
+                      _colorKey,
+                      'Color',
+                      colorValue,
+                      state is ColorsLoaded ? state.dropdownItems : [],
+                      state is ColorsLoaded ? state.colors : [],
+                      false,
+                      setColorData,
+                      controlled: true,
+                      dropDownValue: colorController.text != ""
+                          ? int.parse(colorController.text)
+                          : null,
+                    );
+                  },
+                ),
+                const SizedBox(height: kMinSpacing),
+                textFormFieldMethod(
+                  context,
+                  'Cubic Capacity/Bhp/Torque',
+                  cubicCapacityController,
+                  false,
+                  false,
+                  TextInputType.text,
+                ),
+                const SizedBox(height: kMinSpacing),
+                FormSubHeading(
+                    text: 'Seating Capacity: ${seatingCapacity.ceil()}'),
+                const SizedBox(height: kMinSpacing),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: kDefaultPadding),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _minSeatingCapacity.toString(),
+                        style: const TextStyle(
+                          color: kFormSubHeadingColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: kFormSubHeadingFontSize,
+                        ),
+                      ),
+                      Text(
+                        _maxSeatingCapacity.toString(),
+                        style: const TextStyle(
+                          color: kFormSubHeadingColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: kFormSubHeadingFontSize,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                sliderThemeMethod(
+                  context,
+                  seatingCapacity,
+                  setSeatingCapacity,
+                  _minSeatingCapacity,
+                  _maxSeatingCapacity,
+                ),
+                productValue == thirdParty
+                    ? const SizedBox()
+                    : const FormSubHeading(text: 'Tracker Installed'),
+                productValue == thirdParty
+                    ? const SizedBox()
+                    : const CustomText(
+                        text: '(For Motor Cars Only)',
+                        color: kFormSubHeadingColor),
+                productValue == thirdParty
+                    ? const SizedBox()
+                    : const SizedBox(height: kMinSpacing),
+                productValue == thirdParty
+                    ? const SizedBox()
+                    : Row(
+                        children: [
+                          radioMethod(
+                            context,
+                            'Yes',
+                            'yes',
+                            trackerInstalled,
+                            setTrackerInstalled,
+                          ),
+                          const SizedBox(width: kMinSpacing),
+                          radioMethod(
+                            context,
+                            'No',
+                            'no',
+                            trackerInstalled,
+                            setTrackerInstalled,
+                          ),
+                        ],
+                      ),
+                const SizedBox(height: kMinSpacing),
+                productValue == thirdParty
+                    ? const SizedBox()
+                    : showTrackers
+                        ? flutter_bloc.BlocBuilder<TrackingCompaniesCubit,
+                            TrackingCompaniesState>(
+                            builder: (context, state) {
+                              return dropDownFormFieldMethod(
+                                context,
+                                _trackingCompanyKey,
+                                'Tracking Company',
+                                trackingCompanyValue,
+                                state is TrackingCompaniesLoaded
+                                    ? state.dropdownItems
+                                    : [],
+                                state is TrackingCompaniesLoaded
+                                    ? state.companies
+                                    : [],
+                                false,
+                                setTrackingCompanyData,
+                                controlled: true,
+                                dropDownValue: trackingCompanyController.text !=
+                                        ""
+                                    ? int.parse(trackingCompanyController.text)
+                                    : null,
+                              );
+                            },
+                          )
+                        : const SizedBox(),
+                productValue == thirdParty
+                    ? const SizedBox()
+                    : const SizedBox(height: kMinSpacing),
+                productValue == thirdParty
+                    ? const SizedBox()
+                    : const CustomText(
+                        text: '(For Motor Cars Only)',
+                        color: kFormSubHeadingColor),
+                productValue == thirdParty
+                    ? const SizedBox()
+                    : const SizedBox(height: kMinSpacing),
+                productValue == thirdParty
+                    ? const SizedBox()
+                    : const FormSubHeading(text: 'Additional Accessories'),
+                productValue == thirdParty
+                    ? const SizedBox()
+                    : const SizedBox(height: kMinSpacing),
+                productValue == thirdParty
+                    ? const SizedBox()
+                    : Row(
+                        children: [
+                          radioMethod(
+                            context,
+                            'Yes',
+                            'yes',
+                            additionalAccessories,
+                            setAdditionalAccessories,
+                          ),
+                          const SizedBox(width: kMinSpacing),
+                          radioMethod(
+                            context,
+                            'No',
+                            'no',
+                            additionalAccessories,
+                            setAdditionalAccessories,
+                          ),
+                        ],
+                      ),
+                const CustomText(
+                    text: '(For Motor Cars Only)', color: kFormSubHeadingColor),
+                const SizedBox(height: kMinSpacing),
+                FormSubHeading(text: _personalAccidentText),
+                const SizedBox(height: kMinSpacing),
+                Row(
+                  children: [
+                    radioMethod(
+                      context,
+                      'Yes',
+                      'yes',
+                      personalAccidentValue,
+                      setPersonalAccident,
+                    ),
+                    const SizedBox(width: kMinSpacing),
+                    radioMethod(
+                      context,
+                      'No',
+                      'no',
+                      personalAccidentValue,
+                      setPersonalAccident,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: kMinSpacing),
+                const FormSubHeading(text: 'Period of Insurance'),
+                const SizedBox(height: kMinSpacing),
+                Row(
+                  children: [
+                    const Text(
+                      'From',
+                      style: TextStyle(
+                        color: kFormSubHeadingColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: kFormSubHeadingFontSize,
+                      ),
+                    ),
+                    const SizedBox(width: kMinSpacing),
+                    Expanded(
+                      child: dateTimeFormFieldMethod(
+                        context,
+                        '17-09-2022',
+                        setFromInsuranceDate,
+                        disabledValue: insurancePeriodIssueDate,
+                        disabled: true,
+                      ),
+                    ),
+                    const SizedBox(width: kMinSpacing),
+                    const Text(
+                      'To',
+                      style: TextStyle(
+                        color: kFormSubHeadingColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: kFormSubHeadingFontSize,
+                      ),
+                    ),
+                    const SizedBox(width: kMinSpacing),
+                    Expanded(
+                      child: dateTimeFormFieldMethod(
+                        context,
+                        '16-09-2023',
+                        setToInsuranceDate,
+                        disabled: true,
+                        disabledValue: insurancePeriodExpiryDate,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: kMinSpacing),
+                textFormFieldMethod(
+                    context,
+                    'Insured Estimated Value',
+                    insuredEstimatedValueController,
+                    true,
+                    false,
+                    TextInputType.number),
+                const SizedBox(height: kMinSpacing),
+                CustomButton(
+                  buttonText: calculateButtonText,
+                  onPressed: () {
+                    try {
+                      String productName = productValue!;
+                      String year = vehicleModelValue!;
+                      String vehcileMake = vehicleMakeValue!;
+
+                      String hasTracker = trackerInstalled;
+                      String personalAccident = personalAccidentValue;
+                      double carEstimatedValue = double.parse(
+                          insuredEstimatedValueController.text
+                              .replaceAll(',', '')
+                              .trim());
+
+                      double estimatedValue = 0;
+
+                      final DateTime now = DateTime.now();
+                      final int currentYear = now.year;
+
+                      int personalAccidentAmount =
+                          personalAccident == 'yes' ? 1200 : 0;
+                      int yearsOld = currentYear - int.parse(year);
+
+                      if (productName == privateCar) {
+                        if (yearsOld <= 5) {
+                          if (hasTracker == 'yes') {
+                            estimatedValue = carEstimatedValue * (1.75 / 100);
+                          } else {
+                            estimatedValue = carEstimatedValue * (1.5 / 100);
+                          }
+                          estimatedValue =
+                              estimatedValue + personalAccidentAmount;
+                          contributionController.text =
+                              estimatedValue.toStringAsFixed(2);
+                        } else if (yearsOld > 5 && yearsOld <= 15) {
+                          estimatedValue = carEstimatedValue * (1.5 / 100);
+                          estimatedValue =
+                              estimatedValue + personalAccidentAmount;
+                          contributionController.text =
+                              estimatedValue.toStringAsFixed(2);
+                        } else {
+                          AlertDialog alert = messageDialog(
+                              context,
+                              'Error',
+                              'The model of the vehicle is greater than 15 years. '
+                                  'Please contact the administrator.');
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return alert;
+                            },
+                          );
+                        }
+                      } else if (productName == thirdParty) {
+                        if (yearsOld <= 10) {
+                          String cubicCapacity = cubicCapacityController.text;
+                          cubicCapacity =
+                              cubicCapacity.replaceAll(RegExp(r'\D'), '');
+                          int cubicCapacityInt = int.parse(cubicCapacity);
+
+                          if (cubicCapacityInt < 1000) {
+                            estimatedValue = estimatedValue + 1500;
+                            contributionController.text =
+                                estimatedValue.toStringAsFixed(2);
+                          } else if (cubicCapacityInt >= 1000 &&
+                              cubicCapacityInt <= 2000) {
+                            estimatedValue = estimatedValue + 1500;
+                            contributionController.text =
+                                estimatedValue.toStringAsFixed(2);
+                          } else if (cubicCapacityInt > 2000 &&
+                              cubicCapacityInt <= 3500) {
+                            estimatedValue = estimatedValue + 2500;
+                            contributionController.text =
+                                estimatedValue.toStringAsFixed(2);
+                          } else {
+                            AlertDialog alert = messageDialog(
+                                context,
+                                'Error',
+                                'The cubic capacity is greater than 3500. '
+                                    'Please contact the administrator.');
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return alert;
+                              },
+                            );
+                          }
+                        } else {
+                          AlertDialog alert = messageDialog(
+                              context,
+                              'Error',
+                              'The model of the vehicle is greater than 10 years. '
+                                  'Please contact the administrator.');
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return alert;
+                            },
+                          );
+                        }
+                      } else if (productName == motorCycle) {
+                        if (yearsOld <= 5) {
+                          if (vehcileMake.toLowerCase().contains('honda')) {
+                            estimatedValue = carEstimatedValue * (10 / 100);
+                          } else {
+                            estimatedValue = carEstimatedValue * (8 / 100);
+                          }
+                          contributionController.text =
+                              estimatedValue.toStringAsFixed(2);
+                        } else {
+                          AlertDialog alert = messageDialog(
+                              context,
+                              'Error',
+                              'The model of the vehicle is greater than 5 years. '
+                                  'Please contact the administrator.');
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return alert;
+                            },
+                          );
+                        }
+                      } else {
+                        AlertDialog alert = messageDialog(
+                            context,
+                            'Error',
+                            'The product name is not valid. '
+                                'Please contact the administrator.');
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return alert;
+                          },
+                        );
+                      }
+                    } catch (e) {
                       AlertDialog alert = messageDialog(
-                          context,
-                          'Error',
-                          'The cubic capacity is greater than 3500. '
-                              'Please contact the administrator.');
+                          context, 'Error', 'Please fill all the fields');
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -552,104 +621,53 @@ class _Step2FormState extends State<Step2Form> {
                         },
                       );
                     }
-                  } else {
-                    AlertDialog alert = messageDialog(
-                        context,
-                        'Error',
-                        'The model of the vehicle is greater than 10 years. '
-                            'Please contact the administrator.');
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return alert;
-                      },
-                    );
-                  }
-                } else if (productName == motorCycle) {
-                  if (yearsOld <= 5) {
-                    if (vehcileMake.toLowerCase().contains('honda')) {
-                      estimatedValue = carEstimatedValue * (10 / 100);
+                  },
+                  buttonColor: kSecondaryColor,
+                ),
+                const SizedBox(height: kMinSpacing),
+                const FormSubHeading(text: 'Contribution (Premium)'),
+                const SizedBox(height: kMinSpacing),
+                textFormFieldMethod(
+                  context,
+                  '-',
+                  contributionController,
+                  true,
+                  true,
+                  TextInputType.number,
+                ),
+                const SizedBox(height: kMinSpacing),
+                CustomButton(
+                  buttonText: nextButtonText,
+                  onPressed: () {
+                    if (contributionController.text.isNotEmpty) {
+                      Navigator.pushNamed(context, FormStep3Screen.routeName,
+                          arguments: {
+                            'contribution': contributionController.text,
+                            'productName': productValue,
+                          });
                     } else {
-                      estimatedValue = carEstimatedValue * (8 / 100);
+                      AlertDialog alert = messageDialog(context, 'Error',
+                          'Please calculate the contribution');
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return alert;
+                        },
+                      );
                     }
-                    contributionController.text =
-                        estimatedValue.toStringAsFixed(2);
-                  } else {
-                    AlertDialog alert = messageDialog(
-                        context,
-                        'Error',
-                        'The model of the vehicle is greater than 5 years. '
-                            'Please contact the administrator.');
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return alert;
-                      },
-                    );
-                  }
-                } else {
-                  AlertDialog alert = messageDialog(
-                      context,
-                      'Error',
-                      'The product name is not valid. '
-                          'Please contact the administrator.');
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return alert;
-                    },
-                  );
-                }
-              } catch (e) {
-                AlertDialog alert = messageDialog(
-                    context, 'Error', 'Please fill all the fields');
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return alert;
                   },
-                );
-              }
-            },
-            buttonColor: kSecondaryColor,
-          ),
-          const SizedBox(height: kMinSpacing),
-          const FormSubHeading(text: 'Contribution (Premium)'),
-          const SizedBox(height: kMinSpacing),
-          textFormFieldMethod(
-            context,
-            '-',
-            contributionController,
-            true,
-            true,
-            TextInputType.number,
-          ),
-          const SizedBox(height: kMinSpacing),
-          CustomButton(
-            buttonText: nextButtonText,
-            onPressed: () {
-              if (contributionController.text.isNotEmpty) {
-                Navigator.pushNamed(context, FormStep3Screen.routeName,
-                    arguments: {
-                      'contribution': contributionController.text,
-                      'productName': productValue,
-                    });
-              } else {
-                AlertDialog alert = messageDialog(
-                    context, 'Error', 'Please calculate the contribution');
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return alert;
-                  },
-                );
-              }
-            },
-            buttonColor: kSecondaryColor,
-          ),
-          const SizedBox(height: kSpacingBottom),
-        ],
-      ),
+                  buttonColor: kSecondaryColor,
+                ),
+                const SizedBox(height: kSpacingBottom),
+              ],
+            ),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 

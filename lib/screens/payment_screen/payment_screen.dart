@@ -18,8 +18,6 @@ import 'package:open_file_plus/open_file_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
 
-import 'package:image/image.dart' as img;
-
 class PaymentScreen extends StatefulWidget {
   static const String routeName = '/payment_screen';
 

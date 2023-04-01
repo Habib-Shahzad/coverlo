@@ -1,6 +1,6 @@
+import 'package:coverlo/cubits/cubit_base.dart';
 import 'package:coverlo/models/tracking_company_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coverlo/respository/tracking_company_repository.dart';
 
 @immutable
@@ -24,19 +24,29 @@ class TrackingCompaniesError extends TrackingCompaniesState {
   TrackingCompaniesError({required this.message});
 }
 
-class TrackingCompaniesCubit extends Cubit<TrackingCompaniesState> {
+class TrackingCompaniesCubit extends MyCubit<TrackingCompaniesState> {
   final TrackingCompanyRepository trackingCompanyRepository =
       TrackingCompanyRepository();
 
   TrackingCompaniesCubit() : super(TrackingCompaniesInitial());
 
+  @override
+  Type getInitState() {
+    return TrackingCompaniesInitial;
+  }
+
+  @override
+  Type getErrState() {
+    return TrackingCompaniesError;
+  }
+
+  @override
   Future<void> getData() async {
     emit(TrackingCompaniesLoading());
 
     try {
       final companies = await trackingCompanyRepository.getTrackingCompanies();
-      final dropdownItems =
-          trackingCompanyRepository.toDropdown(companies);
+      final dropdownItems = trackingCompanyRepository.toDropdown(companies);
 
       emit(TrackingCompaniesLoaded(
           companies: companies, dropdownItems: dropdownItems));

@@ -1,7 +1,7 @@
+import 'package:coverlo/cubits/cubit_base.dart';
 import 'package:coverlo/models/product_model.dart';
 import 'package:coverlo/respository/product_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 @immutable
 abstract class ProductsState {}
@@ -23,11 +23,22 @@ class ProductsError extends ProductsState {
   ProductsError({required this.message});
 }
 
-class ProductsCubit extends Cubit<ProductsState> {
+class ProductsCubit extends MyCubit<ProductsState> {
   final ProductRepository productRepository = ProductRepository();
 
   ProductsCubit() : super(ProductsInitial());
 
+  @override
+  Type getInitState() {
+    return ProductsInitial;
+  }
+
+  @override
+  Type getErrState() {
+    return ProductsError;
+  }
+
+  @override
   Future<void> getData() async {
     emit(ProductsLoading());
 

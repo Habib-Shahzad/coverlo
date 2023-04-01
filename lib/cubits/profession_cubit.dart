@@ -1,5 +1,5 @@
+import 'package:coverlo/cubits/cubit_base.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coverlo/respository/profession_repository.dart';
 import 'package:coverlo/models/profession_model.dart';
 
@@ -23,11 +23,22 @@ class ProfessionsError extends ProfessionsState {
   ProfessionsError({required this.message});
 }
 
-class ProfessionsCubit extends Cubit<ProfessionsState> {
+class ProfessionsCubit extends MyCubit<ProfessionsState> {
   final ProfessionRepository professionRepository = ProfessionRepository();
 
   ProfessionsCubit() : super(ProfessionsInitial());
 
+  @override
+  Type getInitState() {
+    return ProfessionsInitial;
+  }
+
+  @override
+  Type getErrState() {
+    return ProfessionsError;
+  }
+
+  @override
   Future<void> getData() async {
     emit(ProfessionsLoading());
 

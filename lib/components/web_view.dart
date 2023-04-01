@@ -39,9 +39,8 @@ class WebView extends State<MyWebView> {
       ));
 
   late PullToRefreshController pullToRefreshController;
-  String url = "";
+  Uri url = Uri.parse("about:blank");
   double progress = 0;
-  final urlController = TextEditingController();
 
   @override
   void initState() {
@@ -72,8 +71,9 @@ class WebView extends State<MyWebView> {
       webViewController!.goBack();
       return Future.value(false);
     } else {
-      Navigator.popAndPushNamed(context, PaymentScreen.routeName);
-
+      if (context.mounted) {
+        Navigator.popAndPushNamed(context, PaymentScreen.routeName);
+      }
       return Future.value(true);
     }
   }
@@ -108,8 +108,7 @@ class WebView extends State<MyWebView> {
                       onLoadStart: (controller, url) {
                         // print(widget.webUrl);
                         setState(() {
-                          this.url = url.toString();
-                          urlController.text = this.url;
+                          this.url = Uri.parse(url.toString());
                         });
                       },
                       androidOnPermissionRequest:
@@ -131,9 +130,9 @@ class WebView extends State<MyWebView> {
                           "javascript",
                           "about"
                         ].contains(uri.scheme)) {
-                          if (await canLaunch(url)) {
+                          if (await canLaunchUrl(url)) {
                             // Launch the App
-                            await launch(
+                            await launchUrl(
                               url,
                             );
                             // and cancel the request
@@ -146,8 +145,7 @@ class WebView extends State<MyWebView> {
                       onLoadStop: (controller, url) async {
                         pullToRefreshController.endRefreshing();
                         setState(() {
-                          this.url = url.toString();
-                          urlController.text = this.url;
+                          this.url = Uri.parse(url.toString());
                         });
                       },
                       onLoadError: (controller, url, code, message) {
@@ -159,14 +157,12 @@ class WebView extends State<MyWebView> {
                         }
                         setState(() {
                           this.progress = progress / 100;
-                          urlController.text = url;
                         });
                       },
                       onUpdateVisitedHistory:
                           (controller, url, androidIsReload) {
                         setState(() {
-                          this.url = url.toString();
-                          urlController.text = this.url;
+                          this.url = Uri.parse(url.toString());
                         });
                       },
                       onConsoleMessage: (controller, consoleMessage) {

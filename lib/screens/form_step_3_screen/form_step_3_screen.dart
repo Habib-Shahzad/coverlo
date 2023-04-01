@@ -19,6 +19,7 @@ class VehicleImageComponent extends StatelessWidget {
   final XFile? imageValue;
   final Function()? setImage;
   final Function()? removeImage;
+  final bool imageLoading;
 
   const VehicleImageComponent({
     Key? key,
@@ -27,6 +28,7 @@ class VehicleImageComponent extends StatelessWidget {
     required this.setImage,
     required this.removeImage,
     required this.imageAssetPath,
+    required this.imageLoading,
   }) : super(key: key);
 
   @override
@@ -69,34 +71,45 @@ class VehicleImageComponent extends StatelessWidget {
                 ),
               ),
         imageValue == null
-            ? Positioned.fill(
-                child: Align(
-                alignment: Alignment.center,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                        height: 40.0,
-                        width: 40.0,
-                        child: IconButton(
-                          padding: const EdgeInsets.all(0.0),
-                          icon: const Icon(
-                            Icons.add_circle_outline,
-                            size: 40.0,
-                            color: Colors.black,
-                          ),
-                          onPressed: setImage,
-                        )),
-                    Text(
-                      imageName!,
-                      style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 16.0,
-                          backgroundColor: Colors.white),
+            ? imageLoading
+                ? Positioned.fill(
+                    child: Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        CircularProgressIndicator(),
+                      ],
                     ),
-                  ],
-                ),
-              ))
+                  ))
+                : Positioned.fill(
+                    child: Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                            height: 40.0,
+                            width: 40.0,
+                            child: IconButton(
+                              padding: const EdgeInsets.all(0.0),
+                              icon: const Icon(
+                                Icons.add_circle_outline,
+                                size: 40.0,
+                                color: Colors.black,
+                              ),
+                              onPressed: setImage,
+                            )),
+                        Text(
+                          imageName!,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16.0,
+                              backgroundColor: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ))
             : const SizedBox(),
       ],
     );
@@ -119,6 +132,38 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
   String? contribution;
   String? productName;
   bool isCar = true;
+
+  bool carFrontLoading = false;
+  bool carBackLoading = false;
+  bool carLeftLoading = false;
+  bool carRightLoading = false;
+  bool carHoodLoading = false;
+  bool carBootLoading = false;
+
+  bool bikeFrontLoading = false;
+  bool bikeBackLoading = false;
+  bool bikeLeftLoading = false;
+  bool bikeRightLoading = false;
+
+  bool imageIsLoading() {
+    if (isCar) {
+      return carFrontLoading ||
+          carBackLoading ||
+          carLeftLoading ||
+          carRightLoading ||
+          carHoodLoading ||
+          carBootLoading;
+    } else {
+      if (bikeFrontLoading ||
+          bikeBackLoading ||
+          bikeLeftLoading ||
+          bikeRightLoading) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -227,12 +272,14 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                   Row(
                                     children: [
                                       VehicleImageComponent(
-                                          imageName: 'Front',
-                                          imageValue: imageCarFront,
-                                          setImage: _pickCarFrontImage,
-                                          removeImage: _removeCarFrontImage,
-                                          imageAssetPath:
-                                              "assets/images/car_front.png"),
+                                        imageName: 'Front',
+                                        imageValue: imageCarFront,
+                                        setImage: _pickCarFrontImage,
+                                        removeImage: _removeCarFrontImage,
+                                        imageAssetPath:
+                                            "assets/images/car_front.png",
+                                        imageLoading: carFrontLoading,
+                                      ),
                                       const Padding(
                                         padding: EdgeInsets.symmetric(
                                           horizontal: 10.0,
@@ -244,7 +291,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                           setImage: _pickCarBackImage,
                                           removeImage: _removeCarBackImage,
                                           imageAssetPath:
-                                              "assets/images/car_back.png"),
+                                              "assets/images/car_back.png",
+                                          imageLoading: carBackLoading),
                                     ],
                                   ),
                                   const Padding(
@@ -260,7 +308,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                           setImage: _pickCarLeftImage,
                                           removeImage: _removeCarLeftImage,
                                           imageAssetPath:
-                                              "assets/images/car_left.png"),
+                                              "assets/images/car_left.png",
+                                          imageLoading: carLeftLoading),
                                       const Padding(
                                         padding: EdgeInsets.symmetric(
                                           horizontal: 10.0,
@@ -272,7 +321,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                           setImage: _pickCarRightImage,
                                           removeImage: _removeCarRightImage,
                                           imageAssetPath:
-                                              "assets/images/car_right.png"),
+                                              "assets/images/car_right.png",
+                                          imageLoading: carRightLoading),
                                     ],
                                   ),
                                   const Padding(
@@ -288,7 +338,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                           setImage: _pickCarHoodImage,
                                           removeImage: _removeCarHoodImage,
                                           imageAssetPath:
-                                              "assets/images/car_hood.png"),
+                                              "assets/images/car_hood.png",
+                                          imageLoading: carHoodLoading),
                                       const Padding(
                                         padding: EdgeInsets.symmetric(
                                           horizontal: 10.0,
@@ -300,7 +351,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                           setImage: _pickCarBootImage,
                                           removeImage: _removeCarBootImage,
                                           imageAssetPath:
-                                              "assets/images/car_boot.png"),
+                                              "assets/images/car_boot.png",
+                                          imageLoading: carBootLoading),
                                     ],
                                   ),
                                 ],
@@ -315,7 +367,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                           setImage: _pickBikeFrontImage,
                                           removeImage: _removeBikeFrontImage,
                                           imageAssetPath:
-                                              "assets/images/bike_front.png"),
+                                              "assets/images/bike_front.png",
+                                          imageLoading: bikeFrontLoading),
                                       const Padding(
                                         padding: EdgeInsets.symmetric(
                                           horizontal: 10.0,
@@ -327,7 +380,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                           setImage: _pickBikeBackImage,
                                           removeImage: _removeBikeBackImage,
                                           imageAssetPath:
-                                              "assets/images/bike_back.png"),
+                                              "assets/images/bike_back.png",
+                                          imageLoading: bikeBackLoading),
                                     ],
                                   ),
                                   const Padding(
@@ -343,7 +397,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                           setImage: _pickBikeLeftImage,
                                           removeImage: _removeBikeLeftImage,
                                           imageAssetPath:
-                                              "assets/images/bike_left.png"),
+                                              "assets/images/bike_left.png",
+                                          imageLoading: bikeLeftLoading),
                                       const Padding(
                                         padding: EdgeInsets.symmetric(
                                           horizontal: 10.0,
@@ -355,7 +410,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                                           setImage: _pickBikeRightImage,
                                           removeImage: _removeBikeRightImage,
                                           imageAssetPath:
-                                              "assets/images/bike_right.png"),
+                                              "assets/images/bike_right.png",
+                                          imageLoading: bikeRightLoading),
                                     ],
                                   ),
                                 ],
@@ -367,6 +423,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                       CustomButton(
                         buttonText: "Submit and Pay",
                         onPressed: () {
+                          bool loading = imageIsLoading();
+                          if (loading) return;
                           Navigator.pushNamed(
                             context,
                             PaymentScreen.routeName,
@@ -374,6 +432,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                           );
                         },
                         buttonColor: kSecondaryColor,
+                        disabled: imageIsLoading(),
                       ),
                     ],
                   ),
@@ -426,7 +485,6 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
   }
 
   // SET CAR BYTES
-
   _setCarFrontBytes(value) {
     setState(() {
       bytesCarFront = value;
@@ -584,47 +642,115 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
     });
   }
 
+  setCarFrontLoading(bool loading) {
+    setState(() {
+      carFrontLoading = loading;
+    });
+  }
+
+  setCarBackLoading(bool loading) {
+    setState(() {
+      carBackLoading = loading;
+    });
+  }
+
+  setCarLeftLoading(bool loading) {
+    setState(() {
+      carLeftLoading = loading;
+    });
+  }
+
+  setCarRightLoading(bool loading) {
+    setState(() {
+      carRightLoading = loading;
+    });
+  }
+
+  setCarHoodLoading(bool loading) {
+    setState(() {
+      carHoodLoading = loading;
+    });
+  }
+
+  setCarBootLoading(bool loading) {
+    setState(() {
+      carBootLoading = loading;
+    });
+  }
+
+  setBikeFrontLoading(bool loading) {
+    setState(() {
+      bikeFrontLoading = loading;
+    });
+  }
+
+  setBikeBackLoading(bool loading) {
+    setState(() {
+      bikeBackLoading = loading;
+    });
+  }
+
+  setBikeLeftLoading(bool loading) {
+    setState(() {
+      bikeLeftLoading = loading;
+    });
+  }
+
+  setBikeRightLoading(bool loading) {
+    setState(() {
+      bikeRightLoading = loading;
+    });
+  }
+
   _pickCarFrontImage() async {
-    _pickImage(_setCarFrontImage, _setCarFrontBytes);
+    _pickImage(_setCarFrontImage, _setCarFrontBytes, setCarFrontLoading);
   }
 
   _pickCarBackImage() {
-    _pickImage(_setCarBackImage, _setCarBackBytes);
+    _pickImage(_setCarBackImage, _setCarBackBytes, setCarBackLoading);
   }
 
   _pickCarLeftImage() {
-    _pickImage(_setCarLeftImage, _setCarLeftBytes);
+    _pickImage(_setCarLeftImage, _setCarLeftBytes, setCarLeftLoading);
   }
 
   _pickCarRightImage() {
-    _pickImage(_setCarRightImage, _setCarRightBytes);
+    _pickImage(_setCarRightImage, _setCarRightBytes, setCarRightLoading);
   }
 
   _pickCarHoodImage() {
-    _pickImage(_setCarHoodImage, _setCarHoodBytes);
+    _pickImage(_setCarHoodImage, _setCarHoodBytes, setCarHoodLoading);
   }
 
   _pickCarBootImage() {
-    _pickImage(_setCarBootImage, _setCarBootBytes);
+    _pickImage(_setCarBootImage, _setCarBootBytes, setCarBootLoading);
   }
 
   _pickBikeFrontImage() {
-    _pickImage(_setBikeFrontImage, _setBikeFrontBytes);
+    _pickImage(_setBikeFrontImage, _setBikeFrontBytes, setBikeFrontLoading);
   }
 
   _pickBikeBackImage() {
-    _pickImage(_setBikeBackImage, _setBikeBackBytes);
+    _pickImage(_setBikeBackImage, _setBikeBackBytes, setBikeBackLoading);
   }
 
   _pickBikeLeftImage() {
-    _pickImage(_setBikeLeftImage, _setBikeLeftBytes);
+    _pickImage(_setBikeLeftImage, _setBikeLeftBytes, setBikeLeftLoading);
   }
 
   _pickBikeRightImage() {
-    _pickImage(_setBikeRightImage, _setBikeRightBytes);
+    _pickImage(_setBikeRightImage, _setBikeRightBytes, setBikeRightLoading);
   }
 
-  _pickImage(Function setImageFunction, Function setBytesFunction) async {
+  _pickImage(Function setImageFunction, Function setBytesFunction,
+      Function setLoading) async {
+    setLoading(true);
+
+    void navigateBack(BuildContext context) {
+      setLoading(false);
+      Navigator.pop(context);
+    }
+
     showDialog<ImageSource>(
       context: context,
       builder: (context) => AlertDialog(
@@ -642,7 +768,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
               alignment: Alignment.bottomRight,
               child: TextButton(
                 child: const Text("Cancel"),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => navigateBack(context),
               ),
             ),
           ],
@@ -657,6 +783,11 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
 
         setBytesFunction(resizedBytes);
         setImageFunction(XFile(pickedFile.path));
+
+        setLoading(false);
+      }
+      else {
+        setLoading(false);
       }
     });
   }

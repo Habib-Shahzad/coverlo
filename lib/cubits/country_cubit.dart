@@ -1,5 +1,5 @@
+import 'package:coverlo/cubits/cubit_base.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coverlo/respository/country_repository.dart';
 import 'package:coverlo/models/country_model.dart';
 
@@ -23,11 +23,22 @@ class CountriesError extends CountriesState {
   CountriesError({required this.message});
 }
 
-class CountriesCubit extends Cubit<CountriesState> {
+class CountriesCubit extends MyCubit<CountriesState> {
   final CountryRepository countryRepository = CountryRepository();
 
   CountriesCubit() : super(CountriesInitial());
 
+  @override
+  Type getInitState() {
+    return CountriesInitial;
+  }
+
+  @override
+  Type getErrState() {
+    return CountriesError;
+  }
+
+  @override
   Future<void> getData() async {
     emit(CountriesLoading());
 
@@ -37,7 +48,7 @@ class CountriesCubit extends Cubit<CountriesState> {
 
       emit(CountriesLoaded(countries: countries, dropdownItems: dropdownItems));
     } catch (e) {
-      print(e.toString());
+      // print(e.toString());
       emit(CountriesError(message: e.toString()));
     }
   }

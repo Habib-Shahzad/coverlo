@@ -52,9 +52,13 @@ class OnboardingBody extends StatelessWidget {
             final jsonString = prefs.getString('user');
 
             if (jsonString != null) {
-              Navigator.pushNamed(context, FormStep1Screen.routeName);
+              if (context.mounted) {
+                Navigator.pushNamed(context, FormStep1Screen.routeName);
+              }
             } else {
-              Navigator.pushNamed(context, LoginScreen.routeName);
+              if (context.mounted) {
+                Navigator.pushNamed(context, LoginScreen.routeName);
+              }
             }
           },
           buttonColor: kSecondaryColor,

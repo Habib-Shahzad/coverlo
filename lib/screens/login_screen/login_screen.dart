@@ -1,12 +1,9 @@
 import 'package:coverlo/components/custom_text.dart';
 import 'package:coverlo/components/main_heading.dart';
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/cubits/city_cubit.dart';
-import 'package:coverlo/cubits/country_cubit.dart';
-import 'package:coverlo/cubits/profession_cubit.dart';
+import 'package:coverlo/networking/data_manager.dart';
 import 'package:coverlo/screens/login_screen/login_form.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -21,19 +18,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (context.read<CitiesCubit>().state is CitiesInitial ||
-          context.read<CitiesCubit>().state is CitiesError)
-        await context.read<CitiesCubit>().getData();
-
-      if (context.read<ProfessionsCubit>().state is ProfessionsInitial ||
-          context.read<ProfessionsCubit>().state is ProfessionsError)
-        await context.read<ProfessionsCubit>().getData();
-
-      if (context.read<CountriesCubit>().state is CountriesInitial ||
-          context.read<CountriesCubit>().state is CountriesError)
-        await context.read<CountriesCubit>().getData();
+      if (context.mounted) await DataManager.fetchMakes(context);
+      if (context.mounted) await DataManager.fetchModels(context);
     });
   }
 

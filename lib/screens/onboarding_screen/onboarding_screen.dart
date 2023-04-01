@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:coverlo/cubits/country_cubit.dart';
-import 'package:coverlo/cubits/profession_cubit.dart';
+import 'package:coverlo/networking/data_manager.dart';
 import 'package:coverlo/respository/user_repository.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/cubits/city_cubit.dart';
 import 'package:coverlo/globals.dart';
 import 'package:coverlo/models/user_model.dart';
 import 'package:coverlo/screens/onboarding_screen/body.dart';
@@ -13,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
+
+// import '../../global_formdata.dart';
 
 class OnboardingScreen extends StatefulWidget {
   static const String routeName = '/onboarding_screen';
@@ -28,23 +27,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool loggedIn = false;
   bool loading = true;
 
+  Future<void> fetchData() async {
+    if (context.mounted) await DataManager.fetchMakes(context);
+    if (context.mounted) await DataManager.fetchModels(context);
+  }
+
+  Future<void>? _future;
+
   @override
   void initState() {
     super.initState();
+    _future = fetchData();
     initPlatformState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (context.read<CitiesCubit>().state is CitiesInitial) {
-        await context.read<CitiesCubit>().getData();
-      }
-
-      if (context.read<ProfessionsCubit>().state is ProfessionsInitial) {
-        await context.read<ProfessionsCubit>().getData();
-      }
-
-      if (context.read<CountriesCubit>().state is CountriesInitial) {
-        await context.read<CountriesCubit>().getData();
-      }
-    });
+    // setDebuggingFormData();
   }
 
   @override
@@ -110,10 +105,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter),
           ),
-          child: OnboardingBody(
-            loggedIn: loggedIn,
-            loading: loading,
-          ),
+          child: FutureBuilder<void>(
+              future: _future,
+              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                return OnboardingBody(
+                  loggedIn: loggedIn,
+                  loading: snapshot.connectionState != ConnectionState.done,
+                );
+              }),
         ),
       ),
     );

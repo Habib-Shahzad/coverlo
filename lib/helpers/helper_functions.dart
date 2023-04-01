@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/env/env.dart';
 import 'package:coverlo/des/des.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xml/xml.dart';
 import 'package:image/image.dart' as img;
@@ -154,8 +153,8 @@ Uint8List? imageBytesResize(List<int>? imageBytes) {
     img.Image resizedImage =
         img.copyResize(image, width: newWidth, height: newHeight);
 
-    print(newWidth);
-    print(newHeight);
+    // print(newWidth);
+    // print(newHeight);
     bytes = Uint8List.fromList(img.encodePng(resizedImage));
   }
   return bytes;

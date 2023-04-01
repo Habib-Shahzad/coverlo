@@ -1,7 +1,7 @@
+import 'package:coverlo/cubits/cubit_base.dart';
 import 'package:coverlo/respository/color_repository.dart';
 import 'package:coverlo/models/color_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 @immutable
 abstract class ColorsState {}
@@ -23,11 +23,22 @@ class ColorsError extends ColorsState {
   ColorsError({required this.message});
 }
 
-class ColorsCubit extends Cubit<ColorsState> {
+class ColorsCubit extends MyCubit<ColorsState> {
   final ColorRepository colorRepository = ColorRepository();
 
   ColorsCubit() : super(ColorsInitial());
 
+  @override
+  Type getInitState() {
+    return ColorsInitial;
+  }
+
+  @override
+  Type getErrState() {
+    return ColorsError;
+  }
+
+  @override
   Future<void> getData() async {
     emit(ColorsLoading());
 
@@ -35,10 +46,9 @@ class ColorsCubit extends Cubit<ColorsState> {
       final colors = await colorRepository.getCarColors();
       final dropdownItems = colorRepository.toDropdown(colors);
 
-
       emit(ColorsLoaded(colors: colors, dropdownItems: dropdownItems));
     } catch (e) {
-      print(e.toString());
+      // print(e.toString());
       emit(ColorsError(message: e.toString()));
     }
   }

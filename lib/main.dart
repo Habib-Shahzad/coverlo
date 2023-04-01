@@ -11,7 +11,6 @@ import 'package:coverlo/screens/onboarding_screen/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-// ignore: depend_on_referenced_packages
 import 'package:provider/provider.dart';
 
 void main() async {

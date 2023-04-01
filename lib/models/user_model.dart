@@ -102,7 +102,7 @@ class UserMessageResponse {
           Des.encrypt(Env.serverKey, deviceUniqueIdentifier);
       setUniqueIDs(encryptedIdentifier, encryptedText);
     } catch (e) {
-      print(e.toString());
+      // print(e.toString());
     }
     return UserMessageResponse(
       code: json['responseCode'].toString(),

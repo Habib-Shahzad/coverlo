@@ -50,7 +50,7 @@ class _LoginFormState extends State<LoginForm> {
           errorPassword = "Password is incorrect";
         });
       } else {
-        Navigator.pushReplacementNamed(context, FormStep1Screen.routeName);
+        if (context.mounted) Navigator.pushReplacementNamed(context, FormStep1Screen.routeName);
       }
       return user;
     } catch (e) {

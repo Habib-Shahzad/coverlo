@@ -1,5 +1,5 @@
+import 'package:coverlo/cubits/cubit_base.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:coverlo/respository/city_repository.dart';
 import 'package:coverlo/models/city_model.dart';
 
@@ -23,11 +23,22 @@ class CitiesError extends CitiesState {
   CitiesError({required this.message});
 }
 
-class CitiesCubit extends Cubit<CitiesState> {
+class CitiesCubit extends MyCubit<CitiesState> {
   final CityRepository cityRepository = CityRepository();
 
   CitiesCubit() : super(CitiesInitial());
 
+  @override
+  Type getInitState() {
+    return CitiesInitial;
+  }
+
+  @override
+  Type getErrState() {
+    return CitiesError;
+  }
+
+  @override
   Future<void> getData() async {
     emit(CitiesLoading());
 
@@ -37,7 +48,7 @@ class CitiesCubit extends Cubit<CitiesState> {
 
       emit(CitiesLoaded(cities: cities, dropdownItems: dropdownItems));
     } catch (e) {
-      print(e.toString());
+      // print(e.toString());
       emit(CitiesError(message: e.toString()));
     }
   }

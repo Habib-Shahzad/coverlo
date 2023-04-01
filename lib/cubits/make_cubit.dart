@@ -1,7 +1,7 @@
+import 'package:coverlo/cubits/cubit_base.dart';
 import 'package:coverlo/models/make_model.dart';
 import 'package:coverlo/respository/make_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 @immutable
 abstract class MakesState {}
@@ -23,11 +23,22 @@ class MakesError extends MakesState {
   MakesError({required this.message});
 }
 
-class MakesCubit extends Cubit<MakesState> {
+class MakesCubit extends MyCubit<MakesState> {
   final MakeRepository makeRepository = MakeRepository();
 
   MakesCubit() : super(MakesInitial());
 
+  @override
+  Type getInitState() {
+    return MakesInitial;
+  }
+
+  @override
+  Type getErrState() {
+    return MakesError;
+  }
+
+  @override
   Future<void> getData() async {
     emit(MakesLoading());
 

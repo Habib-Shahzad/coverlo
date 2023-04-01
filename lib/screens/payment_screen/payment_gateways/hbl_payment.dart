@@ -92,6 +92,6 @@ paymentHBL(Function displayHblPaymentWebView, String? contribution) async {
   });
   postData = postData.substring(0, postData.length - 1);
 
-  String cardNumber = '5200000000000007';
+  // String cardNumber = '5200000000000007';
   displayHblPaymentWebView(postData);
 }

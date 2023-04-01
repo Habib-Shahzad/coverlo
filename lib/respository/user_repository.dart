@@ -20,7 +20,7 @@ class UserRepository {
     var requestBody =
         getDeviceRegisterationXML(DEVICE_REGISTER_API, deviceUniqueIdentifier);
     final response = await _provider.post(DEVICE_REGISTER_API, requestBody);
-    print(response);
+    
     return UserMessageResponse.fromJson(response, deviceUniqueIdentifier);
   }
 

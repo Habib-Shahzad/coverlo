@@ -11,7 +11,7 @@ final Map<String, WidgetBuilder> routes = {
   OnboardingScreen.routeName: (context) => const OnboardingScreen(),
   LoginScreen.routeName: (context) => const LoginScreen(),
   FormStep1Screen.routeName: (context) => FormStep1Screen(),
-  FormStep2Screen.routeName: (context) => FormStep2Screen(),
+  FormStep2Screen.routeName: (context) => const FormStep2Screen(),
   FormStep3Screen.routeName: (context) => const FormStep3Screen(),
   PaymentScreen.routeName: (context) => const PaymentScreen(),
 };

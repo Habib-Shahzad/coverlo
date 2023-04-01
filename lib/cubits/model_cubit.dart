@@ -1,7 +1,7 @@
+import 'package:coverlo/cubits/cubit_base.dart';
 import 'package:coverlo/models/model_model.dart';
 import 'package:coverlo/respository/model_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 @immutable
 abstract class ModelsState {}
@@ -23,11 +23,22 @@ class ModelsError extends ModelsState {
   ModelsError({required this.message});
 }
 
-class ModelsCubit extends Cubit<ModelsState> {
+class ModelsCubit extends MyCubit<ModelsState> {
   final ModelRepository modelRepository = ModelRepository();
 
   ModelsCubit() : super(ModelsInitial());
 
+  @override
+  Type getInitState() {
+    return ModelsInitial;
+  }
+
+  @override
+  Type getErrState() {
+    return ModelsError;
+  }
+
+  @override
   Future<void> getData() async {
     emit(ModelsLoading());
 
