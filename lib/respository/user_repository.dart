@@ -1,7 +1,7 @@
-import 'package:coverlo/constants.dart';
+import 'package:coverlo/networking/api_operations.dart';
 import 'package:coverlo/des/des.dart';
 import 'package:coverlo/env/env.dart';
-import 'package:coverlo/helpers/helper_functions.dart';
+import 'package:coverlo/helpers/xml_helpers.dart';
 import 'package:coverlo/models/user_model.dart';
 import 'package:coverlo/networking/api_provider.dart';
 import 'package:coverlo/networking/base_api.dart';

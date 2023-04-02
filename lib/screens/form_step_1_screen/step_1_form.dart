@@ -7,7 +7,6 @@ import 'package:coverlo/form_fields/date_time_form_field.dart';
 import 'package:coverlo/form_fields/drop_down_form_field.dart';
 import 'package:coverlo/form_fields/text_form_field.dart';
 import 'package:coverlo/global_formdata.dart';
-import 'package:coverlo/global_apidata.dart';
 import 'package:coverlo/models/city_model.dart';
 import 'package:coverlo/models/country_model.dart';
 import 'package:coverlo/models/profession_model.dart';
@@ -49,6 +48,9 @@ class _Step1FormState extends State<Step1Form> {
   bool mobileHasInputError = false;
 
   late FocusNode mobileFocusNode;
+
+  List<DropdownMenuItem<Object>> _genderList = [];
+  List<Map<String, String>> _genderListMap = [];
 
   bool cnicValidated() {
     String regexToCheck =
@@ -113,8 +115,8 @@ class _Step1FormState extends State<Step1Form> {
       {'genderName': 'Transgender', 'genderID': '2'},
     ];
     setState(() {
-      genderList = items;
-      genderListMap = genders;
+      _genderList = items;
+      _genderListMap = genders;
     });
   }
 
@@ -160,7 +162,7 @@ class _Step1FormState extends State<Step1Form> {
     }
 
     String genderName =
-        genderListMap[int.parse(dataIndex ?? '0')]['genderName'] ?? '';
+        _genderListMap[int.parse(dataIndex ?? '0')]['genderName'] ?? '';
 
     setState(() {
       genderValue = genderName;
@@ -329,8 +331,8 @@ class _Step1FormState extends State<Step1Form> {
                   _genderKey,
                   'Gender',
                   genderValue,
-                  genderList,
-                  genderListMap,
+                  _genderList,
+                  _genderListMap,
                   false,
                   setGenderData,
                   nullValidation: true,

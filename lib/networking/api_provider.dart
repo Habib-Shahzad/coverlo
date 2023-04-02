@@ -18,14 +18,13 @@ class ApiProvider extends BaseAPI {
               headers: {
                 'Content-Type': 'text/xml',
               },
-              body: body);
-      //     .timeout(const Duration(seconds: 10), onTimeout: () {
-      //   throw TimeoutException(
-      //       'Connection timed out. Slow internet connection.');
-      // });
+              body: body)
+          .timeout(const Duration(seconds: 10), onTimeout: () {
+        throw TimeoutException(
+            'Connection timed out. Slow internet connection.');
+      });
 
       responseJson = _response(response);
-      
     } on SocketException {
       throw FetchDataException('No Internet connection');
     } on TimeoutException {
@@ -35,7 +34,6 @@ class ApiProvider extends BaseAPI {
       throw FetchDataException('Something went wrong');
     }
 
-    
     return responseJson;
   }
 

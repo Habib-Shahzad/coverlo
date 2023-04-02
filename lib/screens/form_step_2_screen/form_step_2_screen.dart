@@ -3,7 +3,7 @@ import 'package:coverlo/components/navigate_button.dart';
 import 'package:coverlo/components/sub_heading.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/global_formdata.dart';
-import 'package:coverlo/helpers/dialogs/message_dialog.dart';
+import 'package:coverlo/components/message_dialog.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/screens/form_step_2_screen/step_2_form.dart';
 import 'package:coverlo/screens/form_step_3_screen/form_step_3_screen.dart';

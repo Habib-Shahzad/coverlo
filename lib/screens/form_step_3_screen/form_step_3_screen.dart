@@ -4,7 +4,7 @@ import 'package:coverlo/components/sub_heading.dart';
 import 'package:coverlo/constants.dart';
 
 import 'package:coverlo/global_formdata.dart';
-import 'package:coverlo/helpers/helper_functions.dart';
+import 'package:coverlo/helpers/image_operations.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/screens/payment_screen/payment_screen.dart';
 import 'package:flutter/material.dart';

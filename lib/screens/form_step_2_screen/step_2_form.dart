@@ -13,8 +13,7 @@ import 'package:coverlo/form_fields/radio_method.dart';
 import 'package:coverlo/form_fields/slider_method.dart';
 import 'package:coverlo/form_fields/text_form_field.dart';
 import 'package:coverlo/global_formdata.dart';
-import 'package:coverlo/global_apidata.dart';
-import 'package:coverlo/helpers/dialogs/message_dialog.dart';
+import 'package:coverlo/components/message_dialog.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:coverlo/models/make_model.dart';
 import 'package:coverlo/models/model_model.dart';
@@ -39,6 +38,9 @@ class _Step2FormState extends State<Step2Form> {
   final _formKey = GlobalKey<FormState>();
   String calculateButtonText = 'Calculate';
   String nextButtonText = 'Next';
+
+  List<DropdownMenuItem<Object>> vehicleModelDropDownItems = [];
+  List<VehicleModel> vehicleModelList = [];
 
   final int _minSeatingCapacity = 1;
   int _maxSeatingCapacity = 4;
@@ -226,8 +228,8 @@ class _Step2FormState extends State<Step2Form> {
                   _vehicleModelKey,
                   'Vehicle Model',
                   vehicleModelValue,
-                  modelList,
-                  modelListMap,
+                  vehicleModelDropDownItems,
+                  vehicleModelList,
                   _modelReadOnly,
                   setModelData,
                   controlled: true,
@@ -706,17 +708,17 @@ class _Step2FormState extends State<Step2Form> {
 
     int maxCap = 0;
     List<DropdownMenuItem<Object>> newModelList;
-    List<Map<String, String>> newModelListMap;
+    List<VehicleModel> newModelListMap;
 
     if (selectedProductIsCar(productName)) {
       maxCap = 4;
-      newModelList = carModelsList;
-      newModelListMap = carModelsListMap;
+      newModelList = carModelsDropDownItems;
+      newModelListMap = carModelsList;
       _personalAccidentText = "Personal Accident For Drive +4 Passengers";
     } else {
       maxCap = 2;
-      newModelList = bikeModelsList;
-      newModelListMap = bikeModelsListMap;
+      newModelList = bikeModelsDropDownItems;
+      newModelListMap = bikeModelsList;
       _personalAccidentText = "Personal Accident For Driver + 1 Passenger";
     }
 
@@ -724,8 +726,8 @@ class _Step2FormState extends State<Step2Form> {
       productValue = productName;
       productCodeValue = productCode;
       _maxSeatingCapacity = maxCap;
-      modelList = newModelList;
-      modelListMap = newModelListMap;
+      vehicleModelDropDownItems = newModelList;
+      vehicleModelList = newModelListMap;
       _modelReadOnly = false;
     });
   }
@@ -832,7 +834,7 @@ class _Step2FormState extends State<Step2Form> {
 
     vehicleModelController.text = dataIndex;
 
-    var year = (modelYears[int.parse(dataIndex)])['label'];
+    String? year = ((modelYears[int.parse(dataIndex)]) as VehicleModel).year;
 
     setState(() {
       vehicleModelValue = year;

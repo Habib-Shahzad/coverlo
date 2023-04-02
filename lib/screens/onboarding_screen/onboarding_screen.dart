@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
 
-// import '../../global_formdata.dart';
+import '../../global_formdata.dart';
 
 class OnboardingScreen extends StatefulWidget {
   static const String routeName = '/onboarding_screen';
@@ -39,7 +39,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.initState();
     _future = fetchData();
     initPlatformState();
-    // setDebuggingFormData();
+    setDebuggingFormData();
   }
 
   @override

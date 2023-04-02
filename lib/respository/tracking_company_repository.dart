@@ -1,9 +1,9 @@
-import 'package:coverlo/constants.dart';
+import 'package:coverlo/networking/api_operations.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
+import 'package:coverlo/helpers/xml_helpers.dart';
 import 'package:coverlo/models/tracking_company_model.dart';
 import 'package:coverlo/networking/api_provider.dart';
 import 'package:coverlo/networking/base_api.dart';
-import 'package:flutter/material.dart';
 
 class TrackingCompanyRepository {
   final BaseAPI _provider = ApiProvider();
@@ -21,16 +21,7 @@ class TrackingCompanyRepository {
   }
 
   toDropdown(List<TrackingCompany> companies) {
-    List<DropdownMenuItem<Object>> items = [];
-
-    for (var i = 0; i < companies.length; i++) {
-      TrackingCompany company = companies[i];
-
-      items.add(
-        DropdownMenuItem(value: i, child: Text(company.trackingCompanyName)),
-      );
-    }
-
-    return items;
+    return convertToDropDown(
+        companies, (TrackingCompany company) => company.trackingCompanyName);
   }
 }

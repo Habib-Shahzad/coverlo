@@ -1,10 +1,10 @@
-import 'package:coverlo/constants.dart';
+import 'package:coverlo/networking/api_operations.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
+import 'package:coverlo/helpers/xml_helpers.dart';
 import 'package:coverlo/models/city_model.dart';
 
 import 'package:coverlo/networking/api_provider.dart';
 import 'package:coverlo/networking/base_api.dart';
-import 'package:flutter/material.dart';
 
 class CityRepository {
   final BaseAPI _provider = ApiProvider();
@@ -22,16 +22,6 @@ class CityRepository {
   }
 
   toDropdown(List<City> cities) {
-    List<DropdownMenuItem<Object>> items = [];
-
-    for (var i = 0; i < cities.length; i++) {
-      City city = cities[i];
-
-      items.add(
-        DropdownMenuItem(value: i, child: Text(city.cityName)),
-      );
-    }
-
-    return items;
+    return convertToDropDown(cities, (City city) => city.cityName);
   }
 }

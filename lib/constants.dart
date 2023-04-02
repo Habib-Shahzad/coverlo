@@ -1,5 +1,4 @@
-// ignore_for_file: constant_identifier_names
-
+import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 
 const kGradientColorTop = Color(0xFF8234C3);
@@ -51,26 +50,27 @@ const loginImage = 'assets/images/login_image.png';
 const logoImage = 'assets/logos/logo.png';
 
 
-const DEVICE_REGISTER_API = 'Device_Registration';
-const LOGIN_API = 'CoverLo_Login';
-const GET_CITIES_API = 'CoverLo_GetCities';
-const GET_COUNTRIES_API = 'CoverLo_GetCountries';
-const GET_MAKE_API = 'CoverLo_GetMakeLists';
-const GET_MODEL_API = 'CoverLo_GetModelLists';
-const GET_PRODUCT_API = 'CoverLo_GetProducts';
-const GET_PROFESSIONS_API = 'CoverLo_GetProfessions';
-const GET_TRACKING_COMPANIES_API = 'CoverLo_GetTrackingCompanies';
-const GET_YEAR_API = 'CoverLo_GetYears';
-const GET_COLOR_API = 'CoverLo_GetColors';
-
-const GENERATE_INSURANCE_API = 'CoverLo_GenrateInsurance';
-const UPLOAD_PICS_API = 'CoverLo_UploadPics';
-
-enum VehicleType {
-  Car,
-  Motorcycle,
-}
 
 String privateCar = 'PRIVATE CAR (COMPREHENSIVE COVER)';
 String thirdParty = 'THIRD PARTY';
 String motorCycle = 'MOTOR CYCLE (COMPREHENSIVE COVER)';
+
+class VehicleModel {
+  String? year;
+  VehicleModel({this.year});
+}
+
+List<VehicleModel> getYears(numYears) {
+  return List.generate(numYears, (i) {
+    String dateYear = (DateTime.now().year - i).toString();
+    return VehicleModel(year: dateYear);
+  });
+}
+
+var carModelsList = getYears(10);
+final carModelsDropDownItems =
+    convertToDropDown(carModelsList, (VehicleModel model) => model.year);
+
+var bikeModelsList = getYears(5);
+final bikeModelsDropDownItems =
+    convertToDropDown(bikeModelsList, (VehicleModel model) => model.year);

@@ -14,9 +14,6 @@ import 'package:provider/provider.dart';
 class DataManager {
   static Future<void> _fetchData<T extends MyCubit<S>, S>(
       MyCubit<S> cubit) async {
-    // print("here");
-    // print(cubit.state.runtimeType);
-
     if (cubit.state.runtimeType == cubit.getInitState()) {
       await cubit.getData();
     } else if (cubit.state.runtimeType == cubit.getErrState()) {
