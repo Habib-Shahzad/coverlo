@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:coverlo/networking/data_manager.dart';
 import 'package:coverlo/respository/user_repository.dart';
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/globals.dart';
-import 'package:coverlo/models/user_model.dart';
 import 'package:coverlo/screens/onboarding_screen/body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -70,8 +67,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         final jsonString = prefs.getString('user');
 
         if (jsonString != null) {
-          StaticGlobal.user =
-              UserResponse.fromJsonCache(jsonDecode(jsonString));
+          // UserResponse? user =
+          //     UserResponse.fromJsonCache(jsonDecode(jsonString));
 
           setState(() {
             loggedIn = true;

@@ -7,8 +7,8 @@ import 'package:coverlo/constants.dart';
 import 'package:coverlo/des/des.dart';
 import 'package:coverlo/env/env.dart';
 import 'package:coverlo/global_formdata.dart';
-import 'package:coverlo/globals.dart';
 import 'package:coverlo/layouts/main_layout.dart';
+import 'package:coverlo/models/user_model.dart';
 import 'package:coverlo/networking/api_operations.dart';
 import 'package:coverlo/networking/api_provider.dart';
 import 'package:coverlo/networking/base_api.dart';
@@ -293,8 +293,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     String transationID = idGenerator();
 
+    final jsonString = prefs.getString('user');
+    UserResponse? user =
+        UserResponse.fromJsonCache(jsonDecode(jsonString ?? ''));
+
     Map<String, String> apiJsonData = {
-      "ByAgentID": StaticGlobal.user?.agentCode ?? '',
+      "ByAgentID": user.agentCode,
       "PName": nameController.text.toString(),
       "PAddress": addressController.text.toString(),
       "PCity": cityValue ?? '',
@@ -319,6 +323,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "VContr": contributionController.text.toString(),
       "uniqueRef": transationID,
     };
+
+    // print(user.agentCode);
 
     Map<String, dynamic> encodedApiJsonData =
         Des.encryptMap(Env.serverKey, apiJsonData);

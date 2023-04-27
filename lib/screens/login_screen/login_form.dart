@@ -1,6 +1,7 @@
 import 'package:coverlo/components/custom_button.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/models/user_model.dart';
+import 'package:coverlo/networking/data_manager.dart';
 import 'package:coverlo/respository/user_repository.dart';
 import 'package:coverlo/screens/form_step_1_screen/form_step_1_screen.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +25,15 @@ class _LoginFormState extends State<LoginForm> {
   String? errorUserName;
   String? errorPassword;
 
+  Future<void>? _future;
+  Future<void> fetchData() async {
+    if (context.mounted) await DataManager.fetchMakes(context);
+    if (context.mounted) await DataManager.fetchModels(context);
+  }
+
   @override
   void initState() {
+    _future = fetchData();
     super.initState();
   }
 
@@ -50,7 +58,9 @@ class _LoginFormState extends State<LoginForm> {
           errorPassword = "Password is incorrect";
         });
       } else {
-        if (context.mounted) Navigator.pushReplacementNamed(context, FormStep1Screen.routeName);
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(context, FormStep1Screen.routeName);
+        }
       }
       return user;
     } catch (e) {
@@ -73,27 +83,39 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: kMinSpacing),
           passwordTextFormField(),
           const SizedBox(height: kMinSpacing),
-          CustomButton(
-            buttonText: buttonText,
-            onPressed: () async {
-              if (loading) {
-                return;
-              }
-              if (_formKey.currentState!.validate()) {
-                setState(() {
-                  loading = true;
-                  buttonText = 'Logging in...';
-                  errorUserName = null;
-                  errorPassword = null;
-                });
+          FutureBuilder<void>(
+              future: _future,
+              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return CustomButton(
+                    buttonText: buttonText,
+                    onPressed: () async {
+                      if (loading) {
+                        return;
+                      }
+                      if (_formKey.currentState!.validate()) {
+                        setState(() {
+                          loading = true;
+                          buttonText = 'Logging in...';
+                          errorUserName = null;
+                          errorPassword = null;
+                        });
 
-                String userName = _usernameController.text;
-                String password = _passwordController.text;
-                await _loginUser(userName, password);
-              }
-            },
-            buttonColor: kSecondaryColor,
-          ),
+                        String userName = _usernameController.text;
+                        String password = _passwordController.text;
+                        await _loginUser(userName, password);
+                      }
+                    },
+                    buttonColor: kSecondaryColor,
+                  );
+                } else {
+                  return CustomButton(
+                    buttonText: 'please wait..',
+                    onPressed: () async {},
+                    buttonColor: kSecondaryColor,
+                  );
+                }
+              }),
         ],
       ),
     );

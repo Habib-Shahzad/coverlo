@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <CoverLo_GenrateInsurance xmlns="http://tempuri.org/">
+      <ByAgentID>+xsK1GO6ViE=</ByAgentID>
+      <PName>v68YjQ5SN2A=</PName>
+      <PAddress>v68YjQ5SN2A=</PAddress>
+      <PCity>Xuplh6AITQT7GwrUY7pWIQ==</PCity>
+      <PNationality>m6ALA18/CIE=</PNationality>
+      <PPassportNo>xeAB6dWvdch7F5ofxLjUdA==</PPassportNo>
+      <PGender>R8rP+GBvfGc=</PGender>
+      <PProfession>ha+SnkjF+zUGaohvFJOwE6yrTyxw+daMPGLuuumd2+E=</PProfession>
+      <PMobileNo>PAcpJq0Xno0unAdBGpynIQ==</PMobileNo>
+      <PEmail>NGKZgWgiysnhOH696k9dqA==</PEmail>
+      <VProductID>zXgpTxNVlVg=</VProductID>
+      <VRegNo>+xsK1GO6ViE=</VRegNo>
+      <VEngineNo>rmBusao+xbM=</VEngineNo>
+      <VChasisNo>rtfitQNJmwc=</VChasisNo>
+      <VVMake>NRaumgZjlXw=</VVMake>
+      <VVVariant>atDhSgjdwHw1oKCRVHgNmehHBzaGnwO+</VVVariant>
+      <VVModel>OZioa2LEGv8=</VVModel>
+      <VColor>zn5w0ysSQns=</VColor>
+      <VCubicCapacity>lAHIauLJVX0=</VCubicCapacity>
+      <VSeatingCapacity>5OU5T84POxE=</VSeatingCapacity>
+      <VTrackingCompany>m6ALA18/CIE=</VTrackingCompany>
+      <VIEV>oMUtCDoQlkw=</VIEV>
+      <VContr>NL1MronIzbQ=</VContr>
+      <uniqueRef>Q638z5e2i5B3Z2Wr4aMLzfsbCtRjulYh</uniqueRef>
+      <VAFR>true</VAFR>
+      <VTrackerInstalled>true</VTrackerInstalled>
+      <VAdditionalAcces>false</VAdditionalAcces>
+      <VPersonalAccident>true</VPersonalAccident>
+      <uniqueID>U3aZTYR1l9/HNG5IHLXxOQ==</uniqueID>
+      <device_unique_identifier>+4ppRI052OeSm0pmTOWGqA==</device_unique_identifier>
+      <VFrom>2023-04-04T18:30:34.268418</VFrom>
+      <VTo>2024-04-02T18:30:34.268418</VTo>
+      <PCNICDate>2023-04-04T00:00:00.000</PCNICDate>
+      <PDOB>2023-04-04T00:00:00.000</PDOB>
+      <RecordDateTime>2023-04-04T18:37:30.646620</RecordDateTime>
+    </CoverLo_GenrateInsurance>
+  </soap:Body>
+</soap:Envelope>

@@ -101,7 +101,7 @@ List<int>? bytesBikeLeft;
 XFile? imageBikeRight;
 List<int>? bytesBikeRight;
 
-void setDebuggingFormData() {
+void setStep1Data() {
   nameController.text = 'Muhammad Usman';
   addressController.text = 'House # 123, Street # 123, Sector # 123';
   emailController.text = 'ok@ok.com';
@@ -123,36 +123,157 @@ void setDebuggingFormData() {
 
   professionController.text = '0';
   professionValue = 'Accountant';
+}
 
-  // productNameController.text = '0';
-  // productValue = 'Motor';
-  // productCodeValue = 'MOTOR';
+void setStep2Data() {
+  productNameController.text = '0';
+  productValue = 'Motor';
+  productCodeValue = 'MOTOR';
 
-  // vehicleMakeController.text = '0';
-  // vehicleMakeValue = 'Honda';
-  // vehcileMakeCodeValue = 'HONDA';
+  engineNoController.text = '1234567890123';
+  chasisNoController.text = '1234567890123';
 
-  // vehicleModelController.text = '0';
-  // vehicleModelValue = 'Civic';
+  vehicleMakeController.text = '0';
+  vehicleMakeValue = 'Honda';
+  vehcileMakeCodeValue = 'HONDA';
 
-  // colorController.text = '0';
-  // colorValue = 'Black';
+  vehicleModelController.text = '0';
+  vehicleModelValue = 'Civic';
 
-  // bodyTypeController.text = '0';
-  // bodyTypeValue = 'Sedan';
+  colorController.text = '0';
+  colorValue = 'Black';
 
-  // vehicleVariantController.text = '0';
-  // vehicleVariantValue = '1.8L';
+  bodyTypeController.text = '0';
+  bodyTypeValue = 'Sedan';
 
-  // trackingCompanyController.text = '0';
-  // trackingCompanyValue = 'GSM';
+  vehicleVariantController.text = '0';
+  vehicleVariantValue = '1.8L';
 
-  // registrationNoController.text = 'ABC-123';
+  trackingCompanyController.text = '0';
+  trackingCompanyValue = 'GSM';
 
-  // cubicCapacityController.text = '1800';
-  // seatingCapacityController.text = '5';
+  registrationNoController.text = 'ABC-123';
 
-  // contributionController.text = '10000';
+  cubicCapacityController.text = '1800';
+  seatingCapacityController.text = '5';
 
-  // insuredEstimatedValueController.text = '100000';
+  contributionController.text = '10000';
+
+  insuredEstimatedValueController.text = '100000';
+}
+
+void setDebuggingFormData() {
+  setStep1Data();
+  setStep2Data();
+}
+
+void resetFormData() async {
+  try {
+    // STEP 01 data
+    if (nameController.text.isNotEmpty) nameController.clear();
+    if (addressController.text.isNotEmpty) addressController.clear();
+    if (emailController.text.isNotEmpty) emailController.clear();
+    if (mobileNoController.text.isNotEmpty) mobileNoController.clear();
+    if (cnicController.text.isNotEmpty) cnicController.clear();
+
+    if (cnicIssueDateValue != null) cnicIssueDateValue = null;
+    if (dateOfBirthValue != null) dateOfBirthValue = null;
+
+    if (cityController.text.isNotEmpty) cityController.clear();
+    if (cityValue != null) cityValue = null;
+
+    if (countryController.text.isNotEmpty) countryController.clear();
+    if (countryCodeValue != null) countryCodeValue = null;
+    if (countryValue != null) countryValue = null;
+
+    if (genderController.text.isNotEmpty) genderController.clear();
+    if (genderValue != null) genderValue = null;
+
+    if (professionController.text.isNotEmpty) professionController.clear();
+    if (professionValue != null) professionValue = null;
+
+    // STEP 02 data
+    // showTrackers = true;
+    // appliedForRegistartion = 'yes';
+    // seatingCapacity = 1;
+    // trackerInstalled = 'yes';
+    // additionalAccessories = 'no';
+    // personalAccidentValue = 'yes';
+
+    if (registrationNoController.text.isNotEmpty) {
+      registrationNoController.clear();
+    }
+    if (engineNoController.text.isNotEmpty) engineNoController.clear();
+    if (chasisNoController.text.isNotEmpty) chasisNoController.clear();
+    if (insuredEstimatedValueController.text.isNotEmpty) {
+      insuredEstimatedValueController.clear();
+    }
+    if (cubicCapacityController.text.isNotEmpty) {
+      cubicCapacityController.clear();
+    }
+    if (seatingCapacityController.text.isNotEmpty) {
+      seatingCapacityController.clear();
+    }
+    if (contributionController.text.isNotEmpty) contributionController.clear();
+    if (productNameController.text.isNotEmpty) productNameController.clear();
+    if (productValue != null) productValue = null;
+    if (productCodeValue != null) productCodeValue = null;
+
+    if (vehicleMakeController.text.isNotEmpty) vehicleMakeController.clear();
+    if (vehicleMakeValue != null) vehicleMakeValue = null;
+    if (vehcileMakeCodeValue != null) vehcileMakeCodeValue = null;
+
+    if (vehicleModelController.text.isNotEmpty) vehicleModelController.clear();
+    if (vehicleModelValue != null) vehicleModelValue = null;
+
+    if (colorController.text.isNotEmpty) colorController.clear();
+    if (colorValue != null) colorValue = null;
+
+    if (bodyTypeController.text.isNotEmpty) bodyTypeController.clear();
+    if (bodyTypeValue != null) bodyTypeValue = null;
+
+    if (vehicleVariantController.text.isNotEmpty) {
+      vehicleVariantController.clear();
+    }
+    if (vehicleVariantValue != null) vehicleVariantValue = null;
+
+    if (trackingCompanyController.text.isNotEmpty) {
+      trackingCompanyController.clear();
+    }
+    if (trackingCompanyValue != null) trackingCompanyValue = null;
+
+    // STEP 03: data
+    if (imageCarFront != null) imageCarFront = null;
+    if (bytesCarFront != null) imageCarFront = null;
+
+    if (imageCarBack != null) imageCarBack = null;
+    if (bytesCarBack != null) imageCarBack = null;
+
+    if (imageCarLeft != null) imageCarLeft = null;
+    if (bytesCarLeft != null) imageCarLeft = null;
+
+    if (imageCarRight != null) imageCarRight = null;
+    if (bytesCarRight != null) imageCarRight = null;
+
+    if (imageCarHood != null) imageCarHood = null;
+    if (bytesCarHood != null) imageCarHood = null;
+
+    if (imageCarBoot != null) imageCarBoot = null;
+    if (bytesCarBoot != null) imageCarBoot = null;
+
+    if (imageBikeFront != null) imageBikeFront = null;
+    if (bytesBikeFront != null) imageBikeFront = null;
+
+    if (imageBikeBack != null) imageBikeBack = null;
+    if (bytesBikeBack != null) imageBikeBack = null;
+
+    if (imageBikeLeft != null) imageBikeLeft = null;
+    if (bytesBikeLeft != null) imageBikeLeft = null;
+
+    if (imageBikeRight != null) imageBikeRight = null;
+    if (bytesBikeRight != null) imageBikeRight = null;
+  } catch (e) {
+    // print("ERROR");
+    // print(e.toString());
+  }
 }

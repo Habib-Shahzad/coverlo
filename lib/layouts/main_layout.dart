@@ -1,5 +1,4 @@
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/globals.dart';
 import 'package:coverlo/screens/login_screen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -88,8 +87,6 @@ class _MainLayoutState extends State<MainLayout> {
                     ).value,
                   ),
                   onPressed: () async {
-                    StaticGlobal.user = null;
-                
                     final prefs = await SharedPreferences.getInstance();
                     prefs.remove('user');
                     navigateToLoginScreen();
