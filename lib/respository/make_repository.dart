@@ -1,15 +1,16 @@
-import 'package:coverlo/enums.dart';
+import 'package:coverlo/des/des.dart';
+import 'package:coverlo/env/env.dart';
 import 'package:coverlo/networking/api_operations.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
-import 'package:coverlo/helpers/xml_helpers.dart';
 import 'package:coverlo/models/make_model.dart';
 import 'package:coverlo/networking/api_provider.dart';
 import 'package:coverlo/networking/base_api.dart';
 
 class MakeRepository {
   final BaseAPI _provider = ApiProvider();
+  final Map<String, List<Make>> _cache = {};
 
-  Future<List<Make>> getMakesData(responseJson) async {
+  List<Make> getMakesData(responseJson) {
     final makes = (responseJson['_Make'] as List)
         .map((make) => Make.fromJson(make))
         .toList();
@@ -17,18 +18,36 @@ class MakeRepository {
     return makes;
   }
 
-  Future<List<Make>> getCarMakes() async {
-    final requestBody =
-        await getVehicleXML(GET_MAKE_API, encryptVehicleType(VehicleType.car));
-    final responseJson = await _provider.post(GET_MAKE_API, requestBody);
-    return getMakesData(responseJson);
+  Future<List<Make>> getMakes() async {
+    Map data = {
+      'vtype': '',
+      ...(await getDeviceInfo()),
+    };
+    final url = getUrl(GET_MAKES_API, data);
+    final responseJson = await _provider.get(url);
+    final makes = getMakesData(responseJson);
+    return makes;
   }
 
-  Future<List<Make>> getBikeMakes() async {
-    final requestBody = await getVehicleXML(
-        GET_MAKE_API, encryptVehicleType(VehicleType.motorCycle));
-    final responseJson = await _provider.post(GET_MAKE_API, requestBody);
-    return getMakesData(responseJson);
+  Future<List<Make>> getMakesByProduct(String productCode) async {
+    if (_cache.containsKey(productCode)) {
+      return _cache[productCode]!;
+    }
+
+    Map data = {
+      'vtype': '',
+      'productCode': Des.encrypt(Env.serverKey, productCode),
+      ...(await getDeviceInfo()),
+    };
+    final url = getUrl(GET_MAKES_BY_PRODUCT_API, data);
+    final responseJson = await _provider.get(url);
+    final makes = getMakesData(responseJson);
+
+    if (makes.isNotEmpty) {
+      _cache[productCode] = makes;
+    }
+
+    return makes;
   }
 
   toDropdown(List<Make> makes) {

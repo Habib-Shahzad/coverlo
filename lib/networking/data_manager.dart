@@ -46,6 +46,12 @@ class DataManager {
     await _fetchData(cubit);
   }
 
+  static Future<void> fetchMakesByProduct(
+      BuildContext context, String productCode) async {
+    MakesCubit cubit = context.read<MakesCubit>();
+    await cubit.getDataByProduct(productCode);
+  }
+
   static Future<void> fetchModels(BuildContext context) async {
     MyCubit cubit = context.read<ModelsCubit>();
     await _fetchData(cubit);

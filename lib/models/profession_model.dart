@@ -1,4 +1,3 @@
-import 'package:xml/xml.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
 
 class Profession {
@@ -14,13 +13,5 @@ class Profession {
     );
   }
 
-  factory Profession.fromXml(XmlElement xml) {
-    final professionName = xml.findElements('ProfessionName').single.text;
-    final professionCode = xml.findElements('ProfessionCode').single.text;
 
-    return Profession(
-        professionName: decryptItem(professionName),
-        professionCode: decryptItem(professionCode)
-    );
-  }
 }

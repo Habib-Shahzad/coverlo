@@ -1,4 +1,0 @@
-enum VehicleType {
-  car,
-  motorCycle,
-}

@@ -39,8 +39,8 @@ class _Step2FormState extends State<Step2Form> {
   String calculateButtonText = 'Calculate';
   String nextButtonText = 'Next';
 
-  List<DropdownMenuItem<Object>> vehicleModelDropDownItems = [];
-  List<VehicleModel> vehicleModelList = [];
+  List<DropdownMenuItem<Object>> vehicleModelDropDownItems = carModelsDropDownItems;
+  List<VehicleModel> vehicleModelList = carModelsList;
 
   final int _minSeatingCapacity = 1;
   int _maxSeatingCapacity = 4;

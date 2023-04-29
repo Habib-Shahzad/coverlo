@@ -106,7 +106,6 @@ class WebView extends State<MyWebView> {
                         webViewController = controller;
                       },
                       onLoadStart: (controller, url) {
-                        // print(widget.webUrl);
                         setState(() {
                           this.url = Uri.parse(url.toString());
                         });

@@ -1,4 +1,3 @@
-import 'package:xml/xml.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
 
 class Color {
@@ -11,16 +10,9 @@ class Color {
 
     
     return Color(
-        colorName: decryptItem(json['colorName']),
-        colorCode: decryptItem(json['colorCode']));
+        colorName: decryptItem(json['ColorName']),
+        colorCode: decryptItem(json['ColorCode']));
   }
 
-  factory Color.fromXml(XmlElement xml) {
-    final colorName = xml.findElements('colorName').single.text;
-    final colorCode = xml.findElements('colorCode').single.text;
 
-    return Color(
-        colorName: decryptItem(colorName),
-        colorCode: decryptItem(colorCode));
-  }
 }

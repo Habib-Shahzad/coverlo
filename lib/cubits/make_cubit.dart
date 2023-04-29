@@ -40,10 +40,21 @@ class MakesCubit extends MyCubit<MakesState> {
 
   @override
   Future<void> getData() async {
+    try {
+      final makes = await makeRepository.getMakes();
+      final dropdownItems = makeRepository.toDropdown(makes);
+
+      emit(MakesLoaded(makes: makes, dropdownItems: dropdownItems));
+    } catch (e) {
+      emit(MakesError(message: e.toString()));
+    }
+  }
+
+  Future<void> getDataByProduct(String productCode) async {
     emit(MakesLoading());
 
     try {
-      final makes = await makeRepository.getCarMakes();
+      final makes = await makeRepository.getMakesByProduct(productCode);
       final dropdownItems = makeRepository.toDropdown(makes);
 
       emit(MakesLoaded(makes: makes, dropdownItems: dropdownItems));

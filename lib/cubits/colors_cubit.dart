@@ -43,7 +43,7 @@ class ColorsCubit extends MyCubit<ColorsState> {
     emit(ColorsLoading());
 
     try {
-      final colors = await colorRepository.getCarColors();
+      final colors = await colorRepository.getColors();
       final dropdownItems = colorRepository.toDropdown(colors);
 
       emit(ColorsLoaded(colors: colors, dropdownItems: dropdownItems));

@@ -1,8 +1,8 @@
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/enums.dart';
 import 'package:coverlo/env/env.dart';
 import 'package:coverlo/des/des.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 String idGenerator() {
   final now = DateTime.now();
@@ -15,11 +15,6 @@ decryptItem(String item) {
 
 selectedProductIsCar(productName) {
   return productName == thirdParty || productName == privateCar;
-}
-
-encryptVehicleType(VehicleType vtype) {
-  String vehicleString = vtype == VehicleType.car ? "Vehicle" : "Motorcycle";
-  return Des.encrypt(Env.serverKey, vehicleString);
 }
 
 String generateUUID() {
@@ -55,4 +50,31 @@ List<DropdownMenuItem<Object>> convertToDropDown<T>(
     T item = items[i];
     return DropdownMenuItem(value: i, child: Text(getKey(item)));
   });
+}
+
+mapToString(Map map) {
+  String result = '';
+  map.forEach((key, value) {
+    result += '$key=$value&';
+  });
+  return result.substring(0, result.length - 1);
+}
+
+Future<Map> getDeviceInfo() async {
+  final prefs = await SharedPreferences.getInstance();
+  String deviceUniqueIdentifier =
+      prefs.getString('deviceUniqueIdentifier') ?? '';
+  String uniqueID = prefs.getString('uniqueID') ?? '';
+  return {
+    'uniqueID': uniqueID,
+    'device_unique_identifier': deviceUniqueIdentifier,
+  };
+}
+
+getUrl(String operation, Map data) {
+  return '$operation?${mapToString(data)}';
+}
+
+getOperationUrl(String operation) async {
+  return getUrl(operation, await getDeviceInfo());
 }

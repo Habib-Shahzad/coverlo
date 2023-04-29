@@ -1,4 +1,3 @@
-import 'package:xml/xml.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
 
 class Make {
@@ -9,16 +8,8 @@ class Make {
 
   factory Make.fromJson(Map<String, dynamic> json) {
     return Make(
-        makeName: decryptItem(json['makeName']),
-        makeCode: decryptItem(json['makeCode']));
+        makeName: decryptItem(json['MakeName']),
+        makeCode: decryptItem(json['MakeCode']));
   }
 
-  factory Make.fromXml(XmlElement xml) {
-    final makeName = xml.findElements('makeName').single.text;
-    final makeCode = xml.findElements('makeCode').single.text;
-
-    return Make(
-        makeName: decryptItem(makeName),
-        makeCode: decryptItem(makeCode));
-  }
 }

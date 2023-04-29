@@ -18,7 +18,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_file_plus/open_file_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
-import 'package:coverlo/helpers/xml_helpers.dart';
 
 class PaymentScreen extends StatefulWidget {
   static const String routeName = '/payment_screen';
@@ -346,12 +345,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     final BaseAPI provider = ApiProvider();
 
-    var jsontoXmlFormBody =
-        convertJsonToXML(encodedApiJsonData, GENERATE_INSURANCE_API);
-
-    final response =
-        await provider.post(GENERATE_INSURANCE_API, jsontoXmlFormBody);
-
+    var url = getUrl(GENERATE_INSURANCE_API, encodedApiJsonData);
+    final response = await provider.get(url);
     var insuranceID = response["insuranceID"];
 
     for (var i = 0; i < vehicleImages.length; i++) {
@@ -370,10 +365,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
         "imageStr": vehicleImages[i]["IMAGE_STRING"],
       };
 
-      var jsontoXmlFormBody =
-          convertJsonToXML(encodedUploadPicsRequest, UPLOAD_PICS_API);
-
-      final response = await provider.post(UPLOAD_PICS_API, jsontoXmlFormBody);
+      final response =
+          await provider.post(UPLOAD_PICS_API, encodedUploadPicsRequest);
 
       if (response["responseCode"] != 200) {
         setState(() {

@@ -43,11 +43,12 @@ class ModelsCubit extends MyCubit<ModelsState> {
     emit(ModelsLoading());
 
     try {
-      final models = await modelRepository.getCarModels();
+      final models = await modelRepository.getModels();
       final dropdownItems = modelRepository.toDropdown(models);
 
       emit(ModelsLoaded(models: models, dropdownItems: dropdownItems));
     } catch (e) {
+      // print(e.toString());
       emit(ModelsError(message: e.toString()));
     }
   }
