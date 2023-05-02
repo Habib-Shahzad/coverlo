@@ -39,7 +39,8 @@ class _Step2FormState extends State<Step2Form> {
   String calculateButtonText = 'Calculate';
   String nextButtonText = 'Next';
 
-  List<DropdownMenuItem<Object>> vehicleModelDropDownItems = carModelsDropDownItems;
+  List<DropdownMenuItem<Object>> vehicleModelDropDownItems =
+      carModelsDropDownItems;
   List<VehicleModel> vehicleModelList = carModelsList;
 
   final int _minSeatingCapacity = 1;
@@ -705,6 +706,13 @@ class _Step2FormState extends State<Step2Form> {
 
     String productName = product.productName;
     String productCode = product.productCode;
+
+    if (context.mounted) {
+      await DataManager.fetchMakesByProduct(context, productCode);
+    }
+    if (context.mounted) {
+      await DataManager.fetchModelsByProduct(context, productCode);
+    }
 
     int maxCap = 0;
     List<DropdownMenuItem<Object>> newModelList;

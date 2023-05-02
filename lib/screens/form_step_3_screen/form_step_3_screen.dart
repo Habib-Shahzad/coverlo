@@ -1,5 +1,5 @@
 import 'package:coverlo/components/main_heading.dart';
-import 'package:coverlo/components/navigate_button.dart';
+import 'package:coverlo/components/step_navigator.dart';
 import 'package:coverlo/components/sub_heading.dart';
 import 'package:coverlo/constants.dart';
 
@@ -154,14 +154,10 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
           carHoodLoading ||
           carBootLoading;
     } else {
-      if (bikeFrontLoading ||
+      return bikeFrontLoading ||
           bikeBackLoading ||
           bikeLeftLoading ||
-          bikeRightLoading) {
-        return false;
-      } else {
-        return true;
-      }
+          bikeRightLoading;
     }
   }
 
@@ -204,45 +200,15 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: kDefaultPadding,
-                        ),
-                        child: Row(
-                          children: [
-                            NavigateButton(
-                                text: 'Step 1',
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  Navigator.pop(context);
-                                },
-                                color: kStepButtonColor),
-                            const Expanded(
-                              child: Divider(
-                                color: kStepButtonColor,
-                                thickness: 4,
-                              ),
-                            ),
-                            NavigateButton(
-                              text: 'Step 2',
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              color: kStepButtonColor,
-                            ),
-                            const Expanded(
-                              child: Divider(
-                                color: kStepButtonColor,
-                                thickness: 4,
-                              ),
-                            ),
-                            const NavigateButton(
-                              text: 'Step 3',
-                              onPressed: null,
-                              color: kStepButtonActiveColor,
-                            ),
-                          ],
-                        ),
+                      stepNavigatorComponent(
+                        step3Color: kStepButtonActiveColor,
+                        onPressedStep1: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        onPressedStep2: () {
+                          Navigator.pop(context);
+                        },
                       ),
                       const SizedBox(height: kDefaultSpacing),
                       const MainHeading(
@@ -785,8 +751,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
         setImageFunction(XFile(pickedFile.path));
 
         setLoading(false);
-      }
-      else {
+      } else {
         setLoading(false);
       }
     });

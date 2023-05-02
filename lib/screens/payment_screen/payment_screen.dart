@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:coverlo/components/custom_button.dart';
-import 'package:coverlo/components/navigate_button.dart';
+import 'package:coverlo/components/step_navigator.dart';
 import 'package:coverlo/components/web_view.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/des/des.dart';
@@ -39,7 +39,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   bool generatingInsurance = false;
   String? responseMessage;
 
-  bool loaded = false;
   String? contribution;
   String paymentData = '';
   List vehicleImages = [];
@@ -118,25 +117,42 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
+  String? linkHBL;
+  String? linkJazzCash;
+
+  String removeQueryParams(String url) {
+    final uri = Uri.parse(url);
+    final uriWithoutQueryParams = Uri(
+      scheme: uri.scheme,
+      userInfo: uri.userInfo,
+      host: uri.host,
+      port: uri.port,
+      path: uri.path,
+    );
+    return uriWithoutQueryParams.toString();
+  }
+
   @override
   void initState() {
+    contribution = contributionController.text;
+    getImages();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!loaded) {
-      setState(() {
-        contribution = contributionController.text;
-        loaded = true;
-      });
-    }
-
-    if (loaded && imagesLoading) {
-      getImages();
-    }
-
-    if (!showJazzCashWebView && !showHBLWebView) {
+    if (showHBLWebView) {
+      return MyWebView(
+          paymentData: paymentData,
+          webUrl: "$linkHBL?amount=$contribution&txnNumber=$transactionNumber",
+          webViewName: "HBL Payment");
+    } else if (showJazzCashWebView) {
+      return MyWebView(
+          paymentData: paymentData,
+          webUrl:
+              "$linkJazzCash?amount=$contribution&txnNumber=$transactionNumber",
+          webViewName: "JazzCash Payment");
+    } else {
       return MainLayout(
         body: SizedBox(
           width: double.infinity,
@@ -150,121 +166,72 @@ class _PaymentScreenState extends State<PaymentScreen> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: kDefaultPadding,
-                    ),
-                    child: Row(
-                      children: [
-                        NavigateButton(
-                            text: 'Step 1',
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                            },
-                            color: kStepButtonColor),
-                        const Expanded(
-                          child: Divider(
-                            color: kStepButtonColor,
-                            thickness: 4,
-                          ),
-                        ),
-                        NavigateButton(
-                          text: 'Step 2',
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          },
-                          color: kStepButtonColor,
-                        ),
-                        const Expanded(
-                          child: Divider(
-                            color: kStepButtonColor,
-                            thickness: 4,
-                          ),
-                        ),
-                        NavigateButton(
-                          text: 'Step 3',
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          color: kStepButtonColor,
-                        ),
-                      ],
-                    ),
+                  stepNavigatorComponent(
+                    onPressedStep1: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    onPressedStep2: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    onPressedStep3: () {
+                      Navigator.pop(context);
+                    },
                   ),
                   const SizedBox(height: kDefaultSpacing),
                   const SizedBox(
                     height: 20,
                   ),
-                  if (imagesLoading)
-                    const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  if (!imagesLoading)
-                    Column(
-                      children: [
-                        CustomButton(
-                          onPressed: () async {
-                            if (generatingInsurance) return;
-                            await generateInsurance();
-                            if (transactionNumber != null) {
-                              setState(() {
-                                showJazzCashWebView = true;
-                              });
-                            }
-                          },
-                          buttonText: 'Pay with JazzCash',
-                          buttonColor: kSecondaryColor,
-                          disabled: generatingInsurance,
+                  imagesLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : Column(
+                          children: [
+                            CustomButton(
+                              onPressed: () async {
+                                if (generatingInsurance) return;
+                                await generateInsurance();
+                                if (transactionNumber != null) {
+                                  setState(() {
+                                    showJazzCashWebView = true;
+                                  });
+                                }
+                              },
+                              buttonText: 'Pay with JazzCash',
+                              buttonColor: kSecondaryColor,
+                              disabled: generatingInsurance,
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            CustomButton(
+                              onPressed: () async {
+                                if (generatingInsurance) return;
+                                await generateInsurance();
+                                if (transactionNumber != null) {
+                                  setState(() {
+                                    showHBLWebView = true;
+                                  });
+                                }
+                              },
+                              buttonText: 'Pay with Debit / Credit Card',
+                              buttonColor: kSecondaryColor,
+                              disabled: generatingInsurance,
+                            ),
+                            const SizedBox(height: kDefaultSpacing),
+                            if (generatingInsurance)
+                              const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                          ],
                         ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        CustomButton(
-                          onPressed: () async {
-                            if (generatingInsurance) return;
-                            await generateInsurance();
-                            if (transactionNumber != null) {
-                              setState(() {
-                                showHBLWebView = true;
-                              });
-                            }
-                          },
-                          buttonText: 'Pay with Debit / Credit Card',
-                          buttonColor: kSecondaryColor,
-                          disabled: generatingInsurance,
-                        ),
-                        const SizedBox(height: kDefaultSpacing),
-                        if (generatingInsurance)
-                          const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                      ],
-                    )
                 ],
               ),
             ),
           ),
-        ),
-      );
-    } else if (showHBLWebView) {
-      return MyWebView(
-          paymentData: paymentData,
-          webUrl:
-              "${Env.paymntGatewayUrl}/coverlooJazz/?amount=$contribution&txnNumber=$transactionNumber",
-          webViewName: "HBL Payment");
-    } else if (showJazzCashWebView) {
-      return MyWebView(
-          paymentData: paymentData,
-          webUrl:
-              "${Env.paymntGatewayUrl}/coverlooJazz/?amount=$contribution&txnNumber=$transactionNumber",
-          webViewName: "JazzCash Payment");
-    } else {
-      return const Scaffold(
-        body: Center(
-          child: Text("Something went wrong"),
         ),
       );
     }
@@ -296,6 +263,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
     UserResponse? user =
         UserResponse.fromJsonCache(jsonDecode(jsonString ?? ''));
 
+    setState(() {
+      linkHBL = removeQueryParams(user.linkHBL);
+      linkJazzCash = removeQueryParams(user.linkJazzCash);
+    });
+
     Map<String, String> apiJsonData = {
       "ByAgentID": user.agentCode,
       "PName": nameController.text.toString(),
@@ -322,8 +294,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
       "VContr": contributionController.text.toString(),
       "uniqueRef": transationID,
     };
-
-    // print(user.agentCode);
 
     Map<String, dynamic> encodedApiJsonData =
         Des.encryptMap(Env.serverKey, apiJsonData);

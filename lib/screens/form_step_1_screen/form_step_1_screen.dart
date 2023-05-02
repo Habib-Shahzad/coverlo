@@ -1,5 +1,5 @@
 import 'package:coverlo/components/main_heading.dart';
-import 'package:coverlo/components/navigate_button.dart';
+import 'package:coverlo/components/step_navigator.dart';
 import 'package:coverlo/components/sub_heading.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/layouts/main_layout.dart';
@@ -47,58 +47,28 @@ class FormStep1Screen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: kDefaultPadding,
-                  ),
-                  child: Row(
-                    children: [
-                      const NavigateButton(
-                          text: 'Step 1',
-                          onPressed: null,
-                          color: kStepButtonActiveColor),
-                      const Expanded(
-                        child: Divider(
-                          color: kStepButtonColor,
-                          thickness: 4,
-                        ),
-                      ),
-                      NavigateButton(
-                        text: 'Step 2',
-                        onPressed: () {
-                          bool invalidMobile = !mobileValidated();
-                          bool invalidCnic = !cnicValidated();
-                          bool formValidated =
-                              _formKey.currentState!.validate();
+                stepNavigatorComponent(
+                  onPressedStep2: () {
+                    
 
-                          if (invalidMobile || invalidCnic) {
-                          } else if (formValidated) {
-                            Navigator.pushNamed(
-                              context,
-                              FormStep2Screen.routeName,
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Please fill all the fields')),
-                            );
-                          }
-                        },
-                        color: kStepButtonColor,
-                      ),
-                      const Expanded(
-                        child: Divider(
-                          color: kStepButtonColor,
-                          thickness: 4,
-                        ),
-                      ),
-                      const NavigateButton(
-                        text: 'Step 3',
-                        onPressed: null,
-                        color: kStepButtonColor,
-                      ),
-                    ],
-                  ),
+                    bool invalidMobile = !mobileValidated();
+                    bool invalidCnic = !cnicValidated();
+                    bool formValidated = _formKey.currentState!.validate();
+
+                    if (invalidMobile || invalidCnic) {
+                    } else if (formValidated) {
+                      Navigator.pushNamed(
+                        context,
+                        FormStep2Screen.routeName,
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Please fill all the fields')),
+                      );
+                    }
+                  },
+                  step1Color: kStepButtonActiveColor,
                 ),
                 const SizedBox(height: kDefaultSpacing),
                 const Center(

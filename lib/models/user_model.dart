@@ -42,12 +42,16 @@ class UserResponse {
   String userName;
   String userEmail;
   String agentCode;
+  String linkJazzCash;
+  String linkHBL;
 
   UserResponse({
     required this.userID,
     required this.userName,
     required this.userEmail,
     required this.agentCode,
+    required this.linkJazzCash,
+    required this.linkHBL,
   });
 
   static UserResponse fromJsonCache(Map<String, dynamic> json) {
@@ -56,6 +60,8 @@ class UserResponse {
       userName: json['userName'],
       userEmail: json['userEmail'],
       agentCode: json['agentCode'],
+      linkJazzCash: json['linkJazzCash'],
+      linkHBL: json['linkHBL'],
     );
   }
 
@@ -72,6 +78,8 @@ class UserResponse {
       userName: decryptedData['userName'] ?? '',
       userEmail: decryptedData['userEmail'] ?? '',
       agentCode: decryptedData['agentCode'] ?? '',
+      linkJazzCash: json['linkJazzCash'] ?? '',
+      linkHBL: json['linkHBL'] ?? '',
     );
   }
 
@@ -80,6 +88,8 @@ class UserResponse {
         'userName': userName,
         'userEmail': userEmail,
         'agentCode': agentCode,
+        'linkJazzCash': linkJazzCash,
+        'linkHBL': linkHBL,
       };
 }
 
@@ -101,9 +111,7 @@ class UserMessageResponse {
       String encryptedIdentifier =
           Des.encrypt(Env.serverKey, deviceUniqueIdentifier);
       setUniqueIDs(encryptedIdentifier, encryptedText);
-    } catch (e) {
-      // print(e.toString());
-    }
+    } catch (e) {}
     return UserMessageResponse(
       code: json['responseCode'].toString(),
       message: json['responseMsg'],

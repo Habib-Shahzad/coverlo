@@ -17,6 +17,7 @@ class UserRepository {
     };
     final url = getUrl(LOGIN_API, data);
     final responseJson = await _provider.get(url);
+
     return UserModel.fromJson(responseJson);
   }
 

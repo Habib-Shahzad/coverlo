@@ -41,6 +41,7 @@ class MakeRepository {
     };
     final url = getUrl(GET_MAKES_BY_PRODUCT_API, data);
     final responseJson = await _provider.get(url);
+
     final makes = getMakesData(responseJson);
 
     if (makes.isNotEmpty) {

@@ -48,7 +48,19 @@ class ModelsCubit extends MyCubit<ModelsState> {
 
       emit(ModelsLoaded(models: models, dropdownItems: dropdownItems));
     } catch (e) {
-      // print(e.toString());
+      emit(ModelsError(message: e.toString()));
+    }
+  }
+
+  Future<void> getDataByProduct(String productCode) async {
+    emit(ModelsLoading());
+
+    try {
+      final models = await modelRepository.getModelsByProduct(productCode);
+      final dropdownItems = modelRepository.toDropdown(models);
+
+      emit(ModelsLoaded(models: models, dropdownItems: dropdownItems));
+    } catch (e) {
       emit(ModelsError(message: e.toString()));
     }
   }
