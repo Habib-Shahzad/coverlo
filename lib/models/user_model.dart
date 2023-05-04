@@ -2,8 +2,9 @@
 
 import 'dart:convert';
 import 'package:coverlo/des/des.dart';
-import 'package:coverlo/env/env.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../helpers/helper_functions.dart';
 
 class UserModel {
   UserResponse? user;
@@ -66,7 +67,7 @@ class UserResponse {
   }
 
   factory UserResponse.fromJson(Map<String, dynamic> json) {
-    Map<String, String> decryptedData = Des.decryptMap(Env.appKey, {
+    Map<String, String> decryptedData = Des.decryptMap({
       'userID': json['userID'],
       'userName': json['userName'],
       'userEmail': json['userEmail'],
@@ -106,10 +107,9 @@ class UserMessageResponse {
       Map<String, dynamic> json, String deviceUniqueIdentifier) {
     try {
       String encryptedText = json['responseMsg'].split(': ')[1];
-      String text = Des.decrypt(Env.appKey, encryptedText);
-      encryptedText = Des.encrypt(Env.serverKey, text);
-      String encryptedIdentifier =
-          Des.encrypt(Env.serverKey, deviceUniqueIdentifier);
+      String text = decryptItem(encryptedText);
+      encryptedText = encryptItem(text);
+      String encryptedIdentifier = encryptItem(deviceUniqueIdentifier);
       setUniqueIDs(encryptedIdentifier, encryptedText);
     } catch (e) {}
     return UserMessageResponse(

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:coverlo/networking/data_manager.dart';
 import 'package:coverlo/respository/user_repository.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/screens/onboarding_screen/body.dart';
@@ -23,8 +22,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool loading = true;
 
   Future<void> fetchData() async {
-    if (context.mounted) await DataManager.fetchMakes(context);
-    if (context.mounted) await DataManager.fetchModels(context);
+    // if (context.mounted) await DataManager.fetchMakes(context);
+    // if (context.mounted) await DataManager.fetchModels(context);
   }
 
   Future<void>? _future;
@@ -49,13 +48,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           prefs.getString('deviceUniqueIdentifier');
       String? uniqueID = prefs.getString('uniqueID');
 
+      // prefs.remove('deviceUniqueIdentifier');
+      // prefs.remove('uniqueID');
+      // return;
+
       if (deviceUniqueIdentifier == null && uniqueID == null) {
-        if (Platform.isIOS) {
-          await userRepository.registerDevice(generateUUID());
-          setState(() {
-            loading = false;
-          });
-        } else if (Platform.isAndroid) {
+        if (Platform.isIOS || Platform.isAndroid) {
           await userRepository.registerDevice(generateUUID());
           setState(() {
             loading = false;
@@ -65,9 +63,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         final jsonString = prefs.getString('user');
 
         if (jsonString != null) {
-          // UserResponse? user =
-          //     UserResponse.fromJsonCache(jsonDecode(jsonString));
-
           setState(() {
             loggedIn = true;
             loading = false;
@@ -81,7 +76,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     } on PlatformException {
       userRepository.registerDevice(generateUUID());
     }
-    if (!mounted) return;
   }
 
   @override

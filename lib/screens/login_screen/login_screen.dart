@@ -1,7 +1,6 @@
 import 'package:coverlo/components/custom_text.dart';
 import 'package:coverlo/components/main_heading.dart';
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/screens/login_screen/login_form.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -18,10 +17,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      resetFormData();
-    });
   }
 
   @override

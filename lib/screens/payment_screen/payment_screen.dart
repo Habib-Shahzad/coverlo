@@ -5,7 +5,6 @@ import 'package:coverlo/components/step_navigator.dart';
 import 'package:coverlo/components/web_view.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/des/des.dart';
-import 'package:coverlo/env/env.dart';
 import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/models/user_model.dart';
@@ -296,7 +295,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     };
 
     Map<String, dynamic> encodedApiJsonData =
-        Des.encryptMap(Env.serverKey, apiJsonData);
+        Des.encryptMap(apiJsonData);
 
     encodedApiJsonData = {
       ...encodedApiJsonData,
@@ -326,7 +325,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       };
 
       Map<String, dynamic> encodedUploadPicsRequest =
-          Des.encryptMap(Env.serverKey, uploadPicsRequest);
+          Des.encryptMap(uploadPicsRequest);
 
       encodedUploadPicsRequest = {
         ...encodedUploadPicsRequest,

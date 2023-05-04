@@ -1,5 +1,4 @@
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/env/env.dart';
 import 'package:coverlo/des/des.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,8 +8,12 @@ String idGenerator() {
   return now.microsecondsSinceEpoch.toString();
 }
 
+encryptItem(String item) {
+  return Des.encrypt(item);
+}
+
 decryptItem(String item) {
-  return Des.decrypt(Env.appKey, item);
+  return Des.decrypt(item);
 }
 
 selectedProductIsCar(productName) {
@@ -62,9 +65,8 @@ mapToString(Map map) {
 
 Future<Map> getDeviceInfo() async {
   final prefs = await SharedPreferences.getInstance();
-  String deviceUniqueIdentifier =
-      prefs.getString('deviceUniqueIdentifier') ?? '';
-  String uniqueID = prefs.getString('uniqueID') ?? '';
+  String? deviceUniqueIdentifier = prefs.getString('deviceUniqueIdentifier');
+  String? uniqueID = prefs.getString('uniqueID');
   return {
     'uniqueID': uniqueID,
     'device_unique_identifier': deviceUniqueIdentifier,

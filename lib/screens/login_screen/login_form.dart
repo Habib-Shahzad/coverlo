@@ -1,7 +1,7 @@
 import 'package:coverlo/components/custom_button.dart';
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/models/user_model.dart';
-import 'package:coverlo/networking/data_manager.dart';
 import 'package:coverlo/respository/user_repository.dart';
 import 'package:coverlo/screens/form_step_1_screen/form_step_1_screen.dart';
 import 'package:flutter/material.dart';
@@ -27,13 +27,14 @@ class _LoginFormState extends State<LoginForm> {
 
   Future<void>? _future;
   Future<void> fetchData() async {
-    if (context.mounted) await DataManager.fetchMakes(context);
-    if (context.mounted) await DataManager.fetchModels(context);
+    // if (context.mounted) await DataManager.fetchMakes(context);
+    // if (context.mounted) await DataManager.fetchModels(context);
   }
 
   @override
   void initState() {
     _future = fetchData();
+    resetFormData();
     super.initState();
   }
 
