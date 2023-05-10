@@ -48,10 +48,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           prefs.getString('deviceUniqueIdentifier');
       String? uniqueID = prefs.getString('uniqueID');
 
-      // prefs.remove('deviceUniqueIdentifier');
-      // prefs.remove('uniqueID');
-      // return;
-
       if (deviceUniqueIdentifier == null && uniqueID == null) {
         if (Platform.isIOS || Platform.isAndroid) {
           await userRepository.registerDevice(generateUUID());

@@ -4,18 +4,17 @@ import 'package:coverlo/components/custom_button.dart';
 import 'package:coverlo/components/step_navigator.dart';
 import 'package:coverlo/components/web_view.dart';
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/des/des.dart';
 import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/models/user_model.dart';
 import 'package:coverlo/networking/api_operations.dart';
 import 'package:coverlo/networking/api_provider.dart';
 import 'package:coverlo/networking/base_api.dart';
+import 'package:coverlo/respository/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file_plus/open_file_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -30,6 +29,8 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
+  final UserRepository userRepository = UserRepository();
+
   bool showJazzCashWebView = false;
   bool showHBLWebView = false;
   String? transactionNumber;
@@ -192,7 +193,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             CustomButton(
                               onPressed: () async {
                                 if (generatingInsurance) return;
-                                await generateInsurance();
+                                await sendInsuranceRequest();
                                 if (transactionNumber != null) {
                                   setState(() {
                                     showJazzCashWebView = true;
@@ -209,7 +210,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             CustomButton(
                               onPressed: () async {
                                 if (generatingInsurance) return;
-                                await generateInsurance();
+                                await sendInsuranceRequest();
                                 if (transactionNumber != null) {
                                   setState(() {
                                     showHBLWebView = true;
@@ -236,120 +237,77 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
-  generateInsurance() async {
+  sendInsuranceRequest() async {
     setState(() {
       generatingInsurance = true;
     });
 
-    String cnicText = cnicController.text.toString();
-
-    String registrationNoText = appliedForRegistartion != 'yes'
-        ? registrationNoController.text.toString()
-        : '';
-
-    if (countryValue?.toLowerCase() == 'pakistan') {
-      cnicText =
-          '${cnicText.substring(0, 5)}-${cnicText.substring(5, 12)}-${cnicText.substring(12, 13)}';
-    }
-
-    final prefs = await SharedPreferences.getInstance();
-    String? deviceUniqueIdentifier = prefs.getString('deviceUniqueIdentifier');
-    String? uniqueID = prefs.getString('uniqueID');
-
-    String transationID = idGenerator();
-
-    final jsonString = prefs.getString('user');
-    UserResponse? user =
-        UserResponse.fromJsonCache(jsonDecode(jsonString ?? ''));
-
+    UserResponse? user = await userRepository.getAuthenticatedUser();
+    if (user == null) return;
     setState(() {
       linkHBL = removeQueryParams(user.linkHBL);
       linkJazzCash = removeQueryParams(user.linkJazzCash);
     });
 
-    Map<String, String> apiJsonData = {
-      "ByAgentID": user.agentCode,
-      "PName": nameController.text.toString(),
-      "PAddress": addressController.text.toString(),
-      "PCity": cityValue ?? '',
-      "PNationality": countryCodeValue ?? '',
-      "PPassportNo": cnicText,
-      "PGender": genderValue ?? '',
-      "PProfession": professionValue ?? '',
-      "PMobileNo": mobileNoController.text.toString(),
-      "PEmail": emailController.text.toString(),
-      "VProductID": productCodeValue ?? '',
-      "VRegNo": registrationNoText,
-      "VEngineNo": engineNoController.text.toString(),
-      "VChasisNo": chasisNoController.text.toString(),
-      "VVMake": vehcileMakeCodeValue ?? '',
-      "VVVariant": vehicleVariantValue ?? '',
-      "VVModel": vehicleModelValue ?? '',
-      "VColor": colorValue ?? '',
-      "VCubicCapacity": cubicCapacityController.text.toString(),
-      "VSeatingCapacity": seatingCapacity.toInt().toString(),
-      "VTrackingCompany": trackingCompanyValue ?? '',
-      "VIEV": insuredEstimatedValueController.text.toString(),
-      "VContr": contributionController.text.toString(),
-      "uniqueRef": transationID,
-    };
+    String transactionID = idGenerator();
+    var insuranceID = await generateInsurance(user, transactionID);
+    bool imageUploadSuccess = await uploadImages(insuranceID);
 
-    Map<String, dynamic> encodedApiJsonData =
-        Des.encryptMap(apiJsonData);
+    String message = '';
 
-    encodedApiJsonData = {
-      ...encodedApiJsonData,
-      "VAFR": appliedForRegistartion == 'yes',
-      "VTrackerInstalled": trackerInstalled == 'yes',
-      "VAdditionalAcces": additionalAccessories != "no",
-      "VPersonalAccident": personalAccidentValue == 'yes',
-      "uniqueID": uniqueID,
-      "device_unique_identifier": deviceUniqueIdentifier,
-      "VFrom": insurancePeriodIssueDate.toIso8601String(),
-      "VTo": insurancePeriodExpiryDate.toIso8601String(),
-      "PCNICDate": cnicIssueDateValue?.toIso8601String(),
-      "PDOB": dateOfBirthValue?.toIso8601String(),
-      "RecordDateTime": DateTime.now().toIso8601String(),
-    };
-
-    final BaseAPI provider = ApiProvider();
-
-    var url = getUrl(GENERATE_INSURANCE_API, encodedApiJsonData);
-    final response = await provider.get(url);
-    var insuranceID = response["insuranceID"];
-
-    for (var i = 0; i < vehicleImages.length; i++) {
-      Map<String, String> uploadPicsRequest = {
-        "insuranceID": insuranceID.toString(),
-        "picNo": (i + 1).toString(),
-      };
-
-      Map<String, dynamic> encodedUploadPicsRequest =
-          Des.encryptMap(uploadPicsRequest);
-
-      encodedUploadPicsRequest = {
-        ...encodedUploadPicsRequest,
-        "uniqueID": uniqueID,
-        "device_unique_identifier": deviceUniqueIdentifier,
-        "imageStr": vehicleImages[i]["IMAGE_STRING"],
-      };
-
-      final response =
-          await provider.post(UPLOAD_PICS_API, encodedUploadPicsRequest);
-
-      if (response["responseCode"] != 200) {
-        setState(() {
-          responseMessage = "Something went wrong.";
-          generatingInsurance = false;
-        });
-        return;
-      }
+    if (!imageUploadSuccess) {
+      message = 'Something went wrong';
     }
 
     setState(() {
       generatingInsurance = false;
-      transactionNumber = transationID;
+      transactionNumber = transactionID;
+      responseMessage = message;
     });
+  }
+
+  generateInsurance(UserResponse user, String transationID) async {
+    Map<String, dynamic> data = {
+      "ByAgentID": encryptItem(user.agentCode),
+      "uniqueRef": encryptItem(transationID),
+      ...getEncryptedFormData(),
+    };
+
+    data = {
+      ...data,
+      ...await getDeviceInfo(),
+      ...getFormData(),
+    };
+
+    final BaseAPI provider = ApiProvider();
+    var url = getUrl(GENERATE_INSURANCE_API, data);
+    final response = await provider.get(url);
+    var insuranceID = response["insuranceID"];
+
+    return insuranceID;
+  }
+
+  Future<bool> uploadImages(insuranceID) async {
+    final BaseAPI provider = ApiProvider();
+
+    for (var i = 0; i < vehicleImages.length; i++) {
+      Map<String, String> request = {
+        "insuranceID": encryptItem(insuranceID.toString()),
+        "picNo": encryptItem((i + 1).toString()),
+      };
+
+      request = {
+        ...request,
+        ...await getDeviceInfo(),
+        "imageStr": vehicleImages[i]["IMAGE_STRING"],
+      };
+
+      final response = await provider.post(UPLOAD_PICS_API, request);
+      if (response["responseCode"] != 200) {
+        return false;
+      }
+    }
+    return true;
   }
 
   copyToClipboard(String text) async {

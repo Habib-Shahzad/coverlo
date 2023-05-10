@@ -1,8 +1,11 @@
+import 'dart:convert';
+
 import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:coverlo/networking/api_operations.dart';
 import 'package:coverlo/models/user_model.dart';
 import 'package:coverlo/networking/api_provider.dart';
 import 'package:coverlo/networking/base_api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserRepository {
   final BaseAPI _provider = ApiProvider();
@@ -16,6 +19,14 @@ class UserRepository {
     final url = getUrl(LOGIN_API, data);
     final responseJson = await _provider.get(url);
     return UserModel.fromJson(responseJson);
+  }
+
+  Future<UserResponse?> getAuthenticatedUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString('user');
+    UserResponse? user =
+        UserResponse.fromJsonCache(jsonDecode(jsonString ?? ''));
+    return user;
   }
 
   registerDevice(String deviceUniqueIdentifier) async {

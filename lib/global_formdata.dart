@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:coverlo/des/des.dart';
 import 'package:flutter/material.dart';
 
 // STEP 01 data
@@ -160,6 +161,60 @@ void setStep2Data() {
   contributionController.text = '10000';
 
   insuredEstimatedValueController.text = '100000';
+}
+
+Map<String, dynamic> getEncryptedFormData() {
+  String cnicText = cnicController.text.toString();
+
+  String registrationNoText = appliedForRegistartion != 'yes'
+      ? registrationNoController.text.toString()
+      : '';
+
+  if (countryValue?.toLowerCase() == 'pakistan') {
+    cnicText =
+        '${cnicText.substring(0, 5)}-${cnicText.substring(5, 12)}-${cnicText.substring(12, 13)}';
+  }
+
+  Map<String, String> data = {
+    "PName": nameController.text.toString(),
+    "PAddress": addressController.text.toString(),
+    "PCity": cityValue ?? '',
+    "PNationality": countryCodeValue ?? '',
+    "PPassportNo": cnicText,
+    "PGender": genderValue ?? '',
+    "PProfession": professionValue ?? '',
+    "PMobileNo": mobileNoController.text.toString(),
+    "PEmail": emailController.text.toString(),
+    "VProductID": productCodeValue ?? '',
+    "VRegNo": registrationNoText,
+    "VEngineNo": engineNoController.text.toString(),
+    "VChasisNo": chasisNoController.text.toString(),
+    "VVMake": vehcileMakeCodeValue ?? '',
+    "VVVariant": vehicleVariantValue ?? '',
+    "VVModel": vehicleModelValue ?? '',
+    "VColor": colorValue ?? '',
+    "VCubicCapacity": cubicCapacityController.text.toString(),
+    "VSeatingCapacity": seatingCapacity.toInt().toString(),
+    "VTrackingCompany": trackingCompanyValue ?? '',
+    "VIEV": insuredEstimatedValueController.text.toString(),
+    "VContr": contributionController.text.toString(),
+  };
+
+  return Des.encryptMap(data);
+}
+
+Map<String, dynamic> getFormData() {
+  return {
+    "VAFR": appliedForRegistartion == 'yes',
+    "VTrackerInstalled": trackerInstalled == 'yes',
+    "VAdditionalAcces": additionalAccessories != "no",
+    "VPersonalAccident": personalAccidentValue == 'yes',
+    "VFrom": insurancePeriodIssueDate.toIso8601String(),
+    "VTo": insurancePeriodExpiryDate.toIso8601String(),
+    "PCNICDate": cnicIssueDateValue?.toIso8601String(),
+    "PDOB": dateOfBirthValue?.toIso8601String(),
+    "RecordDateTime": DateTime.now().toIso8601String(),
+  };
 }
 
 void setDebuggingFormData() {
