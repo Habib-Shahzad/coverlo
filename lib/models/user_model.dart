@@ -17,7 +17,6 @@ class User {
     required this.linkHBL,
   });
 
-
   toJson() {
     return {
       'userID': userID,
@@ -41,7 +40,6 @@ class User {
   }
 
   factory User.fromJsonResponse(Map<String, dynamic> responseJson) {
-
     Map<String, String> decryptedData = Des.decryptMap({
       'userID': responseJson['userID'],
       'userName': responseJson['userName'],
@@ -54,7 +52,7 @@ class User {
       "linkHBL": responseJson['linkHBL'],
       "linkJazzCash": responseJson['linkJazzCash'],
     };
-    
+
     return User.fromJson(json);
   }
 }

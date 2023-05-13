@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:camera/camera.dart';
 import 'package:coverlo/des/des.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+int? sessionInsuranceId;
 
 // STEP 01 data
 TextEditingController nameController = TextEditingController();
@@ -331,4 +336,21 @@ void resetFormData() async {
     // print("ERROR");
     // print(e.toString());
   }
+}
+
+saveInformation() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  Map<String, String> json = {
+    "Name": nameController.text,
+    "Email": emailController.text,
+    "Mobile Number": mobileNoController.text,
+    if (countryCodeValue != null) "Country Code": countryCodeValue!,
+    if (productCodeValue != null) "Product Code": productCodeValue!,
+    if (vehcileMakeCodeValue != null)
+      "Vehicle Make Code": vehcileMakeCodeValue!,
+    if (vehicleModelValue != null) "Vehicle Model": vehicleModelValue!,
+    "Insurance Amount": contributionController.text,
+  };
+
+  prefs.setString('insuranceInfo', jsonEncode(json));
 }

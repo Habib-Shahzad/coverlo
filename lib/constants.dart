@@ -1,4 +1,3 @@
-import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 
 const kGradientColorTop = Color(0xFF8234C3);
@@ -8,6 +7,7 @@ const kSecondaryColor = Color(0xFF8234C3);
 const kBackgroundColor = Color(0xFFE5E5E5);
 const kErrorColor = Color(0xFF840000);
 const kTextColor = Color.fromRGBO(255, 255, 255, 1);
+const kDisabledTextColor = Color.fromRGBO(0, 0, 0, 0.5);
 const kCursorColor = Color.fromARGB(255, 0, 0, 0);
 const kDarkTextColor = Color(0xFF333333);
 const kIconColor = Colors.white;
@@ -49,15 +49,13 @@ const onBoardingImage = 'assets/images/onboarding_image.png';
 const loginImage = 'assets/images/login_image.png';
 const logoImage = 'assets/logos/logo.png';
 
-
-
 String privateCar = 'PRIVATE CAR (COMPREHENSIVE COVER)';
 String thirdParty = 'THIRD PARTY';
 String motorCycle = 'MOTOR CYCLE (COMPREHENSIVE COVER)';
 
 class VehicleModel {
-  String? year;
-  VehicleModel({this.year});
+  String year;
+  VehicleModel({required this.year});
 }
 
 List<VehicleModel> getYears(numYears) {
@@ -68,9 +66,15 @@ List<VehicleModel> getYears(numYears) {
 }
 
 var carModelsList = getYears(10);
-final carModelsDropDownItems =
-    convertToDropDown(carModelsList, (VehicleModel model) => model.year);
+
+final carModelsDropDownItems = List.generate(carModelsList.length, (i) {
+  VehicleModel item = carModelsList[i];
+  return DropdownMenuItem(value: i, child: Text(item.year));
+});
 
 var bikeModelsList = getYears(5);
-final bikeModelsDropDownItems =
-    convertToDropDown(bikeModelsList, (VehicleModel model) => model.year);
+
+final bikeModelsDropDownItems = List.generate(bikeModelsList.length, (i) {
+  VehicleModel item = bikeModelsList[i];
+  return DropdownMenuItem(value: i, child: Text(item.year));
+});

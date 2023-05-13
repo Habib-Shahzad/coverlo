@@ -6,115 +6,12 @@ import 'package:coverlo/constants.dart';
 import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/helpers/image_operations.dart';
 import 'package:coverlo/layouts/main_layout.dart';
+import 'package:coverlo/respository/insurance_repository.dart';
+import 'package:coverlo/screens/form_step_3_screen/vehicle_image.dart';
 import 'package:coverlo/screens/payment_screen/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-
-import '../../components/custom_button.dart';
-
-class VehicleImageComponent extends StatelessWidget {
-  final String? imageName;
-  final String? imageAssetPath;
-  final XFile? imageValue;
-  final Function()? setImage;
-  final Function()? removeImage;
-  final bool imageLoading;
-
-  const VehicleImageComponent({
-    Key? key,
-    required this.imageName,
-    required this.imageValue,
-    required this.setImage,
-    required this.removeImage,
-    required this.imageAssetPath,
-    required this.imageLoading,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        SizedBox(
-          height: MediaQuery.of(context).size.width * 0.4,
-          width: MediaQuery.of(context).size.width * 0.4,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                  image: imageValue == null
-                      ? AssetImage(imageAssetPath!)
-                      : FileImage(File(imageValue!.path)) as ImageProvider),
-            ),
-          ),
-        ),
-        imageValue == null
-            ? const SizedBox()
-            : Positioned(
-                top: 0,
-                right: 0,
-                child: GestureDetector(
-                  onTap: removeImage,
-                  child: Container(
-                    height: 30,
-                    width: 30,
-                    decoration: const BoxDecoration(
-                      color: Colors.black,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-        imageValue == null
-            ? imageLoading
-                ? Positioned.fill(
-                    child: Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        CircularProgressIndicator(),
-                      ],
-                    ),
-                  ))
-                : Positioned.fill(
-                    child: Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                            height: 40.0,
-                            width: 40.0,
-                            child: IconButton(
-                              padding: const EdgeInsets.all(0.0),
-                              icon: const Icon(
-                                Icons.add_circle_outline,
-                                size: 40.0,
-                                color: Colors.black,
-                              ),
-                              onPressed: setImage,
-                            )),
-                        Text(
-                          imageName!,
-                          style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 16.0,
-                              backgroundColor: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ))
-            : const SizedBox(),
-      ],
-    );
-  }
-}
+import 'package:coverlo/components/custom_button.dart';
 
 class FormStep3Screen extends StatefulWidget {
   static const String routeName = '/form_step_3_screen';
@@ -145,7 +42,13 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
   bool bikeLeftLoading = false;
   bool bikeRightLoading = false;
 
-  bool imageIsLoading() {
+  bool generatingInsurance = false;
+
+  bool isLoading() {
+    if (generatingInsurance) {
+      return true;
+    }
+
     if (isCar) {
       return carFrontLoading ||
           carBackLoading ||
@@ -160,6 +63,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
           bikeRightLoading;
     }
   }
+
+  InsuranceRepository insuranceRepository = InsuranceRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -388,18 +293,18 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                       ),
                       CustomButton(
                         buttonText: "Submit and Pay",
-                        onPressed: () {
-                          bool loading = imageIsLoading();
-                          if (loading) return;
-                          Navigator.pushNamed(
-                            context,
-                            PaymentScreen.routeName,
-                            arguments: {"contribution": contribution},
-                          );
+                        onPressed: () async {
+                          await generateInsurance();
+                          navigateToPayment();
                         },
                         buttonColor: kSecondaryColor,
-                        disabled: imageIsLoading(),
+                        disabled: isLoading(),
                       ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      if (generatingInsurance)
+                        const CircularProgressIndicator(),
                     ],
                   ),
                 ),
@@ -411,6 +316,36 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
               ),
             ),
     );
+  }
+
+  generateInsurance() async {
+    bool loading = isLoading();
+    if (loading) return;
+
+    setState(() {
+      generatingInsurance = true;
+    });
+
+    if (sessionInsuranceId == null) {
+      List images = getImages(productValue);
+      int? insuranceID = await insuranceRepository.sendInsuranceRequest(images);
+
+      if (insuranceID != null) sessionInsuranceId = insuranceID;
+    }
+
+    setState(() {
+      generatingInsurance = false;
+    });
+  }
+
+  navigateToPayment() {
+    if (context.mounted) {
+      Navigator.pushNamed(
+        context,
+        PaymentScreen.routeName,
+        arguments: {"contribution": contribution},
+      );
+    }
   }
 
 // SET CAR IMAGES

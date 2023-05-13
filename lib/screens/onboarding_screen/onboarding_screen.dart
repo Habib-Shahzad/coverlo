@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
 
+import '../../global_formdata.dart';
+
 class OnboardingScreen extends StatefulWidget {
   static const String routeName = '/onboarding_screen';
   const OnboardingScreen({super.key});
@@ -21,14 +23,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool loggedIn = false;
   bool loading = true;
 
-  Future<void> fetchData() async {}
+  Future<void> loadScreen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? insuranceID = prefs.getString('insuranceID');
+    if (insuranceID != null) {
+      sessionInsuranceId = int.parse(insuranceID);
+    }
+
+    // if (context.mounted) await DataManager.fetchMakes(context);
+    // if (context.mounted) await DataManager.fetchModels(context);
+  }
 
   Future<void>? _future;
 
   @override
   void initState() {
     super.initState();
-    _future = fetchData();
+    _future = loadScreen();
     initPlatformState();
     // setDebuggingFormData();
   }

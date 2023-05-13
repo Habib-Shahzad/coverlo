@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/des/des.dart';
 import 'package:flutter/material.dart';
@@ -79,4 +81,11 @@ getUrl(String operation, Map data) {
 
 getOperationUrl(String operation) async {
   return getUrl(operation, await getDeviceInfo());
+}
+
+String bytesToBase64(List<int>? imageBytes) {
+  if (imageBytes == null) {
+    return '';
+  }
+  return base64Encode(imageBytes);
 }

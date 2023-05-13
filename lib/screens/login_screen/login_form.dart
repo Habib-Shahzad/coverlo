@@ -7,6 +7,7 @@ import 'package:coverlo/respository/user_repository.dart';
 import 'package:coverlo/screens/form_step_1_screen/form_step_1_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -25,8 +26,23 @@ class _LoginFormState extends State<LoginForm> {
 
   String? errorMessage;
 
+  Future<void>? _future;
+
+  Future<void> loadScreen() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? insuranceID = prefs.getString('insuranceID');
+    if (insuranceID != null) {
+      sessionInsuranceId = int.parse(insuranceID);
+    }
+
+    // if (context.mounted) await DataManager.fetchMakes(context);
+    // if (context.mounted) await DataManager.fetchModels(context);
+  }
+
   @override
   void initState() {
+    _future = loadScreen();
+
     resetFormData();
     super.initState();
   }
@@ -76,27 +92,38 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: kMinSpacing),
           passwordTextFormField(),
           const SizedBox(height: kMinSpacing),
-          CustomButton(
-            buttonText: buttonText,
-            onPressed: () async {
-              if (loading) {
-                return;
-              }
-              if (_formKey.currentState!.validate()) {
-                setState(() {
-                  loading = true;
-                  buttonText = 'Logging in...';
-                  errorMessage = null;
-                });
+          FutureBuilder<void>(
+              future: _future,
+              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return CustomButton(
+                    buttonText: buttonText,
+                    onPressed: () async {
+                      if (loading) {
+                        return;
+                      }
+                      if (_formKey.currentState!.validate()) {
+                        setState(() {
+                          loading = true;
+                          buttonText = 'Logging in...';
+                          errorMessage = null;
+                        });
 
-                String userName = _usernameController.text;
-                String password = _passwordController.text;
-                await _loginUser(userName, password);
-              }
-            },
-            buttonColor: kSecondaryColor,
-          ),
-          const SizedBox(height: kMinSpacing),
+                        String userName = _usernameController.text;
+                        String password = _passwordController.text;
+                        await _loginUser(userName, password);
+                      }
+                    },
+                    buttonColor: kSecondaryColor,
+                  );
+                } else {
+                  return CustomButton(
+                    buttonText: 'please wait..',
+                    onPressed: () async {},
+                    buttonColor: kSecondaryColor,
+                  );
+                }
+              }),
           if (errorMessage != null)
             CustomText(
               text: errorMessage!,
