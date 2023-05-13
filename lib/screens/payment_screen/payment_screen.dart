@@ -242,7 +242,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       generatingInsurance = true;
     });
 
-    UserResponse? user = await userRepository.getAuthenticatedUser();
+    User? user = await userRepository.getAuthenticatedUser();
     if (user == null) return;
     setState(() {
       linkHBL = removeQueryParams(user.linkHBL);
@@ -266,7 +266,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     });
   }
 
-  generateInsurance(UserResponse user, String transationID) async {
+  generateInsurance(User user, String transationID) async {
     Map<String, dynamic> data = {
       "ByAgentID": encryptItem(user.agentCode),
       "uniqueRef": encryptItem(transationID),

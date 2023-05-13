@@ -1,4 +1,5 @@
 import 'package:coverlo/components/custom_button.dart';
+import 'package:coverlo/components/custom_text.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/models/user_model.dart';
@@ -22,18 +23,10 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  String? errorUserName;
-  String? errorPassword;
-
-  Future<void>? _future;
-  Future<void> fetchData() async {
-    // if (context.mounted) await DataManager.fetchMakes(context);
-    // if (context.mounted) await DataManager.fetchModels(context);
-  }
+  String? errorMessage;
 
   @override
   void initState() {
-    _future = fetchData();
     resetFormData();
     super.initState();
   }
@@ -46,17 +39,17 @@ class _LoginFormState extends State<LoginForm> {
   _loginUser(String userName, String password) async {
     try {
       UserRepository userRepository = UserRepository();
-      UserModel user = await userRepository.loginUser(userName, password);
+      User? user = await userRepository.loginUser(userName, password);
+
       setState(() {
         loading = false;
       });
 
-      if (user.user == null) {
+      if (user == null) {
         setState(() {
           loading = false;
           buttonText = 'Login';
-          errorUserName = "Username is incorrect";
-          errorPassword = "Password is incorrect";
+          errorMessage = "Username & password do not match";
         });
       } else {
         if (context.mounted) {
@@ -68,8 +61,7 @@ class _LoginFormState extends State<LoginForm> {
       setState(() {
         loading = false;
         buttonText = 'Login';
-        errorUserName = "Username is incorrect";
-        errorPassword = "Password is incorrect";
+        errorMessage = "";
       });
     }
   }
@@ -84,39 +76,32 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: kMinSpacing),
           passwordTextFormField(),
           const SizedBox(height: kMinSpacing),
-          FutureBuilder<void>(
-              future: _future,
-              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return CustomButton(
-                    buttonText: buttonText,
-                    onPressed: () async {
-                      if (loading) {
-                        return;
-                      }
-                      if (_formKey.currentState!.validate()) {
-                        setState(() {
-                          loading = true;
-                          buttonText = 'Logging in...';
-                          errorUserName = null;
-                          errorPassword = null;
-                        });
+          CustomButton(
+            buttonText: buttonText,
+            onPressed: () async {
+              if (loading) {
+                return;
+              }
+              if (_formKey.currentState!.validate()) {
+                setState(() {
+                  loading = true;
+                  buttonText = 'Logging in...';
+                  errorMessage = null;
+                });
 
-                        String userName = _usernameController.text;
-                        String password = _passwordController.text;
-                        await _loginUser(userName, password);
-                      }
-                    },
-                    buttonColor: kSecondaryColor,
-                  );
-                } else {
-                  return CustomButton(
-                    buttonText: 'please wait..',
-                    onPressed: () async {},
-                    buttonColor: kSecondaryColor,
-                  );
-                }
-              }),
+                String userName = _usernameController.text;
+                String password = _passwordController.text;
+                await _loginUser(userName, password);
+              }
+            },
+            buttonColor: kSecondaryColor,
+          ),
+          const SizedBox(height: kMinSpacing),
+          if (errorMessage != null)
+            CustomText(
+              text: errorMessage!,
+              color: kErrorColor,
+            ),
         ],
       ),
     );

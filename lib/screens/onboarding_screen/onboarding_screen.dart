@@ -21,10 +21,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool loggedIn = false;
   bool loading = true;
 
-  Future<void> fetchData() async {
-    // if (context.mounted) await DataManager.fetchMakes(context);
-    // if (context.mounted) await DataManager.fetchModels(context);
-  }
+  Future<void> fetchData() async {}
 
   Future<void>? _future;
 
@@ -56,9 +53,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           });
         }
       } else {
-        final jsonString = prefs.getString('user');
+        final userString = prefs.getString('user');
 
-        if (jsonString != null) {
+        if (userString != null) {
           setState(() {
             loggedIn = true;
             loading = false;

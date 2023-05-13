@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserRepository {
   final BaseAPI _provider = ApiProvider();
 
-  Future<UserModel> loginUser(String userName, String password) async {
+  Future<User?> loginUser(String userName, String password) async {
     Map data = {
       "userName": encryptItem(userName),
       "password": encryptItem(password),
@@ -18,24 +18,38 @@ class UserRepository {
     };
     final url = getUrl(LOGIN_API, data);
     final responseJson = await _provider.get(url);
-    return UserModel.fromJson(responseJson);
-  }
-
-  Future<UserResponse?> getAuthenticatedUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString('user');
-    UserResponse? user =
-        UserResponse.fromJsonCache(jsonDecode(jsonString ?? ''));
+    if (responseJson["responseCode"] == 402) return null;
+    User user = User.fromJsonResponse(responseJson);
+    await _saveUser(user);
     return user;
   }
 
-  registerDevice(String deviceUniqueIdentifier) async {
-    final data = {
-      'device_unique_identifier': encryptItem(deviceUniqueIdentifier)
-    };
+  Future<User?> getAuthenticatedUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString('user');
+    User? user = User.fromJson(jsonDecode(jsonString ?? ''));
+    return user;
+  }
 
+  _saveUser(User user) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('user', jsonEncode(user.toJson()));
+  }
+
+  _saveDeviceInfo(String uniqueID, String encryptedIdentifier) async {
+    String text = decryptItem(uniqueID);
+    uniqueID = encryptItem(text);
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('deviceUniqueIdentifier', encryptedIdentifier);
+    prefs.setString('uniqueID', uniqueID);
+  }
+
+  registerDevice(String deviceUniqueIdentifier) async {
+    String encryptedIdentifier = encryptItem(deviceUniqueIdentifier);
+    final data = {'device_unique_identifier': encryptedIdentifier};
     var url = getUrl(DEVICE_REGISTER_API, data);
     final response = await _provider.get(url);
-    return UserMessageResponse.fromJson(response, deviceUniqueIdentifier);
+    String uniqueID = response['responseMsg'].split(': ')[1];
+    await _saveDeviceInfo(uniqueID, encryptedIdentifier);
   }
 }
