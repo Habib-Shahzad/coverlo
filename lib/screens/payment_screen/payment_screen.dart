@@ -6,6 +6,7 @@ import 'package:coverlo/components/step_navigator.dart';
 import 'package:coverlo/components/web_view.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/global_formdata.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/models/user_model.dart';
 import 'package:coverlo/respository/insurance_repository.dart';
@@ -34,31 +35,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   bool showJazzCashWebView = false;
   bool showHBLWebView = false;
-  String? transactionNumber;
-
-  bool generatingInsurance = false;
-  String? responseMessage;
-
-  String? contribution;
   String paymentData = '';
-  List vehicleImages = [];
-
-  String? linkHBL;
-  String? linkJazzCash;
 
   bool loading = false;
-
-  String removeQueryParams(String url) {
-    final uri = Uri.parse(url);
-    final uriWithoutQueryParams = Uri(
-      scheme: uri.scheme,
-      userInfo: uri.userInfo,
-      host: uri.host,
-      port: uri.port,
-      path: uri.path,
-    );
-    return uriWithoutQueryParams.toString();
-  }
 
   late Future<Map<String, dynamic>> userInfoFuture;
 
@@ -89,7 +68,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   @override
   void initState() {
-    contribution = contributionController.text;
     userInfoFuture = _loadInfo();
     super.initState();
   }
@@ -120,6 +98,39 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
+  String getJazzCashLink(data) {
+    String linkJazzCash = removeQueryParams(data['linkJazzCash']);
+    linkJazzCash = getUrl(
+        linkJazzCash,
+        {
+          "amount": data['Insurance Amount'],
+          "txnNumber": sessionInsuranceId.toString(),
+        },
+        uriEncode: true);
+
+    return linkJazzCash;
+  }
+
+  String getHblLink(data) {
+    String linkHBL = removeQueryParams(data['linkHBL']);
+
+    linkHBL = getUrl(
+        linkHBL,
+        {
+          "amount": data['Insurance Amount'],
+          "txnNumber": sessionInsuranceId.toString(),
+          "customerName": data['First Name'],
+          "customerLastName": data['Last Name'],
+          "customerAddress": data['Address'],
+          "customerAddressCity": data['City'],
+          "customerAddressCountry": data['Country'],
+          "customerEmail": data['Email'],
+        },
+        uriEncode: true);
+
+    return linkHBL;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>>(
@@ -131,23 +142,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           Map<String, dynamic> jsonData = snapshot.data!;
-
-          final contribution = jsonData['Insurance Amount'];
-          final linkHBL = removeQueryParams(jsonData['linkHBL']);
-          final linkJazzCash = removeQueryParams(jsonData['linkJazzCash']);
+          String linkJazzCash = getJazzCashLink(jsonData);
+          String linkHBL = getHblLink(jsonData);
 
           if (showHBLWebView) {
-            return MyWebView(
-                paymentData: paymentData,
-                webUrl:
-                    "$linkHBL?amount=$contribution&txnNumber=$sessionInsuranceId",
-                webViewName: "HBL Payment");
+            return MyWebView(webUrl: linkHBL, webViewName: "HBL Payment");
           } else if (showJazzCashWebView) {
             return MyWebView(
-                paymentData: paymentData,
-                webUrl:
-                    "$linkJazzCash?amount=$contribution&txnNumber=$sessionInsuranceId",
-                webViewName: "JazzCash Payment");
+                webUrl: linkJazzCash, webViewName: "JazzCash Payment");
           } else {
             return MainLayout(
               body: SizedBox(
@@ -201,7 +203,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 },
                                 buttonText: 'View Data',
                                 buttonColor: kSecondaryColor,
-                                disabled: generatingInsurance || loading,
+                                disabled: loading,
                               ),
                             if (sessionInsuranceId != null)
                               const SizedBox(
@@ -221,7 +223,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 },
                                 buttonText: 'Delete Transaction',
                                 buttonColor: kSecondaryColor,
-                                disabled: generatingInsurance || loading,
+                                disabled: loading,
                               ),
                             if (sessionInsuranceId != null)
                               const SizedBox(
@@ -235,9 +237,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               },
                               buttonText: 'Pay with JazzCash',
                               buttonColor: kSecondaryColor,
-                              disabled: generatingInsurance ||
-                                  loading ||
-                                  sessionInsuranceId == null,
+                              disabled: loading || sessionInsuranceId == null,
                             ),
                             const SizedBox(
                               height: 20,
@@ -250,12 +250,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               },
                               buttonText: 'Pay with Debit / Credit Card',
                               buttonColor: kSecondaryColor,
-                              disabled: generatingInsurance ||
-                                  loading ||
-                                  sessionInsuranceId == null,
+                              disabled: loading || sessionInsuranceId == null,
                             ),
                             const SizedBox(height: kDefaultSpacing),
-                            if (generatingInsurance)
+                            if (loading)
                               const Center(
                                 child: CircularProgressIndicator(),
                               ),

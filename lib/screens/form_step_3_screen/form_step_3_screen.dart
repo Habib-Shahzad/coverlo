@@ -294,8 +294,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                       CustomButton(
                         buttonText: "Submit and Pay",
                         onPressed: () async {
-                          await generateInsurance();
-                          navigateToPayment();
+                          bool success = await generateInsurance();
+                          if (success) navigateToPayment();
                         },
                         buttonColor: kSecondaryColor,
                         disabled: isLoading(),
@@ -322,20 +322,24 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
     bool loading = isLoading();
     if (loading) return;
 
-    setState(() {
-      generatingInsurance = true;
-    });
-
     if (sessionInsuranceId == null) {
+      setState(() {
+        generatingInsurance = true;
+      });
+
       List images = getImages(productValue);
       int? insuranceID = await insuranceRepository.sendInsuranceRequest(images);
 
-      if (insuranceID != null) sessionInsuranceId = insuranceID;
+      // if (insuranceID == null) return false;
+
+      sessionInsuranceId = insuranceID;
+
+      setState(() {
+        generatingInsurance = false;
+      });
     }
 
-    setState(() {
-      generatingInsurance = false;
-    });
+    return true;
   }
 
   navigateToPayment() {

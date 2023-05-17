@@ -129,7 +129,8 @@ class _Step1FormState extends State<Step1Form> {
     var city = cityList![int.parse(dataIndex!)] as City;
 
     setState(() {
-      cityValue = city.cityCode;
+      cityCodeValue = city.cityCode;
+      cityValue = city.cityName;
     });
   }
 
@@ -150,7 +151,7 @@ class _Step1FormState extends State<Step1Form> {
     setState(() {
       countryValue = countryName;
       countryCodeValue = countryCode;
-      cityValue = "";
+      cityCodeValue = "";
     });
   }
 
@@ -211,8 +212,18 @@ class _Step1FormState extends State<Step1Form> {
               children: [
                 textFormFieldMethod(
                   context,
-                  'Name',
-                  nameController,
+                  'First Name',
+                  firstNameController,
+                  false,
+                  false,
+                  TextInputType.text,
+                  nullValidation: true,
+                ),
+                const SizedBox(height: kMinSpacing),
+                  textFormFieldMethod(
+                  context,
+                  'Last Name',
+                  lastNameController,
                   false,
                   false,
                   TextInputType.text,
@@ -274,7 +285,7 @@ class _Step1FormState extends State<Step1Form> {
                       context,
                       _cityKey,
                       'City',
-                      cityValue,
+                      cityCodeValue,
                       state is CitiesLoaded ? dropdownItems : [],
                       state is CitiesLoaded ? items : [],
                       false,

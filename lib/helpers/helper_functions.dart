@@ -57,9 +57,12 @@ List<DropdownMenuItem<Object>> convertToDropDown<T>(
   });
 }
 
-mapToString(Map map) {
+mapToString(Map map, {bool uriEncode = false}) {
   String result = '';
   map.forEach((key, value) {
+    if (uriEncode) {
+      value = Uri.encodeComponent(value);
+    }
     result += '$key=$value&';
   });
   return result.substring(0, result.length - 1);
@@ -75,8 +78,8 @@ Future<Map> getDeviceInfo() async {
   };
 }
 
-getUrl(String operation, Map data) {
-  return '$operation?${mapToString(data)}';
+getUrl(String operation, Map data, {bool uriEncode = false}) {
+  return '$operation?${mapToString(data, uriEncode: uriEncode)}';
 }
 
 getOperationUrl(String operation) async {
@@ -84,8 +87,19 @@ getOperationUrl(String operation) async {
 }
 
 String bytesToBase64(List<int>? imageBytes) {
-  if (imageBytes == null) {
-    return '';
-  }
-  return base64Encode(imageBytes);
+  return imageBytes != null ? base64Encode(imageBytes) : "";
+}
+
+
+
+String removeQueryParams(String url) {
+  final uri = Uri.parse(url);
+  final uriWithoutQueryParams = Uri(
+    scheme: uri.scheme,
+    userInfo: uri.userInfo,
+    host: uri.host,
+    port: uri.port,
+    path: uri.path,
+  );
+  return uriWithoutQueryParams.toString();
 }

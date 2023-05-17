@@ -8,7 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 int? sessionInsuranceId;
 
 // STEP 01 data
-TextEditingController nameController = TextEditingController();
+TextEditingController firstNameController = TextEditingController();
+TextEditingController lastNameController = TextEditingController();
+
 TextEditingController addressController = TextEditingController();
 TextEditingController emailController = TextEditingController();
 TextEditingController mobileNoController = TextEditingController();
@@ -20,6 +22,7 @@ DateTime? dateOfBirthValue;
 // dropdowns
 TextEditingController cityController = TextEditingController();
 String? cityValue;
+String? cityCodeValue;
 
 TextEditingController countryController = TextEditingController();
 String? countryCodeValue;
@@ -108,7 +111,8 @@ XFile? imageBikeRight;
 List<int>? bytesBikeRight;
 
 void setStep1Data() {
-  nameController.text = 'Muhammad Usman';
+  firstNameController.text = 'Muhammad';
+  lastNameController.text = 'Ali';
   addressController.text = 'House # 123, Street # 123, Sector # 123';
   emailController.text = 'ok@ok.com';
   mobileNoController.text = '03001234567';
@@ -118,7 +122,7 @@ void setStep1Data() {
   dateOfBirthValue = DateTime.now();
 
   cityController.text = '0';
-  cityValue = 'Islamabad';
+  cityCodeValue = 'Islamabad';
 
   countryController.text = '0';
   countryCodeValue = 'PK';
@@ -181,9 +185,9 @@ Map<String, dynamic> getEncryptedFormData() {
   }
 
   Map<String, String> data = {
-    "PName": nameController.text.toString(),
+    "PName": firstNameController.text.toString(),
     "PAddress": addressController.text.toString(),
-    "PCity": cityValue ?? '',
+    "PCity": cityCodeValue ?? '',
     "PNationality": countryCodeValue ?? '',
     "PPassportNo": cnicText,
     "PGender": genderValue ?? '',
@@ -230,7 +234,7 @@ void setDebuggingFormData() {
 void resetFormData() async {
   try {
     // STEP 01 data
-    if (nameController.text.isNotEmpty) nameController.clear();
+    if (firstNameController.text.isNotEmpty) firstNameController.clear();
     if (addressController.text.isNotEmpty) addressController.clear();
     if (emailController.text.isNotEmpty) emailController.clear();
     if (mobileNoController.text.isNotEmpty) mobileNoController.clear();
@@ -240,7 +244,7 @@ void resetFormData() async {
     if (dateOfBirthValue != null) dateOfBirthValue = null;
 
     if (cityController.text.isNotEmpty) cityController.clear();
-    if (cityValue != null) cityValue = null;
+    if (cityCodeValue != null) cityCodeValue = null;
 
     if (countryController.text.isNotEmpty) countryController.clear();
     if (countryCodeValue != null) countryCodeValue = null;
@@ -341,14 +345,16 @@ void resetFormData() async {
 saveInformation() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Map<String, String> json = {
-    "Name": nameController.text,
+    "First Name": firstNameController.text,
+    "Last Name": lastNameController.text,
     "Email": emailController.text,
     "Mobile Number": mobileNoController.text,
-    if (countryCodeValue != null) "Country Code": countryCodeValue!,
-    if (productCodeValue != null) "Product Code": productCodeValue!,
-    if (vehcileMakeCodeValue != null)
-      "Vehicle Make Code": vehcileMakeCodeValue!,
-    if (vehicleModelValue != null) "Vehicle Model": vehicleModelValue!,
+    "Address": addressController.text,
+    "Country": "PK",
+    "City": cityValue ?? "",
+    "Product Code": productCodeValue ?? "",
+    "Vehicle Make Code": vehcileMakeCodeValue ?? "",
+    "Vehicle Model": vehicleModelValue ?? "",
     "Insurance Amount": contributionController.text,
   };
 

@@ -55,6 +55,16 @@ class _LoginFormState extends State<LoginForm> {
   _loginUser(String userName, String password) async {
     try {
       UserRepository userRepository = UserRepository();
+
+      if (userName.isEmpty || password.isEmpty) {
+        setState(() {
+          loading = false;
+          buttonText = 'Login';
+          errorMessage = "Username or password cannot be empty";
+        });
+        return;
+      }
+
       User? user = await userRepository.loginUser(userName, password);
 
       setState(() {

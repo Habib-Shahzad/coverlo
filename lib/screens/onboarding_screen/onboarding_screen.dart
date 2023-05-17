@@ -29,9 +29,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (insuranceID != null) {
       sessionInsuranceId = int.parse(insuranceID);
     }
-
-    // if (context.mounted) await DataManager.fetchMakes(context);
-    // if (context.mounted) await DataManager.fetchModels(context);
   }
 
   Future<void>? _future;
@@ -41,7 +38,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.initState();
     _future = loadScreen();
     initPlatformState();
-    // setDebuggingFormData();
   }
 
   @override

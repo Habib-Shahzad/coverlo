@@ -9,12 +9,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 
 class MyWebView extends StatefulWidget {
-  final String paymentData;
+  final String? paymentData;
   final String webUrl;
   final String webViewName;
   const MyWebView(
       {super.key,
-      required this.paymentData,
+      this.paymentData,
       required this.webUrl,
       required this.webViewName});
 
@@ -80,6 +80,9 @@ class WebView extends State<MyWebView> {
 
   @override
   Widget build(BuildContext context) {
+    final body = widget.paymentData != null
+        ? Uint8List.fromList(utf8.encode(widget.paymentData ?? ""))
+        : null;
     return WillPopScope(
         onWillPop: () => _goBack(context),
         child: Scaffold(
@@ -93,8 +96,7 @@ class WebView extends State<MyWebView> {
                       key: webViewKey,
                       initialUrlRequest: URLRequest(
                           url: Uri.parse(widget.webUrl),
-                          body: Uint8List.fromList(
-                              utf8.encode(widget.paymentData)),
+                          body: body,
                           method: "POST",
                           headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'

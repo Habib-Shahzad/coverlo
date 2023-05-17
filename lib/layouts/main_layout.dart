@@ -1,4 +1,5 @@
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/respository/insurance_repository.dart';
 import 'package:coverlo/screens/login_screen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -17,6 +18,8 @@ class _MainLayoutState extends State<MainLayout> {
     Navigator.of(context).pushNamedAndRemoveUntil(
         LoginScreen.routeName, (Route<dynamic> route) => false);
   }
+
+  InsuranceRepository insuranceRepository = InsuranceRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +92,7 @@ class _MainLayoutState extends State<MainLayout> {
                   onPressed: () async {
                     final prefs = await SharedPreferences.getInstance();
                     prefs.remove('user');
+                    insuranceRepository.deleteInsuranceInfo();
                     navigateToLoginScreen();
                   },
                 ),
