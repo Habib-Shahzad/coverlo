@@ -57,6 +57,7 @@ dependencies:
   equatable: ^2.0.5
   image: ^3.3.0
   provider: ^6.0.5
+  tuple: ^2.0.1
   
 
 flutter_icons:

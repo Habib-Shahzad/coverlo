@@ -2,12 +2,14 @@ import 'package:coverlo/components/custom_button.dart';
 import 'package:coverlo/components/custom_text.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/global_formdata.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:coverlo/models/user_model.dart';
 import 'package:coverlo/respository/user_repository.dart';
 import 'package:coverlo/screens/form_step_1_screen/form_step_1_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tuple/tuple.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -34,16 +36,11 @@ class _LoginFormState extends State<LoginForm> {
     if (insuranceID != null) {
       sessionInsuranceId = int.parse(insuranceID);
     }
-
-    // if (context.mounted) await DataManager.fetchMakes(context);
-    // if (context.mounted) await DataManager.fetchModels(context);
   }
 
   @override
   void initState() {
     _future = loadScreen();
-
-    resetFormData();
     super.initState();
   }
 
@@ -65,19 +62,26 @@ class _LoginFormState extends State<LoginForm> {
         return;
       }
 
-      User? user = await userRepository.loginUser(userName, password);
+      Tuple2<LoginStatus, User?> loginResult =
+          await userRepository.loginUser(userName, password);
 
-      setState(() {
-        loading = false;
-      });
+      LoginStatus loginStatus = loginResult.item1;
+      User? user = loginResult.item2;
 
-      if (user == null) {
+      if (loginStatus == LoginStatus.incorrectDetails) {
         setState(() {
           loading = false;
           buttonText = 'Login';
           errorMessage = "Username & password do not match";
         });
-      } else {
+      } else if (loginStatus == LoginStatus.unregisteredDevice) {
+        await userRepository.registerDevice(generateUUID());
+        setState(() {
+          loading = false;
+          buttonText = 'Login';
+          errorMessage = "Device is not registered. Please login again!";
+        });
+      } else if (loginStatus == LoginStatus.success) {
         if (context.mounted) {
           Navigator.pushReplacementNamed(context, FormStep1Screen.routeName);
         }

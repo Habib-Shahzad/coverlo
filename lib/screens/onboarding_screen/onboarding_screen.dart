@@ -1,9 +1,7 @@
-import 'dart:io';
 import 'package:coverlo/respository/user_repository.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/screens/onboarding_screen/body.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
 
@@ -21,9 +19,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final UserRepository userRepository = UserRepository();
 
   bool loggedIn = false;
-  bool loading = true;
 
   Future<void> loadScreen() async {
+    await registerDevice();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? insuranceID = prefs.getString('insuranceID');
     if (insuranceID != null) {
@@ -37,7 +35,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void initState() {
     super.initState();
     _future = loadScreen();
-    initPlatformState();
   }
 
   @override
@@ -45,7 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
-  Future<void> initPlatformState() async {
+  Future<void> registerDevice() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       String? deviceUniqueIdentifier =
@@ -53,27 +50,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       String? uniqueID = prefs.getString('uniqueID');
 
       if (deviceUniqueIdentifier == null && uniqueID == null) {
-        if (Platform.isIOS || Platform.isAndroid) {
-          await userRepository.registerDevice(generateUUID());
-          setState(() {
-            loading = false;
-          });
-        }
-      } else {
-        final userString = prefs.getString('user');
-
-        if (userString != null) {
-          setState(() {
-            loggedIn = true;
-            loading = false;
-          });
-        } else {
-          setState(() {
-            loading = false;
-          });
-        }
+        await userRepository.registerDevice(generateUUID());
       }
-    } on PlatformException {
+
+      final userString = prefs.getString('user');
+
+      if (userString != null) {
+        setState(() {
+          loggedIn = true;
+        });
+      } else {
+        resetFormData();
+      }
+    } catch (e) {
       userRepository.registerDevice(generateUUID());
     }
   }

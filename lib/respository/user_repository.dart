@@ -6,11 +6,15 @@ import 'package:coverlo/models/user_model.dart';
 import 'package:coverlo/networking/api_provider.dart';
 import 'package:coverlo/networking/base_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tuple/tuple.dart';
+
+enum LoginStatus { incorrectDetails, success, unregisteredDevice }
 
 class UserRepository {
   final BaseAPI _provider = ApiProvider();
 
-  Future<User?> loginUser(String userName, String password) async {
+  Future<Tuple2<LoginStatus, User?>> loginUser(
+      String userName, String password) async {
     Map data = {
       "userName": encryptItem(userName),
       "password": encryptItem(password),
@@ -18,10 +22,19 @@ class UserRepository {
     };
     final url = getUrl(LOGIN_API, data);
     final responseJson = await _provider.get(url);
-    if (responseJson["responseCode"] == 402) return null;
+
+    final responseCode = responseJson["responseCode"];
+
+    if (responseCode == 400) {
+      return const Tuple2(LoginStatus.unregisteredDevice, null);
+    }
+    if (responseCode == 402) {
+      return const Tuple2(LoginStatus.incorrectDetails, null);
+    }
+
     User user = User.fromJsonResponse(responseJson);
     await _saveUser(user);
-    return user;
+    return Tuple2(LoginStatus.success, user);
   }
 
   Future<User?> getAuthenticatedUser() async {
