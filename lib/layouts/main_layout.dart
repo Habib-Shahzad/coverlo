@@ -92,7 +92,7 @@ class _MainLayoutState extends State<MainLayout> {
                   onPressed: () async {
                     final prefs = await SharedPreferences.getInstance();
                     prefs.remove('user');
-                    insuranceRepository.deleteInsuranceInfo();
+                    insuranceRepository.deleteSavedInsuranceInfo();
                     navigateToLoginScreen();
                   },
                 ),

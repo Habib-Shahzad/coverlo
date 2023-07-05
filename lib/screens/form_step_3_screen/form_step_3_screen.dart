@@ -7,6 +7,8 @@ import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/helpers/image_operations.dart';
 import 'package:coverlo/layouts/main_layout.dart';
 import 'package:coverlo/respository/insurance_repository.dart';
+import 'package:coverlo/screens/form_step_2_screen/step_2_data.dart';
+import 'package:coverlo/screens/form_step_3_screen/step_3_data.dart';
 import 'package:coverlo/screens/form_step_3_screen/vehicle_image.dart';
 import 'package:coverlo/screens/payment_screen/payment_screen.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +67,7 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
   }
 
   InsuranceRepository insuranceRepository = InsuranceRepository();
+  bool retryingInsurance = false;
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +75,9 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
       final args =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
-      if (args['productName'] == privateCar ||
-          args['productName'] == thirdParty) {
+      retryingInsurance = args['retryingInsurance'] ?? false;
+
+      if (productNameValue == privateCar || productNameValue == thirdParty) {
         setState(() {
           isCar = true;
         });
@@ -84,8 +88,8 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
       }
 
       setState(() {
-        contribution = args['contribution'];
-        productName = args['productName'];
+        contribution = contributionController.text;
+        productName = productNameValue;
 
         loaded = true;
       });
@@ -108,10 +112,12 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
                       stepNavigatorComponent(
                         step3Color: kStepButtonActiveColor,
                         onPressedStep1: () {
+                          if (retryingInsurance) return;
                           Navigator.pop(context);
                           Navigator.pop(context);
                         },
                         onPressedStep2: () {
+                          if (retryingInsurance) return;
                           Navigator.pop(context);
                         },
                       ),
@@ -327,10 +333,20 @@ class _FormStep3ScreenState extends State<FormStep3Screen> {
         generatingInsurance = true;
       });
 
-      List images = getImages(productValue);
+      List images = getImages(productNameValue);
       int? insuranceID = await insuranceRepository.sendInsuranceRequest(images);
 
-      // if (insuranceID == null) return false;
+      if (insuranceID == null) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Unable to generate insurance')),
+          );
+        }
+        setState(() {
+          generatingInsurance = false;
+        });
+        return false;
+      }
 
       sessionInsuranceId = insuranceID;
 

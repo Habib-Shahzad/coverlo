@@ -11,18 +11,10 @@ import 'package:coverlo/models/city_model.dart';
 import 'package:coverlo/models/country_model.dart';
 import 'package:coverlo/models/profession_model.dart';
 import 'package:coverlo/networking/data_manager.dart';
+import 'package:coverlo/screens/form_step_1_screen/step_1_data.dart';
 import 'package:coverlo/screens/form_step_2_screen/form_step_2_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart' as flutter_bloc;
-
-String emailRegex =
-    r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-
-String pkPhoneRegex =
-    r'^((\+92)|(0092))-{0,1}\d{3}-{0,1}\d{7}$|^\d{11}$|^\d{4}-\d{7}$';
-
-String cnicRegex = r'^[0-9]{1,13}$';
-String passportRegex = r'^(?!^0+$)[a-zA-Z0-9]{3,20}$';
 
 class Step1Form extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -42,28 +34,14 @@ class _Step1FormState extends State<Step1Form> {
 
   final CitiesCubit citiesCubit = CitiesCubit();
 
+  late FocusNode mobileFocusNode;
   late FocusNode cnicFocusNode;
 
   bool cnicHasInputError = false;
   bool mobileHasInputError = false;
 
-  late FocusNode mobileFocusNode;
-
   List<DropdownMenuItem<Object>> _genderList = [];
   List<Map<String, String>> _genderListMap = [];
-
-  bool cnicValidated() {
-    String regexToCheck =
-        countryValue == "PAKISTAN" ? cnicRegex : passportRegex;
-    return regexMatched(cnicController.text, regexToCheck) &&
-        cnicController.text.isNotEmpty &&
-        cnicController.text.length == (countryValue == "PAKISTAN" ? 13 : 9);
-  }
-
-  bool mobileValidated() {
-    return regexMatched(mobileNoController.text, pkPhoneRegex) &&
-        mobileNoController.text.isNotEmpty;
-  }
 
   Future<void> fetchData() async {
     if (context.mounted) await DataManager.fetchCountries(context);
@@ -130,7 +108,7 @@ class _Step1FormState extends State<Step1Form> {
 
     setState(() {
       cityCodeValue = city.cityCode;
-      cityValue = city.cityName;
+      cityNameValue = city.cityName;
     });
   }
 
@@ -149,7 +127,7 @@ class _Step1FormState extends State<Step1Form> {
     cityController.text = "";
 
     setState(() {
-      countryValue = countryName;
+      countryNameValue = countryName;
       countryCodeValue = countryCode;
       cityCodeValue = "";
     });
@@ -215,17 +193,17 @@ class _Step1FormState extends State<Step1Form> {
                   'First Name',
                   firstNameController,
                   false,
-                  false,
+                  sessionInsuranceId != null,
                   TextInputType.text,
                   nullValidation: true,
                 ),
                 const SizedBox(height: kMinSpacing),
-                  textFormFieldMethod(
+                textFormFieldMethod(
                   context,
                   'Last Name',
                   lastNameController,
                   false,
-                  false,
+                  sessionInsuranceId != null,
                   TextInputType.text,
                   nullValidation: true,
                 ),
@@ -235,7 +213,7 @@ class _Step1FormState extends State<Step1Form> {
                   'Address',
                   addressController,
                   false,
-                  false,
+                  sessionInsuranceId != null,
                   TextInputType.text,
                   nullValidation: true,
                 ),
@@ -246,10 +224,10 @@ class _Step1FormState extends State<Step1Form> {
                       context,
                       _nationalityKey,
                       'Nationality',
-                      countryValue,
+                      countryNameValue,
                       state is CountriesLoaded ? state.dropdownItems : [],
                       state is CountriesLoaded ? state.countries : [],
-                      false,
+                      sessionInsuranceId != null,
                       setCountryData,
                       nullValidation: true,
                       controlled: true,
@@ -268,7 +246,7 @@ class _Step1FormState extends State<Step1Form> {
                     if (state is CitiesLoaded) {
                       int index = 0;
                       for (City city in state.cities) {
-                        if (city.countryName == countryValue) {
+                        if (city.countryName == countryNameValue) {
                           items.add(city);
                           dropdownItems.add(
                             DropdownMenuItem(
@@ -288,7 +266,7 @@ class _Step1FormState extends State<Step1Form> {
                       cityCodeValue,
                       state is CitiesLoaded ? dropdownItems : [],
                       state is CitiesLoaded ? items : [],
-                      false,
+                      sessionInsuranceId != null,
                       setCityData,
                       nullValidation: true,
                       controlled: true,
@@ -301,21 +279,22 @@ class _Step1FormState extends State<Step1Form> {
                 const SizedBox(height: kMinSpacing),
                 textFormFieldMethod(
                   context,
-                  countryValue == "PAKISTAN" ? 'CNIC' : 'Passport No',
+                  countryNameValue == "PAKISTAN" ? 'CNIC' : 'Passport No',
                   cnicController,
                   false,
-                  false,
+                  sessionInsuranceId != null,
                   TextInputType.text,
                   regexValidation: true,
-                  regexPattern:
-                      countryValue == "PAKISTAN" ? cnicRegex : passportRegex,
-                  regexValidationText: countryValue == "PAKISTAN"
+                  regexPattern: countryNameValue == "PAKISTAN"
+                      ? cnicRegex
+                      : passportRegex,
+                  regexValidationText: countryNameValue == "PAKISTAN"
                       ? 'Invalid CNIC'
                       : 'Invalid Passport',
                   nullValidation: true,
                   focusNode: cnicFocusNode,
                   fieldInputError: cnicHasInputError,
-                  maxLength: countryValue == "PAKISTAN" ? 13 : 9,
+                  maxLength: countryNameValue == "PAKISTAN" ? 13 : 9,
                   denyMoreThanMaxLength: true,
                 ),
                 const SizedBox(height: kMinSpacing),
@@ -326,6 +305,7 @@ class _Step1FormState extends State<Step1Form> {
                   ignoreFuture: true,
                   nullValidation: true,
                   inititalDate: cnicIssueDateValue,
+                  disabled: sessionInsuranceId != null,
                 ),
                 const SizedBox(height: kMinSpacing),
                 dateTimeFormFieldMethod(
@@ -335,6 +315,7 @@ class _Step1FormState extends State<Step1Form> {
                   ignoreFuture: true,
                   nullValidation: true,
                   inititalDate: dateOfBirthValue,
+                  disabled: sessionInsuranceId != null,
                 ),
                 const SizedBox(height: kMinSpacing),
                 dropDownFormFieldMethod(
@@ -344,7 +325,7 @@ class _Step1FormState extends State<Step1Form> {
                   genderValue,
                   _genderList,
                   _genderListMap,
-                  false,
+                  sessionInsuranceId != null,
                   setGenderData,
                   nullValidation: true,
                   controlled: true,
@@ -362,7 +343,7 @@ class _Step1FormState extends State<Step1Form> {
                         professionValue,
                         state is ProfessionsLoaded ? state.dropdownItems : [],
                         state is ProfessionsLoaded ? state.professions : [],
-                        false,
+                        sessionInsuranceId != null,
                         setProfessionData,
                         nullValidation: true,
                         controlled: true,
@@ -377,7 +358,7 @@ class _Step1FormState extends State<Step1Form> {
                   'Mobile No',
                   mobileNoController,
                   false,
-                  false,
+                  sessionInsuranceId != null,
                   TextInputType.number,
                   regexValidation: true,
                   regexPattern: pkPhoneRegex,
@@ -394,7 +375,7 @@ class _Step1FormState extends State<Step1Form> {
                   'Email',
                   emailController,
                   false,
-                  false,
+                  sessionInsuranceId != null,
                   TextInputType.emailAddress,
                   regexValidation: true,
                   regexPattern: emailRegex,
@@ -417,7 +398,10 @@ class _Step1FormState extends State<Step1Form> {
                         cnicHasInputError = invalidCnic;
                       });
                     } else if (formValidated) {
-                      Navigator.pushNamed(context, FormStep2Screen.routeName);
+                      await saveStep1Data();
+                      if (context.mounted) {
+                        Navigator.pushNamed(context, FormStep2Screen.routeName);
+                      }
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

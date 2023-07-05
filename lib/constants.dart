@@ -23,6 +23,7 @@ const kFormRadioActiveColor = Color(0xFFFF3e81);
 const kFormSubHeadingColor = Color(0xFF848484);
 const kFormReadyOnlyBackgroundColor = Color(0xFF817F82);
 const kFormReadOnlyTextColor = Color(0xFF545454);
+const kFormLightOpacityBlack = Color.fromRGBO(0, 0, 0, 0.5);
 
 const kDefaultFontSize = 16.0;
 const kFormSubHeadingFontSize = 18.0;

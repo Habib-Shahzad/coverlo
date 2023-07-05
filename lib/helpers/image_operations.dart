@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
+import 'package:coverlo/screens/form_step_3_screen/step_3_data.dart';
 import 'package:image/image.dart' as img;
 
 Uint8List? imageBytesResize(List<int>? imageBytes) {

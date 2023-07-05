@@ -2,9 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class JsonList extends StatefulWidget {
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file_plus/open_file_plus.dart';
+import 'dart:io';
 
-  const JsonList( {Key? key}) : super(key: key);
+class JsonList extends StatefulWidget {
+  const JsonList({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -53,4 +57,21 @@ class _JsonListState extends State<JsonList> {
       },
     );
   }
+}
+
+copyToClipboard(String text) async {
+  await Clipboard.setData(ClipboardData(text: text));
+}
+
+openFileContainingData(jsonData, {fileType = 'json'}) async {
+  jsonData = json.encode(jsonData);
+
+  String filename = 'data.$fileType';
+  String saveDir =
+      await getExternalStorageDirectory().then((value) => value!.path);
+
+  File file = File('$saveDir/$filename');
+  await file.writeAsString(jsonData.toString());
+
+  await OpenFile.open(file.path);
 }

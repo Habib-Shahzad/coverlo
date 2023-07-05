@@ -57,7 +57,7 @@ TextFormField textFormFieldMethod(
       return null;
     },
     style: TextStyle(
-      color: isReadOnly ? kTextColor : kFormTextColor,
+      color: isReadOnly ? kFormLightOpacityBlack : kFormTextColor,
       fontSize: ResponsiveValue(
         context,
         defaultValue: kDefaultFontSize,
@@ -77,9 +77,8 @@ TextFormField textFormFieldMethod(
       contentPadding: const EdgeInsets.symmetric(
         horizontal: kDefaultFontSize,
       ),
-      fillColor: isReadOnly
-          ? kFormReadyOnlyBackgroundColor
-          : kFormFieldBackgroundColor,
+      fillColor:
+          isReadOnly ? kFormFieldBackgroundColor : kFormFieldBackgroundColor,
       filled: true,
       prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
       prefixIcon: hasPrefix

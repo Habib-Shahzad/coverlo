@@ -2,9 +2,9 @@ import 'package:coverlo/components/main_heading.dart';
 import 'package:coverlo/components/step_navigator.dart';
 import 'package:coverlo/components/sub_heading.dart';
 import 'package:coverlo/constants.dart';
-import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/components/message_dialog.dart';
 import 'package:coverlo/layouts/main_layout.dart';
+import 'package:coverlo/screens/form_step_2_screen/step_2_data.dart';
 import 'package:coverlo/screens/form_step_2_screen/step_2_form.dart';
 import 'package:coverlo/screens/form_step_3_screen/form_step_3_screen.dart';
 import 'package:flutter/material.dart';
@@ -42,18 +42,22 @@ class _FormStep2ScreenState extends State<FormStep2Screen> {
                   onPressedStep1: () {
                     Navigator.pop(context);
                   },
-                  onPressedStep3: () {
+                  onPressedStep3: () async {
                     if (contributionController.text.isNotEmpty &&
-                        productValue != null &&
-                        productValue!.isNotEmpty) {
-                      Navigator.pushNamed(
-                        context,
-                        FormStep3Screen.routeName,
-                        arguments: {
-                          "contribution": contributionController.text,
-                          "productName": productValue,
-                        },
-                      );
+                        productNameValue != null &&
+                        productNameValue!.isNotEmpty) {
+                      await saveStep2Data();
+
+                      if (context.mounted) {
+                        Navigator.pushNamed(
+                          context,
+                          FormStep3Screen.routeName,
+                          arguments: {
+                            "contribution": contributionController.text,
+                            "productName": productNameValue,
+                          },
+                        );
+                      }
                     } else {
                       AlertDialog alert = messageDialog(
                           context, "Error", "Please fill all fields");

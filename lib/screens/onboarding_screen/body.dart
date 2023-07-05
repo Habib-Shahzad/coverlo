@@ -1,8 +1,10 @@
 import 'package:coverlo/components/custom_button.dart';
 import 'package:coverlo/components/main_heading.dart';
 import 'package:coverlo/constants.dart';
+import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/screens/form_step_1_screen/form_step_1_screen.dart';
 import 'package:coverlo/screens/login_screen/login_screen.dart';
+import 'package:coverlo/screens/payment_screen/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -53,7 +55,11 @@ class OnboardingBody extends StatelessWidget {
 
             if (jsonString != null) {
               if (context.mounted) {
-                Navigator.pushNamed(context, FormStep1Screen.routeName);
+                if (sessionInsuranceId != null) {
+                  Navigator.pushNamed(context, PaymentScreen.routeName);
+                } else {
+                  Navigator.pushNamed(context, FormStep1Screen.routeName);
+                }
               }
             } else {
               if (context.mounted) {

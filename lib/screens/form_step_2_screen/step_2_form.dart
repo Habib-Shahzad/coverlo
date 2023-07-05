@@ -12,14 +12,15 @@ import 'package:coverlo/form_fields/drop_down_form_field.dart';
 import 'package:coverlo/form_fields/radio_method.dart';
 import 'package:coverlo/form_fields/slider_method.dart';
 import 'package:coverlo/form_fields/text_form_field.dart';
-import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/components/message_dialog.dart';
+import 'package:coverlo/global_formdata.dart';
 import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:coverlo/models/make_model.dart';
 import 'package:coverlo/models/model_model.dart';
 import 'package:coverlo/models/product_model.dart';
 import 'package:coverlo/models/tracking_company_model.dart';
 import 'package:coverlo/networking/data_manager.dart';
+import 'package:coverlo/screens/form_step_2_screen/step_2_data.dart';
 import 'package:coverlo/screens/form_step_3_screen/form_step_3_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:coverlo/models/color_model.dart';
@@ -69,6 +70,16 @@ class _Step2FormState extends State<Step2Form> {
   bool _modelReadOnly = false;
 
   Future<void> fetchData() async {
+    // if (context.mounted) {
+    //   if (productCodeValue != null) {
+    //     await DataManager.fetchMakesByProduct(context, productCodeValue!);
+
+    //     if (context.mounted) {
+    //       await DataManager.fetchModelsByProduct(context, productCodeValue!);
+    //     }
+    //   }
+    // }
+
     if (context.mounted) await DataManager.fetchProducts(context);
     if (context.mounted) await DataManager.fetchColors(context);
     if (context.mounted) await DataManager.fetchTrackingCompanies(context);
@@ -104,10 +115,10 @@ class _Step2FormState extends State<Step2Form> {
                       context,
                       _productKey,
                       'Product',
-                      productValue,
+                      productNameValue,
                       state is ProductsLoaded ? state.dropdownItems : [],
                       state is ProductsLoaded ? state.products : [],
-                      false,
+                      sessionInsuranceId != null,
                       setProductData,
                       controlled: true,
                       dropDownValue: productNameController.text != ""
@@ -127,6 +138,7 @@ class _Step2FormState extends State<Step2Form> {
                       'yes',
                       appliedForRegistartion,
                       setAppliedForRegistartion,
+                      readOnly: sessionInsuranceId != null,
                     ),
                     const SizedBox(width: kMinSpacing),
                     radioMethod(
@@ -135,6 +147,7 @@ class _Step2FormState extends State<Step2Form> {
                       'already registered',
                       appliedForRegistartion,
                       setAppliedForRegistartion,
+                      readOnly: sessionInsuranceId != null,
                     ),
                   ],
                 ),
@@ -146,7 +159,7 @@ class _Step2FormState extends State<Step2Form> {
                     'Registration No',
                     registrationNoController,
                     false,
-                    false,
+                    sessionInsuranceId != null,
                     TextInputType.text,
                   ),
                 const SizedBox(height: kMinSpacing),
@@ -155,7 +168,7 @@ class _Step2FormState extends State<Step2Form> {
                   'Engine No',
                   engineNoController,
                   false,
-                  false,
+                  sessionInsuranceId != null,
                   TextInputType.text,
                 ),
                 const SizedBox(height: kMinSpacing),
@@ -164,7 +177,7 @@ class _Step2FormState extends State<Step2Form> {
                   'Chasis No',
                   chasisNoController,
                   false,
-                  false,
+                  sessionInsuranceId != null,
                   TextInputType.text,
                 ),
                 const SizedBox(height: kMinSpacing),
@@ -174,10 +187,10 @@ class _Step2FormState extends State<Step2Form> {
                       context,
                       _vehicleMakeKey,
                       'Vehicle Make',
-                      vehicleMakeValue,
+                      vehicleMakeNameValue,
                       state is MakesLoaded ? state.dropdownItems : [],
                       state is MakesLoaded ? state.makes : [],
-                      false,
+                      sessionInsuranceId != null,
                       setMakeData,
                       controlled: true,
                       dropDownValue: vehicleMakeController.text != ""
@@ -195,7 +208,7 @@ class _Step2FormState extends State<Step2Form> {
                     if (state is ModelsLoaded) {
                       int index = 0;
                       for (Model model in state.models) {
-                        if (model.makeName == vehicleMakeValue) {
+                        if (model.makeName == vehicleMakeNameValue) {
                           items.add(model);
                           dropdownItems.add(
                             DropdownMenuItem(
@@ -211,10 +224,10 @@ class _Step2FormState extends State<Step2Form> {
                       context,
                       _vehicleVariantKey,
                       'Vehicle Variant',
-                      vehicleVariantValue,
+                      vehicleVariantNameValue,
                       dropdownItems,
                       items,
-                      _variantReadOnly,
+                      _variantReadOnly || sessionInsuranceId != null,
                       setVariantData,
                       controlled: true,
                       dropDownValue: vehicleVariantController.text != ""
@@ -231,7 +244,7 @@ class _Step2FormState extends State<Step2Form> {
                   vehicleModelValue,
                   vehicleModelDropDownItems,
                   vehicleModelList,
-                  _modelReadOnly,
+                  _modelReadOnly || sessionInsuranceId != null,
                   setModelData,
                   controlled: true,
                   dropDownValue: vehicleModelController.text != ""
@@ -248,7 +261,7 @@ class _Step2FormState extends State<Step2Form> {
                       colorValue,
                       state is ColorsLoaded ? state.dropdownItems : [],
                       state is ColorsLoaded ? state.colors : [],
-                      false,
+                      sessionInsuranceId != null,
                       setColorData,
                       controlled: true,
                       dropDownValue: colorController.text != ""
@@ -263,7 +276,7 @@ class _Step2FormState extends State<Step2Form> {
                   'Cubic Capacity/Bhp/Torque',
                   cubicCapacityController,
                   false,
-                  false,
+                  sessionInsuranceId != null,
                   TextInputType.text,
                 ),
                 const SizedBox(height: kMinSpacing),
@@ -301,19 +314,20 @@ class _Step2FormState extends State<Step2Form> {
                   setSeatingCapacity,
                   _minSeatingCapacity,
                   _maxSeatingCapacity,
+                  readOnly: sessionInsuranceId != null,
                 ),
-                productValue == thirdParty
+                productNameValue == thirdParty
                     ? const SizedBox()
                     : const FormSubHeading(text: 'Tracker Installed'),
-                productValue == thirdParty
+                productNameValue == thirdParty
                     ? const SizedBox()
                     : const CustomText(
                         text: '(For Motor Cars Only)',
                         color: kFormSubHeadingColor),
-                productValue == thirdParty
+                productNameValue == thirdParty
                     ? const SizedBox()
                     : const SizedBox(height: kMinSpacing),
-                productValue == thirdParty
+                productNameValue == thirdParty
                     ? const SizedBox()
                     : Row(
                         children: [
@@ -323,6 +337,7 @@ class _Step2FormState extends State<Step2Form> {
                             'yes',
                             trackerInstalled,
                             setTrackerInstalled,
+                            readOnly: sessionInsuranceId != null,
                           ),
                           const SizedBox(width: kMinSpacing),
                           radioMethod(
@@ -331,11 +346,12 @@ class _Step2FormState extends State<Step2Form> {
                             'no',
                             trackerInstalled,
                             setTrackerInstalled,
+                            readOnly: sessionInsuranceId != null,
                           ),
                         ],
                       ),
                 const SizedBox(height: kMinSpacing),
-                productValue == thirdParty
+                productNameValue == thirdParty
                     ? const SizedBox()
                     : showTrackers
                         ? flutter_bloc.BlocBuilder<TrackingCompaniesCubit,
@@ -345,14 +361,14 @@ class _Step2FormState extends State<Step2Form> {
                                 context,
                                 _trackingCompanyKey,
                                 'Tracking Company',
-                                trackingCompanyValue,
+                                trackingCompanyCodeValue,
                                 state is TrackingCompaniesLoaded
                                     ? state.dropdownItems
                                     : [],
                                 state is TrackingCompaniesLoaded
                                     ? state.companies
                                     : [],
-                                false,
+                                sessionInsuranceId != null,
                                 setTrackingCompanyData,
                                 controlled: true,
                                 dropDownValue: trackingCompanyController.text !=
@@ -363,24 +379,24 @@ class _Step2FormState extends State<Step2Form> {
                             },
                           )
                         : const SizedBox(),
-                productValue == thirdParty
+                productNameValue == thirdParty
                     ? const SizedBox()
                     : const SizedBox(height: kMinSpacing),
-                productValue == thirdParty
+                productNameValue == thirdParty
                     ? const SizedBox()
                     : const CustomText(
                         text: '(For Motor Cars Only)',
                         color: kFormSubHeadingColor),
-                productValue == thirdParty
+                productNameValue == thirdParty
                     ? const SizedBox()
                     : const SizedBox(height: kMinSpacing),
-                productValue == thirdParty
+                productNameValue == thirdParty
                     ? const SizedBox()
                     : const FormSubHeading(text: 'Additional Accessories'),
-                productValue == thirdParty
+                productNameValue == thirdParty
                     ? const SizedBox()
                     : const SizedBox(height: kMinSpacing),
-                productValue == thirdParty
+                productNameValue == thirdParty
                     ? const SizedBox()
                     : Row(
                         children: [
@@ -390,6 +406,7 @@ class _Step2FormState extends State<Step2Form> {
                             'yes',
                             additionalAccessories,
                             setAdditionalAccessories,
+                            readOnly: sessionInsuranceId != null,
                           ),
                           const SizedBox(width: kMinSpacing),
                           radioMethod(
@@ -398,6 +415,7 @@ class _Step2FormState extends State<Step2Form> {
                             'no',
                             additionalAccessories,
                             setAdditionalAccessories,
+                            readOnly: sessionInsuranceId != null,
                           ),
                         ],
                       ),
@@ -414,6 +432,7 @@ class _Step2FormState extends State<Step2Form> {
                       'yes',
                       personalAccidentValue,
                       setPersonalAccident,
+                      readOnly: sessionInsuranceId != null,
                     ),
                     const SizedBox(width: kMinSpacing),
                     radioMethod(
@@ -422,6 +441,7 @@ class _Step2FormState extends State<Step2Form> {
                       'no',
                       personalAccidentValue,
                       setPersonalAccident,
+                      readOnly: sessionInsuranceId != null,
                     ),
                   ],
                 ),
@@ -475,16 +495,17 @@ class _Step2FormState extends State<Step2Form> {
                     'Insured Estimated Value',
                     insuredEstimatedValueController,
                     true,
-                    false,
+                    sessionInsuranceId != null,
                     TextInputType.number),
                 const SizedBox(height: kMinSpacing),
                 CustomButton(
                   buttonText: calculateButtonText,
+                  disabled: sessionInsuranceId != null,
                   onPressed: () {
                     try {
-                      String productName = productValue!;
+                      String productName = productNameValue!;
                       String year = vehicleModelValue!;
-                      String vehcileMake = vehicleMakeValue!;
+                      String vehcileMake = vehicleMakeNameValue!;
 
                       String hasTracker = trackerInstalled;
                       String personalAccident = personalAccidentValue;
@@ -641,13 +662,16 @@ class _Step2FormState extends State<Step2Form> {
                 const SizedBox(height: kMinSpacing),
                 CustomButton(
                   buttonText: nextButtonText,
-                  onPressed: () {
+                  onPressed: () async {
                     if (contributionController.text.isNotEmpty) {
-                      Navigator.pushNamed(context, FormStep3Screen.routeName,
-                          arguments: {
-                            'contribution': contributionController.text,
-                            'productName': productValue,
-                          });
+                      await saveStep2Data();
+                      if (context.mounted) {
+                        Navigator.pushNamed(context, FormStep3Screen.routeName,
+                            arguments: {
+                              'contribution': contributionController.text,
+                              'productName': productNameValue,
+                            });
+                      }
                     } else {
                       AlertDialog alert = messageDialog(context, 'Error',
                           'Please calculate the contribution');
@@ -694,13 +718,13 @@ class _Step2FormState extends State<Step2Form> {
     colorValue = null;
 
     vehicleMakeController.text = "";
-    vehicleMakeValue = null;
+    vehicleMakeNameValue = null;
 
     vehicleModelController.text = "";
     vehicleModelValue = null;
 
     vehicleVariantController.text = "";
-    vehicleVariantValue = null;
+    vehicleVariantNameValue = null;
 
     var product = productList![int.parse(dataIndex)] as Product;
 
@@ -731,7 +755,7 @@ class _Step2FormState extends State<Step2Form> {
     }
 
     setState(() {
-      productValue = productName;
+      productNameValue = productName;
       productCodeValue = productCode;
       _maxSeatingCapacity = maxCap;
       vehicleModelDropDownItems = newModelList;
@@ -759,7 +783,7 @@ class _Step2FormState extends State<Step2Form> {
     String makeCode = make.makeCode;
 
     vehicleVariantController.text = "";
-    vehicleVariantValue = null;
+    vehicleVariantNameValue = null;
 
     vehicleModelController.text = "";
     vehicleModelValue = null;
@@ -772,7 +796,7 @@ class _Step2FormState extends State<Step2Form> {
     _bodyTypeKey.currentState?.reset();
 
     setState(() {
-      vehicleMakeValue = makeName;
+      vehicleMakeNameValue = makeName;
       vehcileMakeCodeValue = makeCode;
 
       _variantReadOnly = false;
@@ -799,9 +823,10 @@ class _Step2FormState extends State<Step2Form> {
 
     _vehicleModelKey.currentState?.reset();
     _bodyTypeKey.currentState?.reset();
+
     setState(() {
-      vehcileMakeCodeValue = variantCode;
-      vehicleVariantValue = variantName;
+      vehcileVariantCodeValue = variantCode;
+      vehicleVariantNameValue = variantName;
       vehicleModelValue = null;
       bodyTypeValue = null;
     });
@@ -817,7 +842,7 @@ class _Step2FormState extends State<Step2Form> {
     var company = trackingCompanyList[int.parse(dataIndex)] as TrackingCompany;
 
     setState(() {
-      trackingCompanyValue = company.trackingCompanyCode;
+      trackingCompanyCodeValue = company.trackingCompanyCode;
     });
   }
 

@@ -3,33 +3,15 @@ import 'package:coverlo/components/step_navigator.dart';
 import 'package:coverlo/components/sub_heading.dart';
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/layouts/main_layout.dart';
+import 'package:coverlo/screens/form_step_1_screen/step_1_data.dart';
 import 'package:coverlo/screens/form_step_1_screen/step_1_form.dart';
 import 'package:coverlo/screens/form_step_2_screen/form_step_2_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:coverlo/global_formdata.dart';
 
 class FormStep1Screen extends StatelessWidget {
   static const String routeName = '/form_step_1_screen';
   final _formKey = GlobalKey<FormState>();
   FormStep1Screen({Key? key}) : super(key: key);
-
-  bool regexMatched(String value, regexPattern) {
-    RegExp regex = RegExp(regexPattern);
-    return regex.hasMatch(value);
-  }
-
-  bool cnicValidated() {
-    String regexToCheck =
-        countryValue == "PAKISTAN" ? cnicRegex : passportRegex;
-    return regexMatched(cnicController.text, regexToCheck) &&
-        cnicController.text.isNotEmpty &&
-        cnicController.text.length == (countryValue == "PAKISTAN" ? 13 : 9);
-  }
-
-  bool mobileValidated() {
-    return regexMatched(mobileNoController.text, pkPhoneRegex) &&
-        mobileNoController.text.isNotEmpty;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,19 +30,21 @@ class FormStep1Screen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 stepNavigatorComponent(
-                  onPressedStep2: () {
-                    
+                  onPressedStep2: () async {
+                    bool validMobile = mobileValidated();
+                    bool validCnic = cnicValidated();
+                    bool formValidated = validMobile &&
+                        validCnic &&
+                        _formKey.currentState!.validate();
 
-                    bool invalidMobile = !mobileValidated();
-                    bool invalidCnic = !cnicValidated();
-                    bool formValidated = _formKey.currentState!.validate();
-
-                    if (invalidMobile || invalidCnic) {
-                    } else if (formValidated) {
-                      Navigator.pushNamed(
-                        context,
-                        FormStep2Screen.routeName,
-                      );
+                    if (formValidated) {
+                      await saveStep1Data();
+                      if (context.mounted) {
+                        Navigator.pushNamed(
+                          context,
+                          FormStep2Screen.routeName,
+                        );
+                      }
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

@@ -15,3 +15,4 @@ const GET_COLORS_API = 'CoverLo_GetColors';
 
 const GENERATE_INSURANCE_API = 'CoverLo_GenrateInsurance';
 const UPLOAD_PICS_API = 'CoverLo_UploadPics';
+const GET_INSURANCE_INFO = 'getregisteredInsuDetail';
