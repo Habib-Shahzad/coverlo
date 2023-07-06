@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:coverlo/constants.dart';
 import 'package:coverlo/des/des.dart';
+import 'package:coverlo/helpers/helper_functions.dart';
 import 'package:coverlo/screens/form_step_1_screen/step_1_data.dart';
 import 'package:coverlo/screens/form_step_2_screen/step_2_data.dart';
 import 'package:coverlo/screens/form_step_3_screen/step_3_data.dart';
-import 'package:coverlo/screens/payment_screen/data_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 int? sessionInsuranceId;
@@ -86,12 +86,13 @@ Future<Map<String, String>> getFormData() async {
 
   Map step1Data = jsonDecode(prefs.getString('step1Data') ?? '{}');
   Map step1EncryptedData = (jsonDecode(prefs.getString('step1DataE') ?? '{}'));
-
   step1EncryptedData = Des.encryptMap(_convertToStringMap(step1EncryptedData));
+  step1EncryptedData = urlEncodeMap(step1EncryptedData);
 
   Map step2Data = jsonDecode(prefs.getString('step2Data') ?? '{}');
   Map step2EncryptedData = (jsonDecode(prefs.getString('step2DataE') ?? '{}'));
   step2EncryptedData = Des.encryptMap(_convertToStringMap(step2EncryptedData));
+  step2EncryptedData = urlEncodeMap(step2EncryptedData);
 
   Map formData = {};
   formData.addAll(step1Data);

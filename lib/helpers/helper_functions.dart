@@ -68,6 +68,14 @@ mapToString(Map map, {bool uriEncode = false}) {
   return result.substring(0, result.length - 1);
 }
 
+urlEncodeMap(Map map) {
+  Map result = {};
+  map.forEach((key, value) {
+    result[key] = Uri.encodeComponent(value);
+  });
+  return result;
+}
+
 Future<Map> getDeviceInfo() async {
   final prefs = await SharedPreferences.getInstance();
   String? deviceUniqueIdentifier = prefs.getString('deviceUniqueIdentifier');
@@ -89,8 +97,6 @@ getOperationUrl(String operation) async {
 String bytesToBase64(List<int>? imageBytes) {
   return imageBytes != null ? base64Encode(imageBytes) : "";
 }
-
-
 
 String removeQueryParams(String url) {
   final uri = Uri.parse(url);
